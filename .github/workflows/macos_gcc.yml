@@ -1,0 +1,66 @@
+name: macos_gcc_14
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+env:
+  BUILD_TYPE: Release
+  BREW_PREFIX: /opt/homebrew # 显式定义brew路径
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Homebrew Path
+        run: |
+          # 直接加载brew环境变量
+          [[ -f $BREW_PREFIX/bin/brew ]] && eval "$($BREW_PREFIX/bin/brew shellenv)"
+          echo "$BREW_PREFIX/bin" >> $GITHUB_PATH
+
+      - name: Install GCC 14
+        run: |
+          # 使用绝对路径确保找到brew
+          if ! command -v $BREW_PREFIX/bin/brew &> /dev/null; then
+              /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+              eval "$($BREW_PREFIX/bin/brew shellenv)"
+          fi
+
+          $BREW_PREFIX/bin/brew install gcc@14
+
+          # 动态获取gcc安装路径
+          GCC_BIN_PATH="$BREW_PREFIX/opt/gcc/bin"
+          echo "CC=$GCC_BIN_PATH/gcc-14" >> $GITHUB_ENV
+          echo "CXX=$GCC_BIN_PATH/g++-14" >> $GITHUB_ENV
+          echo "$GCC_BIN_PATH" >> $GITHUB_PATH  # 关键路径前置
+
+      - name: Verify Environment
+        run: |
+          echo "Current PATH: $PATH"
+          which gcc-14
+          which g++-14
+          g++-14 --version
+
+      - name: Install Build Tools
+        run: |
+          $BREW_PREFIX/bin/brew install cmake ninja
+
+      - name: CMake Configuration
+        run: |
+          cmake -B build \
+            -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} \
+            -DCMAKE_C_COMPILER=${{env.CC}} \
+            -DCMAKE_CXX_COMPILER=${{env.CXX}} \
+            -G Ninja
+
+      - name: Build Project
+        run: cmake --build build --parallel $(sysctl -n hw.logicalcpu)
+
+      - name: Run Tests
+        working-directory: ./build
+        run: ctest --output-on-failure --parallel $(sysctl -n hw.logicalcpu)
