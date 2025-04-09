@@ -1,0 +1,47 @@
+#pragma once
+
+#include "./snd/__default_domain.hpp"
+#include "./snd/__transform_sender.hpp"
+#include "./snd/__transform_env.hpp"
+#include "./snd/__apply_sender.hpp"
+#include "./snd/__get_completion_signatures.hpp"
+#include "./snd/__single_sender.hpp"
+#include "./snd/__sender.hpp"
+#include "./snd/__sender_in.hpp"
+#include "./snd/__sender_to.hpp"
+#include "./snd/__sender_for.hpp"
+#include "./snd/__sender_of.hpp"
+
+#include "snd/__make_sender.hpp"
+
+#include "snd/__detail/mate_type/__data_type.hpp"
+
+namespace mcs::execution
+{
+    using ::mcs::execution::snd::default_domain;
+    using ::mcs::execution::snd::transform_sender;
+    using ::mcs::execution::snd::transform_env;
+    using ::mcs::execution::snd::apply_sender;
+
+    using ::mcs::execution::snd::completion_signatures_of_t;
+
+    // concepts
+    using ::mcs::execution::snd::sender;
+    using ::mcs::execution::snd::sender_in;
+    using ::mcs::execution::snd::sender_to;
+    using ::mcs::execution::snd::sender_for;
+    using ::mcs::execution::snd::sender_of;
+    using ::mcs::execution::snd::single_sender;
+
+    //
+    using ::mcs::execution::snd::get_completion_signatures;
+
+    //
+    using ::mcs::execution::snd::tag_of_t;
+
+    using ::mcs::execution::snd::make_sender;
+
+    //
+    using ::mcs::execution::snd::__detail::mate_type::data_type;
+
+}; // namespace mcs::execution

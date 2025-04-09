@@ -10,3 +10,4 @@ include(${CMAKE_SOURCE_DIR}/test/script/auto_add_exec.cmake)
 auto_add_exec("draft")
 
 auto_add_test_by_dir("base")
+auto_add_test_by_dir("ip")

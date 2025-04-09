@@ -45,7 +45,7 @@ Diagnostics:
       readability-identifier-naming.VariableCase: camelBack,lower_case
       readability-identifier-naming.GlobalVariableCase: lower_case
       readability-identifier-naming.GlobalVariablePrefix: g_
-      readability-identifier-naming.PrivateMemberPrefix: m_
+      readability-identifier-naming.PrivateMemberSuffix: _
       # ui 例外
       readability-identifier-naming.PrivateMemberIgnoredRegexp: ^ui,
       # 函数名

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>文件传输演示</title>
+    <style>
+      #dropZone {
+        width: 300px;
+        height: 150px;
+        border: 2px dashed #999;
+        text-align: center;
+        padding: 20px;
+      }
+      .dragover {
+        background: #f0f0f0;
+      }
+      .progress {
+        height: 20px;
+        border: 1px solid #ccc;
+        margin: 10px 0;
+      }
+      .progress-bar {
+        height: 100%;
+        background: #4caf50;
+        transition: width 0.3s;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="dropZone">
+      <p>拖放文件到此处或点击选择</p>
+      <input type="file" id="fileInput" />
+    </div>
+    <div id="uploadProgress" class="progress">
+      <div class="progress-bar" style="width: 0%"></div>
+    </div>
+    <div id="downloadLinks"></div>
+
+    <script>
+      function uploadFile(file) {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/upload", true);
+
+        // 上传进度处理
+        xhr.upload.onprogress = (e) => {
+          const percent = Math.round((e.loaded / e.total) * 100);
+          document.querySelector(
+            "#uploadProgress .progress-bar"
+          ).style.width = `${percent}%`;
+        };
+
+        xhr.onload = () => {
+          if (xhr.status === 200) {
+            const link = `<a href="/download?name=${encodeURIComponent(
+              file.name
+            )}" 
+                                   download>下载 ${file.name}</a>`;
+            document.getElementById("downloadLinks").innerHTML += link + "<br>";
+          }
+        };
+
+        xhr.send(formData);
+      }
+
+      // 事件处理
+      document.getElementById("fileInput").onchange = (e) =>
+        uploadFile(e.target.files[0]);
+
+      document.getElementById("dropZone").ondragover = (e) => {
+        e.preventDefault();
+        e.target.classList.add("dragover");
+      };
+
+      document.getElementById("dropZone").ondrop = (e) => {
+        e.preventDefault();
+        e.target.classList.remove("dragover");
+        uploadFile(e.dataTransfer.files[0]);
+      };
+    </script>
+  </body>
+</html>
