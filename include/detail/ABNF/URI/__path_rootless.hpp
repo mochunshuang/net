@@ -1,104 +1,61 @@
 #pragma once
 
-#include "__pchar.hpp"
+#include "./__segment_nz.hpp"
+#include "./__segment.hpp"
+#include <array>
 
 namespace mcs::ABNF::URI
 {
     // path-rootless = segment-nz *( "/" segment )
-    // segment-nz    = 1*pchar
-    // segment       = *pchar
-    constexpr bool path_rootless(default_span_t sp) noexcept
+    constexpr CheckResult path_rootless(default_span_t sp) noexcept
     {
+        using span_t = std::decay_t<default_span_t>;
+        static_assert(not segment_nz(span_t{})); // NOTE: so need sp.empty() is false
 
-        if (sp.empty()) // segment-nz 至少需要一个 pchar，空输入非法
-            return false;
+        const auto k_size = sp.size();
+        if (k_size == 0)
+            return std::unexpected{Info{0}};
 
-        static_assert(not pchar('/')); // NOTE: '/' 不属于 pchar
+        // NOTE: '/' is not segment_nz then can split
+        static_assert(not segment_nz(std::array<OCTET, 1>{'/'}));
 
-        // Step 1: 解析第一个 segment-nz
-        size_t pos = 0;
-        bool has_pchar = false; // 标记是否至少有一个 pchar
+        // handle: segment-nz
+        auto first = std::ranges::find(sp, '/');
+        if (first == sp.end())
+            return segment_nz(sp); // NOTE: return early when sp is only have segment-nz
 
-        // 逐个字符（或 pct-encoded 三元组）匹配 pchar
-        while (pos < sp.size())
+        // split to two-part and handle respectively
+        // handle: segment-nz
+        size_t d = std::distance(sp.begin(), first);
+        auto ret = segment_nz(sp.first(d));
+        if (not ret)
+            return ret;
+
+        // handle: 1*( "/" segment )
+        static_assert(segment(span_t{})); // NOTE: so '/' is good case
+        auto index = d + 1;               // check_span start index
+        while (index < k_size)
         {
-            bool matched = false;
-
-            if (pos + 3 <= sp.size())
+            // NOTE: check segment until find '/' or other error char
+            auto ret = segment(sp.subspan(index));
+            if (ret)
             {
-                const auto k_sub = sp.subspan(pos, 3);
-                if (pchar(k_sub))
-                {
-                    pos += 3;
-                    matched = true;
-                    has_pchar = true;
-                }
+                index += ret->count;
+                continue;
             }
 
-            if (!matched && pos < sp.size())
+            static_assert(not segment(std::array<OCTET, 1>{'/'}));
+            // update index point to the char of ('/' or other error char)
+            // NOTE: if chck_span = "//xxx" => index = index + 0;
+            // NOTE: if chck_span = "x/" => index = index + 1;
+            index = index + ret.error().index();
+            if (sp[index] == '/')
             {
-                const auto &c = sp[pos];
-                if (pchar(c))
-                {
-                    pos++;
-                    matched = true;
-                    has_pchar = true;
-                }
+                ++index;
+                continue;
             }
-
-            if (!matched) // 匹配失败时退出循环
-            {
-                break;
-            }
+            return std::unexpected(Info(index));
         }
-
-        if (!has_pchar) // segment-nz 必须包含至少一个 pchar
-            return false;
-
-        while (pos < sp.size()) // Step 2: 解析后续的 *( "/" segment )
-        {
-
-            if (sp[pos] != '/') // 必须从 '/' 开始
-            {
-                return false;
-            }
-            pos++; // 跳过 '/'
-
-            // 解析 segment（允许空字符串）
-            while (pos < sp.size())
-            {
-                bool matched = false;
-
-                // 优先检查 pct-encoded（3字节）
-                if (pos + 3 <= sp.size())
-                {
-                    const auto sub = sp.subspan(pos, 3);
-                    if (pchar(sub))
-                    { // 检查 pct-encoded
-                        pos += 3;
-                        matched = true;
-                    }
-                }
-
-                // 若未匹配 pct-encoded，检查单字符 pchar
-                if (!matched && pos < sp.size())
-                {
-                    const auto c = sp[pos];
-                    if (pchar(c))
-                    { // 检查单字符 pchar
-                        pos++;
-                        matched = true;
-                    }
-                }
-
-                // 无法匹配时退出当前 segment 解析
-                if (!matched)
-                {
-                    break;
-                }
-            }
-        }
-
-        return true;
+        return Success{k_size};
     }
 }; // namespace mcs::ABNF::URI

@@ -1,14 +1,12 @@
 #pragma once
 
-#include "./__segment_nz.hpp"
+#include "./__pchars.hpp"
 
 namespace mcs::ABNF::URI
 {
     // segment       = *pchar
-    constexpr bool segment(default_span_t sp) noexcept
+    constexpr CheckResult segment(default_span_t sp) noexcept
     {
-        if (sp.empty())
-            return true;
-        return segment_nz(sp);
+        return pchars(sp);
     }
 }; // namespace mcs::ABNF::URI

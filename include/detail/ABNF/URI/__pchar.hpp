@@ -10,15 +10,10 @@ namespace mcs::ABNF::URI
     {
         return unreserved(v) || sub_delims(v) || (v == ':' || v == '@');
     }
-    constexpr bool pchar(default_span_t sp) noexcept
+    constexpr bool pchar(octet_t a, octet_t b, octet_t c) noexcept
     {
-        // NOTE: ABNF的顺序，一定要严格遵守
-        // if (sp.size() == 1) //NOTE: 移动到到 pchar 是等价的
-        //     return unreserved(sp[0]);
-        if (sp.size() == 3)
-            return pct_encoded(sp);
-        if (sp.size() == 1)
-            return pchar(sp[0]);
-        return false;
+        // NOTE: pchar Can be overloaded Because the following assertion holds true
+        static_assert(not unreserved('%') && not sub_delims('%'));
+        return pct_encoded(a, b, c); // pct-encoded   = "%" HEXDIG HEXDIG
     }
 }; // namespace mcs::ABNF::URI

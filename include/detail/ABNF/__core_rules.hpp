@@ -1,7 +1,12 @@
 #pragma once
 
 #include <cstdint>
+#include <expected>
+#include <limits>
 #include <span> // 改用 span 替代 string_view
+
+#include "./detail/__ParseError.hpp"
+#include "./detail/__ParseResult.hpp"
 
 /**
  * @brief [ABNF Core Rules]
@@ -10,12 +15,18 @@
  */
 namespace mcs::ABNF
 {
+    using Success = detail::ParseResult;
+    using Info = detail::ParseError;
+    using CheckResult = std::expected<Success, Info>;
 
     /**
      * @brief OCTET          =  %x00-FF
      *                          ; 8 bits of data
      */
     using OCTET = std::uint8_t;
+    static_assert(std::numeric_limits<OCTET>::min() == 0 && // NOLINTNEXTLINE
+                      std::numeric_limits<OCTET>::max() == 0xFF,
+                  "OCTET range error!");
 
     using default_span_t = const std::span<const OCTET> &;
     using octet_t = const OCTET &;
@@ -67,9 +78,17 @@ namespace mcs::ABNF
     inline constexpr OCTET CR = 0x0D; // NOLINT
 
     // CRLF           =  CR LF
-    constexpr bool CRLF(default_span_t pair) noexcept
+    constexpr CheckResult CRLF(default_span_t pair) noexcept
     {
-        return pair.size() == 2 && pair[0] == CR && pair[1] == LF;
+        if (pair.size() != 2)
+            return std::unexpected(Info(0));
+        if (pair[0] == CR)
+        {
+            if (pair[1] == LF)
+                return Success{2};
+            return std::unexpected(Info(1));
+        }
+        return std::unexpected(Info(0));
     }
 
     // SP             =  %x20
@@ -88,7 +107,7 @@ namespace mcs::ABNF
      *
      */
     // LWSP = *(WSP / CRLF WSP)  ;
-    constexpr bool LWSP(default_span_t range) noexcept
+    constexpr CheckResult LWSP(default_span_t range) noexcept
     {
         std::size_t i = 0;
         const std::size_t k_size = range.size();
@@ -96,12 +115,21 @@ namespace mcs::ABNF
         {
             if (WSP(range[i]))
                 ++i;
-            else if (i + 2 < k_size && CRLF(range.subspan(i, 2)) && WSP(range[i + 2]))
-                i += 3; // 合并检查 CRLF + WSP
             else
-                return false;
+            {
+                if (range[i] == CR && i + 2 < k_size)
+                {
+                    if (range[i + 1] != LF)
+                        return std::unexpected{Info{i + 1}};
+                    if (not WSP(range[i + 2]))
+                        return std::unexpected{Info{i + 2}};
+                    i += 3;
+                    continue;
+                }
+                return std::unexpected{Info{i}};
+            }
         }
-        return true;
+        return Success{k_size};
     }
 
     //  VCHAR          =  %x21-7E; visible (printing) characters

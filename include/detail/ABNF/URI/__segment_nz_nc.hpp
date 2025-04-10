@@ -8,45 +8,44 @@ namespace mcs::ABNF::URI
 {
     // segment-nz-nc = 1*( unreserved / pct-encoded / sub-delims / "@" )
     // ;non-zero-length segment without any colon ":"
-    constexpr bool segment_nz_nc(default_span_t sp) noexcept
+    constexpr CheckResult segment_nz_nc(default_span_t sp) noexcept
     {
-        if (sp.empty())
-            return false;
+        const auto k_size = sp.size();
+        if (k_size == 0)
+            return std::unexpected{Info{0}};
 
         size_t index = 0;
-        while (index < sp.size())
+        while (index < k_size)
         {
-            bool matched = false;
-
-            if (unreserved(sp[index])) // 1、 unreserved
+            const auto &c = sp[index];
+            if (unreserved(c)) // 1、unreserved
             {
                 ++index;
-                matched = true;
+                continue;
             }
 
-            if (!matched && index + 3 <= sp.size()) // 2、 pct-encoded
+            static_assert(not sub_delims('%'));
+            if (c == '%') // 2、pct-encoded   = "%" HEXDIG HEXDIG
             {
-                const auto k_sub = sp.subspan(index, 3);
-                if (pct_encoded(k_sub))
+                if (index + 2 < k_size)
                 {
-                    index += 3;
-                    matched = true;
+                    if (pct_encoded(c, sp[index + 1], sp[index + 2]))
+                    {
+                        index += 3;
+                        continue;
+                    }
                 }
             }
-
-            if (!matched && index < sp.size()) // 3、sub-delims / "@"
+            else // 3、sub-delims / "@"
             {
-                const auto &c = sp[index];
                 if (sub_delims(c) || c == '@')
                 {
                     ++index;
-                    matched = true;
+                    continue;
                 }
             }
-
-            if (!matched)
-                return false;
+            return std::unexpected{Info{index}};
         }
-        return true;
+        return Success{k_size};
     }
 }; // namespace mcs::ABNF::URI

@@ -5,10 +5,19 @@
 namespace mcs::ABNF::URI
 {
     // pct-encoded   = "%" HEXDIG HEXDIG
-    constexpr bool pct_encoded(default_span_t sp) noexcept
+    constexpr CheckResult pct_encoded(default_span_t sp) noexcept
     {
         if (sp.size() != 3)
-            return false; // 输入"%41"（即"A"的编码），%6A = j
-        return sp[0] == '%' && HEXDIG(sp[1]) && HEXDIG(sp[2]);
+            return std::unexpected(Info(0));
+
+        if (sp[0] == '%') // "%41"='A'; %6A = j
+        {
+            if (not HEXDIG(sp[1]))
+                return std::unexpected(Info(1));
+            if (not HEXDIG(sp[2]))
+                return std::unexpected(Info(2));
+            return Success{3};
+        }
+        return std::unexpected(Info(0));
     }
 }; // namespace mcs::ABNF::URI

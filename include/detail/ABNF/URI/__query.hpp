@@ -1,42 +1,40 @@
 #pragma once
 
-#include "../__core_rules.hpp"
-
-#include "./__pchar.hpp"
+#include "./__pchars.hpp"
+#include "__pchar.hpp"
 
 namespace mcs::ABNF::URI
 {
     // query         = *( pchar / "/" / "?" )
-    constexpr bool query(default_span_t sp) noexcept
+    constexpr CheckResult query(default_span_t sp) noexcept
     {
+        const auto k_size = sp.size();
         size_t index = 0;
-        while (index < sp.size())
+        while (index < k_size)
         {
-            bool matched = false;
-
-            if (index + 3 <= sp.size())
+            auto check_span = sp.subspan(index);
+            auto ret = pchars(check_span);
+            if (ret) // NOTE: first check pchar anyway
             {
-                const auto k_sub = sp.subspan(index, 3);
-                if (pchar(k_sub))
-                {
-                    index += 3;
-                    matched = true;
-                }
+                index += ret->count;
+                continue;
             }
 
-            if (!matched && index < sp.size())
-            {
-                const auto &c = sp[index];
-                if (pchar(c) || c == '/' || c == '?')
-                {
-                    index++;
-                    matched = true;
-                }
-            }
+            // NOTE: error: ...%ce... => ret.error().index() -> %
+            // NOTE: error: ...{... => ret.error().index() -> %
+            // NOTE: error: .../... => ret.error().index() -> /
+            static_assert(not pchar('{'));
+            static_assert(not pchar('/') && not pchar('?'));
 
-            if (!matched)
-                return false;
+            index = ret.error().index();
+            const auto &c = sp[index];
+            if (c == '/' || c == '?')
+            {
+                ++index;
+                continue;
+            }
+            return std::unexpected{Info(index)};
         }
-        return true; // sp.empty() || pass
+        return Success{k_size};
     }
 }; // namespace mcs::ABNF::URI
