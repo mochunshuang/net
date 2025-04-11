@@ -1,8 +1,6 @@
 #pragma once
 
-#include "./__unreserved.hpp"
-#include "./__pct_encoded.hpp"
-#include "./__sub_delims.hpp"
+#include "./__reg_name.hpp"
 
 namespace mcs::ABNF::URI
 {
@@ -12,39 +10,28 @@ namespace mcs::ABNF::URI
     {
         const auto k_size = sp.size();
         if (k_size == 0)
-            return std::unexpected{Info{0}};
+            return Fail(0);
 
+        // handle: 1*( unreserved / pct-encoded / sub-delims / "@" )
+        // NOTE: reg-name = *( unreserved / pct-encoded / sub-delims )
         size_t index = 0;
         while (index < k_size)
         {
-            const auto &c = sp[index];
-            if (unreserved(c)) // 1、unreserved
+            const auto k_ret = reg_name(sp.subspan(index));
+            if (k_ret)
+            {
+                index += k_ret->count;
+                continue;
+            }
+
+            static_assert(not reg_name(std::array<OCTET, 1>{'@'}));
+            index = index + k_ret.error().index();
+            if (sp[index] == '@')
             {
                 ++index;
                 continue;
             }
-
-            static_assert(not sub_delims('%'));
-            if (c == '%') // 2、pct-encoded   = "%" HEXDIG HEXDIG
-            {
-                if (index + 2 < k_size)
-                {
-                    if (pct_encoded(c, sp[index + 1], sp[index + 2]))
-                    {
-                        index += 3;
-                        continue;
-                    }
-                }
-            }
-            else // 3、sub-delims / "@"
-            {
-                if (sub_delims(c) || c == '@')
-                {
-                    ++index;
-                    continue;
-                }
-            }
-            return std::unexpected{Info{index}};
+            return Fail(index);
         }
         return Success{k_size};
     }

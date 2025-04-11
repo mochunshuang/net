@@ -4,20 +4,10 @@
 
 namespace mcs::ABNF::URI
 {
+    // NOTE: Atomicity should be ensured so need 3 parameter
     // pct-encoded   = "%" HEXDIG HEXDIG
-    constexpr CheckResult pct_encoded(default_span_t sp) noexcept
+    constexpr bool pct_encoded(octet_t a, octet_t b, octet_t c) noexcept
     {
-        if (sp.size() != 3)
-            return std::unexpected(Info(0));
-
-        if (sp[0] == '%') // "%41"='A'; %6A = j
-        {
-            if (not HEXDIG(sp[1]))
-                return std::unexpected(Info(1));
-            if (not HEXDIG(sp[2]))
-                return std::unexpected(Info(2));
-            return Success{3};
-        }
-        return std::unexpected(Info(0));
+        return a == '%' && HEXDIG(b) && HEXDIG(c);
     }
 }; // namespace mcs::ABNF::URI

@@ -19,6 +19,11 @@ namespace mcs::ABNF
     using Info = detail::ParseError;
     using CheckResult = std::expected<Success, Info>;
 
+    constexpr auto Fail(const size_t &idx) noexcept
+    {
+        return std::unexpected<Info>(idx);
+    }
+
     /**
      * @brief OCTET          =  %x00-FF
      *                          ; 8 bits of data
@@ -30,7 +35,7 @@ namespace mcs::ABNF
 
     using default_span_t = const std::span<const OCTET> &;
     using octet_t = const OCTET &;
-    inline constexpr auto empty_span_octet = std::span<const OCTET>{}; // NOLINT
+    inline constexpr auto empty_span = std::span<const OCTET>{}; // NOLINT
 
     // ALPHA          =  %x41-5A / %x61-7A   ; A-Z / a-z
     constexpr bool ALPHA(octet_t c) noexcept
@@ -50,7 +55,7 @@ namespace mcs::ABNF
     // CTL            =  %x00-1F / %x7F
     constexpr bool CTL(octet_t c) noexcept
     {
-        return (c >= 0X00 && c <= 0X1F) || c == 0x7F; // NOLINT
+        return c <= 0X1F || c == 0x7F; // NOLINT
     }
     // DIGIT          =  %x30-39
     constexpr bool DIGIT(octet_t c) noexcept
@@ -62,10 +67,11 @@ namespace mcs::ABNF
     // DQUOTE         =  %x22 ;" (Double Quote)
     inline constexpr OCTET DQUOTE = 0x22; // NOLINT
 
-    // HEXDIG         =  DIGIT / "A" / "B" / "C" / "D" / "E" / "F"
+    // NOTE: 不区分大小写除非特别说明
+    //  HEXDIG         =  DIGIT / "A" / "B" / "C" / "D" / "E" / "F"
     constexpr bool HEXDIG(octet_t c) noexcept
     {
-        return DIGIT(c) || (c >= 'A' && c <= 'F');
+        return DIGIT(c) || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
     }
 
     // HTAB           =  %x09; horizontal tab

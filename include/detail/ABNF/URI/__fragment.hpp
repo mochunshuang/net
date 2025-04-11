@@ -12,11 +12,11 @@ namespace mcs::ABNF::URI
         size_t index = 0;
         while (index < k_size)
         {
-            auto check_span = sp.subspan(index);
-            auto ret = pchars(check_span);
-            if (ret) // NOTE: first check pchar anyway
+            const auto k_check_span = sp.subspan(index);
+            const auto k_ret = pchars(k_check_span);
+            if (k_ret) // NOTE: first check pchar anyway
             {
-                index += ret->count;
+                index += k_ret->count;
                 continue;
             }
 
@@ -26,14 +26,14 @@ namespace mcs::ABNF::URI
             static_assert(not pchar('{'));
             static_assert(not pchar('/') && not pchar('?'));
 
-            index = ret.error().index();
+            index = k_ret.error().index();
             const auto &c = sp[index];
             if (c == '/' || c == '?')
             {
                 ++index;
                 continue;
             }
-            return std::unexpected{Info(index)};
+            return Fail(index);
         }
         return Success{k_size};
     }

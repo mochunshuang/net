@@ -9,7 +9,7 @@ namespace mcs::ABNF::tool
            std::size_t count = std::dynamic_extent) noexcept {
             // 优先检查offset合法性
             if (offset > sp.size())
-                return empty_span_octet;
+                return empty_span;
 
             // 修正条件：允许count == 0,k_remaining的特殊情况
             const auto k_available = sp.size() - offset;

@@ -36,7 +36,7 @@ namespace mcs::ABNF::URI
                     continue;
                 }
             }
-            return std::unexpected{Info(index)};
+            return Fail(index);
         }
         return Success{k_size};
     }

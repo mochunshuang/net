@@ -8,7 +8,7 @@ namespace mcs::ABNF::URI
     constexpr CheckResult segment_nz(default_span_t sp) noexcept
     {
         if (sp.empty())
-            return std::unexpected{Info{0}};
+            return Fail(0);
         return pchars(sp);
     }
 }; // namespace mcs::ABNF::URI

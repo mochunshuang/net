@@ -10,7 +10,8 @@ struct ErrorInfo
     struct Context
     {
         std::source_location location; // 源代码位置
-        const char *message;           // 静态字符串描述（避免堆分配）
+        const char *message;           // 静态字符串描述（避免堆分配)
+        // NOTE: message 只能是字面量
     };
 
     Context inner; // 最内层错误（原始错误点）
@@ -71,12 +72,10 @@ int main()
         std::cerr << "错误码: " << err.code << "\n";
         std::cerr << "原始错误: " << err.inner.message
                   << "\n  位置: " << err.inner.location.file_name() << ":"
-                  << err.inner.location.line() << "\n"
-                  << "  函数: " << err.inner.location.function_name() << "\n";
-        std::cerr << "最终处理 : " << err.outer.message
+                  << err.inner.location.line() << "\n";
+        std::cerr << "最终处理: " << err.outer.message
                   << "\n  位置: " << err.outer.location.file_name() << ":"
-                  << err.outer.location.line() << "\n"
-                  << "  函数: " << err.inner.location.function_name() << "\n";
+                  << err.outer.location.line() << "\n";
     }
     {
         std::runtime_error{std::string("1")};
