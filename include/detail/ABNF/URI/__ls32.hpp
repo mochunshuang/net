@@ -3,6 +3,7 @@
 #include "./__h16.hpp"
 #include "./__IPv4address.hpp"
 #include <array>
+#include <cstddef>
 
 namespace mcs::ABNF::URI
 {
@@ -20,7 +21,7 @@ namespace mcs::ABNF::URI
         if (const auto k_first = std::ranges::find(sp, ':');
             k_first != sp.end()) // find ':' in sp
         {
-            auto idx1 = std::distance(sp.begin(), k_first);
+            size_t idx1 = std::distance(sp.begin(), k_first);
             if (idx1 == 0 || idx1 + 1 == k_size) // when sp like ":"xxx or  xxx":"
                 return false;
             return h16(sp.first(idx1)) && h16(sp.subspan(idx1 + 1));

@@ -1,96 +1,116 @@
 
+
 #include "../test_common/test_macro.hpp"
 #include "../../include/net.hpp"
 
+#include <array>
+#include <cassert>
+#include <span>
+
 // NOLINTBEGIN
-
 using OCTET = mcs::ABNF::OCTET;
-
-// 测试工具函数 =======================================================
-namespace tool_test
-{
-    // split_span_first 测试
-    static constexpr OCTET split_first1[] = {'a', ':', 'b', ':', 'c'};
-    static_assert(mcs::ABNF::tool::split_span_first(split_first1, ':').first.size() == 1);
-    static_assert(mcs::ABNF::tool::split_span_first(split_first1, ':').second.size() ==
-                  3);
-
-    // split_span_last 测试
-    static constexpr OCTET split_last1[] = {'a', ':', 'b', ':', 'c'};
-    static_assert(mcs::ABNF::tool::split_span_last(split_last1, ':').first.size() == 3);
-    static_assert(mcs::ABNF::tool::split_span_last(split_last1, ':').second.size() == 1);
-}; // namespace tool_test
-
-// 测试 check_common_tail =============================================
-namespace test_tail
-{
-    // 有效案例：6个h16段 + ls32（IPv4格式）
-    static constexpr OCTET valid_tail1[] = {'1', ':', '2', ':', '3', ':', '4',
-                                            ':', '5', ':', '6', ':', '1', '2',
-                                            '7', '.', '0', '.', '0', '.', '1'};
-    static_assert(mcs::ABNF::URI::detail::check_common_tail(valid_tail1, 6));
-
-    // 有效案例：6个h16段 + ls32（IPv6格式）
-    static constexpr OCTET valid_tail2[] = {'a', ':', 'b', ':', 'c', ':', 'd', ':',
-                                            'e', ':', 'f', ':', 'a', 'b', 'c', 'd'};
-    // static_assert(mcs::ABNF::URI::detail::check_common_tail(valid_tail2, 6));
-
-    // 无效案例：h16段包含非法字符（'g'）
-    static constexpr OCTET invalid_h16_tail[] = {'1', ':', '2', ':', 'g', ':', '4',
-                                                 ':', '5', ':', '6', ':', '1', '.',
-                                                 '2', '.', '3', '.', '4'};
-    static_assert(!mcs::ABNF::URI::detail::check_common_tail(invalid_h16_tail, 6));
-
-    // 无效案例：段数不足（只有5段）
-    static constexpr OCTET insufficient_segments[] = {'1', ':', '2', ':', '3', ':', '4',
-                                                      ':', '5', ':', '1', '2', '7', '.',
-                                                      '0', '.', '0', '.', '1'};
-    static_assert(!mcs::ABNF::URI::detail::check_common_tail(insufficient_segments, 6));
-
-    // 无效案例：ls32格式错误（IPv4地址超范围）
-    static constexpr OCTET invalid_ls32[] = {'1', ':', '2', ':', '3', ':', '4',
-                                             ':', '5', ':', '6', ':', '2', '5',
-                                             '6', '.', '0', '.', '0', '.', '1'};
-    static_assert(!mcs::ABNF::URI::detail::check_common_tail(invalid_ls32, 6));
-} // namespace test_tail
-
-// 测试 check_common_front ============================================
-namespace test_front
-{
-    // 有效案例：空输入（允许空字符串）
-    static_assert(mcs::ABNF::URI::detail::check_common_front(mcs::ABNF::empty_span, 0,
-                                                             0));
-
-    // 有效案例：单个h16（max_segments=1, max_colons=0）
-    static constexpr OCTET single_h16[] = {'a', 'b', 'c', 'd'};
-    static_assert(mcs::ABNF::HEXDIG('a'));
-    static_assert(mcs::ABNF::URI::h16(single_h16));
-    static_assert(mcs::ABNF::URI::detail::check_common_front(single_h16, 1, 0));
-
-    // 有效案例：两段h16（1个冒号）
-    static constexpr OCTET two_segments[] = {'a', ':', 'b'};
-    // static_assert(mcs::ABNF::URI::detail::check_common_front(two_segments, 2, 1));
-
-    // 无效案例：超出最大段数（允许2段但实际3段）
-    static constexpr OCTET excess_segments[] = {'1', ':', '2', ':', '3'};
-    static_assert(!mcs::ABNF::URI::detail::check_common_front(excess_segments, 2, 2));
-
-    // 无效案例：超出最大冒号数（允许1个但实际2个）
-    static constexpr OCTET excess_colons[] = {'a', ':', 'b', ':', 'c'};
-    static_assert(!mcs::ABNF::URI::detail::check_common_front(excess_colons, 3, 1));
-
-    // 无效案例：末尾带冒号（h16后不能有冒号）
-    static constexpr OCTET trailing_colon[] = {'a', ':', 'b', ':'};
-    static_assert(!mcs::ABNF::URI::detail::check_common_front(trailing_colon, 2, 1));
-
-    // 边界案例：最大允许6个冒号（7段h16）
-    static constexpr OCTET max_colons_case[] = {'1', ':', '2', ':', '3', ':', '4',
-                                                ':', '5', ':', '6', ':', '7'};
-    // static_assert(mcs::ABNF::URI::detail::check_common_front(max_colons_case, 7, 6));
-} // namespace test_front
+constexpr auto make_span = [](auto &&arr) constexpr {
+    return std::span<const OCTET>{arr};
+};
 
 int main()
 {
+    using namespace mcs::ABNF::URI; // NOLINT
+
+    // ------------------------- 有效IPv6地址测试 -------------------------
+    // Rule 1: 6(h16 ":") ls32 (完整格式)
+    // 有效案例：2001:db8:85a3:0:0:8a2e:370:7334
+    static constexpr std::array<OCTET, 31> case1 =
+        {
+            '2', '0', '0', '1', ':', 'd', 'b', '8', ':', '8', '5',
+            'a', '3', ':', '0', ':', '0', ':', '8', 'a', '2', 'e',
+            ':', '3', '7', '0', ':', '7', '3', '3', '4' // ls32为纯IPv6格式
+        };
+
+    // NOTE: 数组太长，是不能编译期测试的
+    assert(IPv6address(case1));
+
+    // Rule 2: "::" 5(h16 ":") ls32 (双冒号开头)
+    // 有效案例：::1:2:3:4:5:6.7.8.9
+    static constexpr OCTET case2[] = {
+        ':', ':', '1', ':', '2', ':', '3', ':', '4', ':',
+        '5', ':', '6', '.', '7', '.', '8', '.', '9' // ls32为IPv4格式
+    };
+    static_assert(IPv6address(make_span(case2)), "Rule 2失败");
+
+    // Rule 3: [h16] "::" 4(h16 ":") ls32 (可选前缀+双冒号)
+    // 有效案例1：a::b:c:d:e:fffg:1234
+    static constexpr OCTET case3a[] = {
+        'a', ':', ':', 'b', ':', 'c', ':', 'd', ':', 'e',
+        ':', 'f', 'f', 'f', 'f', ':', '1', '2', '3', '4' // ls32为IPv6格式
+    };
+    // 有效案例2：::b:c:d:e:fff:1234
+    static constexpr OCTET case3b[] = {':', ':', 'b', ':', 'c', ':', 'd', ':', 'e',
+                                       ':', 'f', 'f', 'f', ':', '1', '2', '3', '4'};
+    static_assert(IPv6address(make_span(case3a)), "Rule 3案例1失败");
+    static_assert(IPv6address(make_span(case3b)), "Rule 3案例2失败");
+
+    // Rule 4: [*1(h16 ":") h16] "::" 3(h16 ":") ls32 (最多1个前缀段)
+    // 有效案例：a:b::c:d:e:1.2.3.4
+    static constexpr OCTET case4[] = {
+        'a', ':', 'b', ':', ':', 'c', ':', 'd', ':',
+        'e', ':', '1', '.', '2', '.', '3', '.', '4' // IPv4结尾
+    };
+    static_assert(IPv6address(make_span(case4)), "Rule 4失败");
+
+    // Rule 5: [*2(h16 ":") h16] "::" 2(h16 ":") ls32 (最多2个前缀段)
+    // 有效案例：1:2:3::4:5:6.7.8.9
+    static constexpr OCTET case5[] = {'1', ':', '2', ':', '3', ':', ':', '4', ':',
+                                      '5', ':', '6', '.', '7', '.', '8', '.', '9'};
+    static_assert(IPv6address(make_span(case5)), "Rule 5失败");
+
+    // Rule 6: [*3(h16 ":") h16] "::" h16 ":" ls32 (最多3个前缀段)
+    // 有效案例：a:b:c:d::e:ffff:1234
+    static constexpr OCTET case6[] = {'a', ':', 'b', ':', 'c', ':', 'd', ':', ':', 'e',
+                                      ':', 'f', 'f', 'f', 'f', ':', '1', '2', '3', '4'};
+    static_assert(IPv6address(make_span(case6)), "Rule 6失败");
+
+    // Rule 7: [*4(h16 ":") h16] "::" ls32 (最多4个前缀段)
+    // 有效案例：1:2:3:4:5::6.7.8.9
+    static constexpr OCTET case7[] = {'1', ':', '2', ':', '3', ':', '4', ':', '5',
+                                      ':', ':', '6', '.', '7', '.', '8', '.', '9'};
+    static_assert(IPv6address(make_span(case7)), "Rule 7失败");
+
+    // Rule 8: [*5(h16 ":") h16] "::" h16 (最多5个前缀段)
+    // 有效案例：1:2:3:4:5:6::7
+    static constexpr OCTET case8[] = {
+        '1', ':', '2', ':', '3', ':', '4',
+        ':', '5', ':', '6', ':', ':', '7' // 双冒号在末尾
+    };
+    static_assert(IPv6address(make_span(case8)), "Rule 8失败");
+
+    // Rule 9: [*6(h16 ":") h16] "::" (最多6个前缀段)
+    // 有效案例：1:2:3:4:5:6:7::
+    static constexpr OCTET case9[] = {'1', ':', '2', ':', '3', ':', '4', ':',
+                                      '5', ':', '6', ':', '7', ':', ':'};
+    static_assert(IPv6address(make_span(case9)), "Rule 9失败");
+
+    // ------------------------- 特殊边界测试 -------------------------
+    // 最短合法地址 ::
+    static constexpr OCTET case_min[] = {':', ':'};
+    static_assert(IPv6address(make_span(case_min)), "最短地址失败");
+
+    // 混合大小写测试（规范要求不区分大小写）
+    static constexpr OCTET case_mixed_case[] = {'F', 'F', 'F', 'F', ':',
+                                                ':', 'A', 'B', 'C', 'D'}; // ::ABCD
+    static_assert(IPv6address(make_span(case_mixed_case)), "大小写敏感问题");
+
+    // 最大长度测试（8段全展开）
+    static constexpr OCTET case_full[] = {
+        '0', ':', '0', ':', '0', ':', '0', ':',
+        '0', ':', '0', ':', '0', ':', '0'}; // :: 的等效形式
+    // static_assert(IPv6address(make_span(case_full)), "全零地址失败");
+    assert(IPv6address(make_span(case_full))); // NOTE: 长数组只能运行时
+    static_assert(detail::check_common_tail(case_full, 6));
+
+    // 非法双冒号测试（包含多个::）
+    static constexpr OCTET invalid_double_colon[] = {'1', ':', ':', '2', ':', ':', '3'};
+    static_assert(!IPv6address(make_span(invalid_double_colon)), "应拒绝多个双冒号");
     return 0;
 }
 

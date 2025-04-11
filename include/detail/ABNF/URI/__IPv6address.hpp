@@ -17,82 +17,74 @@ namespace mcs::ABNF::URI
         {
             if (k_times == 0)
                 return false;
-
+            // from left to right check
             auto [front, check_span] = tool::split_span_first(sp, ':');
-            auto need_check_times = k_times;
+
             if (front.size() != sp.size()) // NOTE: need find ':' in sp
             {
+                auto need_check_times = k_times;
                 need_check_times--;
                 if (not h16(front)) // check
                     return false;
 
-                auto tail = check_span;
+                auto remaining = check_span;
                 while (need_check_times-- > 0) // times( h16 ":" ) ls32
                 {
-                    auto [front, t] = tool::split_span_first(tail, ':');
+                    auto [front, tail] = tool::split_span_first(remaining, ':');
                     if (not h16(front))
                         return false;
-                    tail = t;
+                    remaining = tail;
                 }
-                return ls32(tail); // check ls32 last
+                return ls32(remaining); // check ls32 last
             }
-            return false;
+            return false; // NOTE: not  find ':' in sp
         }
 
-        // [               h16 ] → 0冒号，1段
-        // [ *1( h16 ":" ) h16 ] → 1冒号，2段
+        // [               h16 ]
+        // [ *1( h16 ":" ) h16 ]
         // ......
-        // [ *6( h16 ":" ) h16 ] → 6冒号，7段
-        constexpr bool check_common_front(
-            default_span_t sp,
-            size_t max_segments, // 最大允许的h16段数 (冒号数+1)
-            size_t max_colons    // 最大允许的冒号数
-            ) noexcept
+        // [ *6( h16 ":" ) h16 ]
+        constexpr bool check_common_front(default_span_t sp,
+                                          const size_t k_max_colons // 最大允许的冒号数
+                                          ) noexcept
         {
-            // NOTE: [ *n( h16 ":" ) h16 ] 允许空字符串
             if (sp.empty())
                 return true;
 
-            // 第一步：检查最后一个h16
             auto [front_part, last_h16] = tool::split_span_last(sp, ':');
+
+            //  *k_max_colons( h16 ":" ) h16
             if (!h16(last_h16))
                 return false;
 
-            // 特殊情况：只有最后一段h16（无冒号）
-            if (front_part.empty())
-                return max_segments >= 1 && max_colons >= 0;
+            if (k_max_colons == 0) // [               h16 ]
+                return front_part.empty();
 
-            // 第二步：解析前面的 h16 ":" 结构
-            size_t colon_count = 0;
-            size_t segment_count = 1; // 已包含最后的h16
+            // NOTE: init state with find  ':' in sp
+            size_t colons_count = 1;
             auto remaining = front_part;
 
-            while (!remaining.empty())
+            while (!remaining.empty() && colons_count <= k_max_colons)
             {
-                // 分割冒号
                 auto [current_h16, tail] = tool::split_span_first(remaining, ':');
+                if (tail.empty()) // have no find ':'
+                {
+                    remaining = tail;
+                    break;
+                }
 
-                // 冒号必须存在于字符串中
-                if (current_h16.size() == remaining.size())
-                    return false;
-
-                // 验证h16有效性
-                if (!h16(current_h16))
-                    return false;
-
-                // 更新计数
-                ++colon_count;
-                ++segment_count;
-                remaining = tail;
-
-                // 超过限制立即返回
-                if (colon_count > max_colons || segment_count > max_segments)
-                    return false;
+                // nomal check
+                if (h16(current_h16))
+                {
+                    remaining = tail;
+                    ++colons_count;
+                    continue;
+                }
+                return false;
             }
-
-            // 最终验证（必须精确匹配限制）
-            return colon_count <= max_colons && segment_count <= max_segments;
+            return colons_count <= k_max_colons && remaining.empty();
         }
+
     }; // namespace detail
 
     /**
@@ -114,8 +106,7 @@ namespace mcs::ABNF::URI
     constexpr bool IPv6address(default_span_t sp) noexcept
     {
         const auto k_size = sp.size();
-        constexpr auto k_min_size = 7; // 6( h16 ":" ) ls32
-        if (k_size < k_min_size)
+        if (k_size < 2) // [ *6( h16 ":" ) h16 ] "::"
             return false;
 
         static_assert(not ls32(empty_span));
@@ -153,17 +144,17 @@ namespace mcs::ABNF::URI
         // [ *6( h16 ":" ) h16 ] "::"
         return (index == k_max && detail::check_common_tail(sp, 6)) ||  // NOLINT: case 1
                (front.empty() && detail::check_common_tail(last, 5)) || // NOLINT : case 2
-               (detail::check_common_front(front, 1, 0) &&
+               (detail::check_common_front(front, 0) &&
                 detail::check_common_tail(last, 4)) ||
-               (detail::check_common_front(front, 2, 1) &&
+               (detail::check_common_front(front, 1) &&
                 detail::check_common_tail(last, 3)) ||
-               (detail::check_common_front(front, 3, 2) &&
+               (detail::check_common_front(front, 2) &&
                 detail::check_common_tail(last, 2)) ||
-               (detail::check_common_front(front, 4, 3) &&
+               (detail::check_common_front(front, 3) &&
                 detail::check_common_tail(last, 1)) ||
-               (detail::check_common_front(front, 5, 4) && ls32(last)) || // NOLINT
-               -                                                          // NOLINT
-               (detail::check_common_front(front, 6, 5) && h16(last)) ||  // NOLINT
-               (detail::check_common_front(front, 7, 6) && last.empty()); // NOLINT
+               (detail::check_common_front(front, 4) && ls32(last)) || // NOLINT
+               -                                                       // NOLINT
+               (detail::check_common_front(front, 5) && h16(last)) ||  // NOLINT
+               (detail::check_common_front(front, 6) && last.empty()); // NOLINT
     }
 }; // namespace mcs::ABNF::URI
