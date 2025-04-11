@@ -11,6 +11,7 @@
 #include "./URI/__path.hpp"
 
 #include "./URI/__query.hpp"
+#include "./URI/__fragment.hpp"
 
 /**
  * @brief [ABNF-URI]
