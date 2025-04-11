@@ -79,6 +79,17 @@ int main()
             'p', 'a', 'r', 'a', 'm', '=', 'v', 'a', 'l', '%', '2', '0'};
         static_assert(mcs::ABNF::URI::fragment(long_fragment).has_value());
     }
+    {
+        { // 合法片段：包含编码后的# (%23)
+            static constexpr OCTET encoded_hash[] = {'f', 'r', '%', '2', '3', 'a', 'g'};
+            static_assert(mcs::ABNF::URI::fragment(encoded_hash).has_value());
+        }
+
+        { // 非法片段：直接包含#
+            static constexpr OCTET raw_hash[] = {'f', 'r', '#', 'a', 'g'};
+            static_assert(!mcs::ABNF::URI::fragment(raw_hash).has_value());
+        }
+    }
     std::cout << "main done\n";
     return 0;
 }
