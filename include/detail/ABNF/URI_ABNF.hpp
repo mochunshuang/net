@@ -8,6 +8,10 @@
 
 #include "./URI/__IPv4address.hpp"
 
+#include "./URI/__path.hpp"
+
+#include "./URI/__query.hpp"
+
 /**
  * @brief [ABNF-URI]
  * https://www.rfc-editor.org/rfc/rfc3986.html#appendix-A:~:text=Appendix%20A.%20%20Collected%20ABNF%20for%20URI

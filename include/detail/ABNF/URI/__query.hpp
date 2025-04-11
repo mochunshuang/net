@@ -1,6 +1,5 @@
 #pragma once
 
-#include "./__pchars.hpp"
 #include "__pchar.hpp"
 
 namespace mcs::ABNF::URI
@@ -12,22 +11,29 @@ namespace mcs::ABNF::URI
         size_t index = 0;
         while (index < k_size)
         {
-            const auto k_check_span = sp.subspan(index);
-            const auto k_ret = pchars(k_check_span);
-            if (k_ret) // NOTE: first check pchar anyway
+            // pchar
+            const auto &c = sp[index];
+            if (c == '%')
             {
-                index += k_ret->count;
-                continue;
+                if (index + 2 < k_size) // check: if match "%41"
+                {
+                    if (pchar(c, sp[index + 1], sp[index + 2]))
+                    {
+                        index += 3;
+                        continue;
+                    }
+                }
+            }
+            else
+            {
+                static_assert(not pchar('%'));
+                if (pchar(c))
+                {
+                    index++;
+                    continue;
+                }
             }
 
-            // NOTE: error: ...%ce... => ret.error().index() -> %
-            // NOTE: error: ...{... => ret.error().index() -> %
-            // NOTE: error: .../... => ret.error().index() -> /
-            static_assert(not pchar('{'));
-            static_assert(not pchar('/') && not pchar('?'));
-
-            index = k_ret.error().index();
-            const auto &c = sp[index];
             if (c == '/' || c == '?')
             {
                 ++index;
