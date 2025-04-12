@@ -26,6 +26,11 @@
 #include "./URI/__relative_part.hpp"
 #include "./URI/__relative_ref.hpp"
 
+#include "./URI/__hier_part.hpp"
+#include "./URI/__absolute_uri.hpp"
+#include "./URI/__uri.hpp"
+#include "./URI/__uri_reference.hpp"
+
 /**
  * @brief [ABNF-URI]
  * https://www.rfc-editor.org/rfc/rfc3986.html#appendix-A:~:text=Appendix%20A.%20%20Collected%20ABNF%20for%20URI
