@@ -37,12 +37,12 @@ constexpr auto test_span_size(mcs::ABNF::default_span_t s)
 int main()
 {
     using namespace mcs::ABNF::URI; // NOLINT
-    constexpr auto v = make_span("123");
+    constexpr auto v = make_array("123");
     // std::span<const OCTET> sp(v);
-    constexpr auto v2 = test_span(make_span("123"));
-    static_assert(test_span(make_span("123")));
+    constexpr auto v2 = test_span(make_array("123"));
+    static_assert(test_span(make_array("123")));
 
-    static_assert(test_span_size(make_span("123")) == 3);
+    static_assert(test_span_size(make_array("123")) == 3);
 
     return 0;
 }
