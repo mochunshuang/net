@@ -11,3 +11,5 @@ auto_add_exec("draft")
 
 auto_add_test_by_dir("base")
 auto_add_test_by_dir("ip")
+
+auto_add_test_by_dir("URI")
