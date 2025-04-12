@@ -130,3 +130,31 @@ namespace mcstest
         EXPECT(v);          \
     else                    \
         UNEXPECT(message)
+
+using OCTET = std::uint8_t;
+template <size_t N>
+consteval auto make_span(const char (&str)[N]) noexcept // NOLINT
+{
+    auto octets = [&]() {
+        std::array<OCTET, N - 1> arr{};
+        for (size_t i = 0; i < N - 1; ++i)
+        {
+            arr[i] = static_cast<OCTET>(str[i]);
+        }
+        return arr;
+    };
+    return octets();
+}
+template <size_t N>
+consteval auto make_span(const OCTET (&str)[N]) noexcept // NOLINT
+{
+    auto octets = [&]() {
+        std::array<OCTET, N - 1> arr{};
+        for (size_t i = 0; i < N - 1; ++i)
+        {
+            arr[i] = static_cast<OCTET>(str[i]);
+        }
+        return arr;
+    };
+    return octets();
+}
