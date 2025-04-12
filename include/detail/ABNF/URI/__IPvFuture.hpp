@@ -20,7 +20,7 @@ namespace mcs::ABNF::URI
         static_assert(not HEXDIG('v'));
 
         if (sp[0] != 'v')
-            return true;
+            return false;
 
         const auto [front, tail] = tool::split_span_first(sp, '.');
 
