@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <source_location>
+#include <span>
 #include <string_view>
 #include <iostream>
 
@@ -141,4 +142,45 @@ consteval auto make_array(const char (&str)[N]) noexcept // NOLINT
         arr[i] = static_cast<OCTET>(str[i]);
     }
     return arr;
+}
+
+template <std::size_t N>
+struct make_span
+{
+    using OCTET = std::uint8_t;
+    OCTET octets[N - 1]{};                           // NOLINT
+    constexpr make_span(char const (&s)[N]) noexcept // NOLINT
+    {
+        for (size_t i = 0; i < N - 1; ++i)
+        {
+            octets[i] = static_cast<OCTET>(s[i]);
+        }
+    };
+
+    constexpr auto size() const noexcept
+    {
+        return N - 1;
+    }
+};
+
+template <make_span S>
+consteval decltype(auto) operator""_span()
+{
+    return std::span{S.octets, S.size()};
+}
+
+struct make_oct
+{
+    using OCTET = std::uint8_t;
+    OCTET oct[1]{};                                 // NOLINT
+    constexpr make_oct(char const (&s)[2]) noexcept // NOLINT
+    {
+        oct[0] = static_cast<OCTET>(s[0]);
+    };
+};
+
+template <make_oct a>
+consteval auto operator""_oct()
+{
+    return a.oct[0];
 }

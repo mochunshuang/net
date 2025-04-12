@@ -3,10 +3,8 @@
 #include "../test_common/test_macro.hpp"
 #include "../../include/net.hpp"
 
-#include <array>
 #include <cassert>
 #include <span>
-#include <string_view>
 
 // NOLINTBEGIN
 
