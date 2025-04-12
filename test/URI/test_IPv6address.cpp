@@ -6,11 +6,12 @@
 #include <array>
 #include <cassert>
 #include <span>
+#include <utility>
 
 // NOLINTBEGIN
 using OCTET = mcs::ABNF::OCTET;
 constexpr auto make_span = [](auto &&arr) constexpr {
-    return std::span<const OCTET>{arr};
+    return std::span<const OCTET>{std::forward<decltype(arr)>(arr)};
 };
 
 int main()
@@ -29,7 +30,7 @@ int main()
 
     // NOTE: 数组太长，是不能编译期测试的
     assert(IPv6address(case1));
-
+    // static_assert(IPv6address(make_span(case1)));
     // Rule 2: "::" 5(h16 ":") ls32 (双冒号开头)
     // 有效案例：::1:2:3:4:5:6.7.8.9
     static constexpr OCTET case2[] = {
