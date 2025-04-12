@@ -20,6 +20,8 @@
 #include "./URI/__host.hpp"
 #include "./URI/__port.hpp"
 
+#include "./URI/__userinfo.hpp"
+
 /**
  * @brief [ABNF-URI]
  * https://www.rfc-editor.org/rfc/rfc3986.html#appendix-A:~:text=Appendix%20A.%20%20Collected%20ABNF%20for%20URI
