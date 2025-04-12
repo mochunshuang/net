@@ -6,7 +6,10 @@ namespace mcs::ABNF::tool
 {
     constexpr auto split_span_first(default_span_t sp, octet_t c) noexcept
     {
-        for (size_t i = 0; i < sp.size(); ++i)
+        // NOTE: first(i): i < k_size is ok
+        // NOTE: subspan(i+1): i+1 <=k_size is ok
+        const auto k_size = sp.size();
+        for (size_t i = 0; i < k_size; ++i)
         {
             if (sp[i] == c)
                 return std::pair{sp.first(i), sp.subspan(i + 1)};
@@ -15,7 +18,8 @@ namespace mcs::ABNF::tool
     }
     constexpr auto split_span_last(default_span_t sp, octet_t c) noexcept
     {
-        for (size_t i = sp.size(); i-- > 0;)
+        const auto k_size = sp.size();
+        for (size_t i = k_size; i-- > 0;)
         {
             if (sp[i] == c)
                 return std::pair{sp.first(i), sp.subspan(i + 1)};
