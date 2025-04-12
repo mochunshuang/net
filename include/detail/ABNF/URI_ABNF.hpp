@@ -8,6 +8,7 @@
 #include "./URI/__IPv6address.hpp"
 #include "./URI/__IPv4address.hpp"
 #include "./URI/__IPvFuture.hpp"
+#include "./URI/__IP_literal.hpp"
 
 #include "./URI/__query.hpp"
 #include "./URI/__fragment.hpp"
