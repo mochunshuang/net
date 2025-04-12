@@ -24,6 +24,7 @@
 
 #include "./URI/__authority.hpp"
 #include "./URI/__relative_part.hpp"
+#include "./URI/__relative_ref.hpp"
 
 /**
  * @brief [ABNF-URI]

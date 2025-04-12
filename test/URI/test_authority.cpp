@@ -17,6 +17,24 @@ int main()
     // 完整结构：userinfo + IPv6 + port
     constexpr auto full_authority_1 =
         "user%3Apass@[v9.fe]:8080"_span; // 混合编码和IPvFuture
+    {
+        // authority     = [ userinfo "@" ] host [ ":" port ]
+        static_assert(userinfo("user%3Apass"_span));
+        //  host          = IP-literal / IPv4address / reg-name
+        {
+            EXPECT(host("[v9.fe]"_span));
+            // IP-literal    = "[" ( IPv6address / IPvFuture  ) "]"
+            EXPECT(IP_literal("[v9.fe]"_span));
+            {
+                static_assert(IPvFuture("v9.fe"_span));
+                static_assert("[v9.fe]"_span.size() == 7);
+                constexpr auto sp = "[v9.fe]"_span.subspan(1, 7 - 2);
+                EXPECT(std::string(sp.begin(), sp.end()) == "v9.fe");
+            }
+        }
+        // port
+        static_assert(port("8080"_span));
+    }
     EXPECT(authority(full_authority_1));
 
     // 仅有 userinfo 和 reg-name
@@ -25,11 +43,18 @@ int main()
 
     // 仅有 IPv4 和 port
     constexpr auto ipv4_port = "192.168.0.1:65535"_span; // 最大端口号
+    {
+        static_assert(host("192.168.0.1"_span));
+        static_assert(port("65535"_span));
+    }
     static_assert(authority(ipv4_port));
 
     // 纯 reg-name 带特殊字符
     constexpr auto reg_name_special =
         "server_!$&.sub-domain"_span; // 包含sub-delims的注册名
+    {
+        static_assert(host("server_!$&.sub-domain"_span));
+    }
     static_assert(authority(reg_name_special));
 
     // 边界用例：空port（仅冒号）

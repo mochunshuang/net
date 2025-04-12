@@ -4,10 +4,6 @@
 #include "./__host.hpp"
 #include "./__port.hpp"
 
-#include "../tool/__split_span.hpp"
-
-#include <cstddef>
-
 namespace mcs::ABNF::URI
 {
     // authority     = [ userinfo "@" ] host [ ":" port ]
@@ -17,34 +13,44 @@ namespace mcs::ABNF::URI
         if (k_size == 0)
             return false;
 
-        size_t idx0 = k_size;
-        size_t idx1 = k_size;
-        for (size_t left = 0, right = k_size - 1; left < right; ++left, --right)
+        size_t idx_0 = k_size;
+        size_t idx_1 = k_size;
+        for (size_t i = 0; i < k_size; ++i)
         {
-            if (idx0 == k_size && sp[left] == '@')
-                idx0 = left;
-            if (idx1 == k_size && sp[right] == ':')
-                idx1 = right;
-
-            if (idx1 != k_size && idx0 != k_size)
+            if (sp[i] == '@')
+            {
+                idx_0 = i;
                 break;
+            }
+        }
+        for (size_t left = (idx_0 < k_size ? idx_0 + 1 : 0), right = k_size;
+             right-- > left;)
+        {
+            if (sp[right] == ':')
+            {
+                idx_1 = right;
+                break;
+            }
         }
 
-        if (idx0 == k_size && idx1 == k_size) // only host
+        if (idx_0 == k_size && idx_1 == k_size) // only host
             return host(sp);
-        if (idx0 != k_size && idx1 == k_size) // has userinfo but has no port
+        if (idx_0 < k_size && idx_1 == k_size) // has userinfo but has no port
         {
-            const auto [u, h] = tool::split_span_first(sp, '@');
-            return userinfo(u) && host(h);
+            const auto k_u = sp.first(idx_0);
+            const auto k_h = sp.subspan(idx_0 + 1);
+            return userinfo(k_u) && host(k_h);
         }
-        if (idx0 == k_size && idx1 != k_size) // has no userinfo but has port
+        if (idx_0 == k_size && idx_1 < k_size) // has no userinfo but has port
         {
-            const auto [h, p] = tool::split_span_last(sp, ':');
-            return host(h) && port(p);
+            const auto k_u = sp.first(idx_1);
+            const auto k_p = sp.subspan(idx_1 + 1);
+            return host(k_u) && port(k_p);
         }
-        const auto [u, remain] = tool::split_span_first(sp, '@');
-        const auto [h, p] = tool::split_span_last(remain, ':');
-        return userinfo(u) && host(h) && port(p);
+        const auto k_u = sp.first(idx_0);
+        const auto k_h = sp.subspan(idx_0 + 1, idx_1 - idx_0 - 1);
+        const auto k_p = sp.subspan(idx_1 + 1);
+        return userinfo(k_u) && host(k_h) && port(k_p);
     }
 
 }; // namespace mcs::ABNF::URI
