@@ -112,18 +112,19 @@ int main()
     constexpr auto ipv6_rel_ref = "//[2001:db8::1]/path"_span; // relative-ref含IPv6
 
     static_assert(uri_reference(tricky_uri));
-    static_assert(not uri_reference(ipv6_rel_ref));
+    static_assert(uri_reference(ipv6_rel_ref));
     {
         static_assert(not uri(ipv6_rel_ref));
         // relative-ref  = relative-part [ "?" query ] [ "#" fragment ]
-        static_assert(not relative_ref(ipv6_rel_ref));
+        static_assert(relative_ref(ipv6_rel_ref));
         // relative-part = "//" authority path-abempty
-        static_assert(not relative_part(ipv6_rel_ref));
+        static_assert(relative_part(ipv6_rel_ref));
         {
             // authority     = [ userinfo "@" ] host [ ":" port ]
-            static_assert(not authority("[2001:db8::1]"_span));
+            static_assert(authority("[2001:db8::1]"_span));
             {
-                // TODO bug 逻辑
+                //  host          = IP-literal / IPv4address / reg-name
+                // IP-literal    = "[" ( IPv6address / IPvFuture  ) "]"
                 static_assert(host("[2001:db8::1]"_span));
             }
         }
