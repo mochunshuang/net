@@ -27,9 +27,9 @@
 #include "./URI/__relative_ref.hpp"
 
 #include "./URI/__hier_part.hpp"
-#include "./URI/__absolute_uri.hpp"
 #include "./URI/__uri.hpp"
 #include "./URI/__uri_reference.hpp"
+#include "./URI/__absolute_uri.hpp"
 
 /**
  * @brief [ABNF-URI]
