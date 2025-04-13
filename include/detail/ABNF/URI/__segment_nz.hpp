@@ -2,7 +2,7 @@
 
 #include "./__pchars.hpp"
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     // segment-nz    = 1*pchar
     constexpr CheckResult segment_nz(default_span_t sp) noexcept
@@ -11,4 +11,4 @@ namespace mcs::ABNF::URI
             return Fail(0);
         return pchars(sp);
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

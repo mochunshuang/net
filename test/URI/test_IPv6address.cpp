@@ -9,14 +9,14 @@
 #include <utility>
 
 // NOLINTBEGIN
-using OCTET = mcs::ABNF::OCTET;
+using OCTET = mcs::abnf::OCTET;
 constexpr auto make_span2 = [](auto &&arr) constexpr {
     return std::span<const OCTET>{std::forward<decltype(arr)>(arr)};
 };
 
 int main()
 {
-    using namespace mcs::ABNF::URI; // NOLINT
+    using namespace mcs::abnf::uri; // NOLINT
 
     // ------------------------- 有效IPv6地址测试 -------------------------
     // Rule 1: 6(h16 ":") ls32 (完整格式)

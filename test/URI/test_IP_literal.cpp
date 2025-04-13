@@ -11,8 +11,8 @@
 int main()
 {
 
-    using namespace mcs::ABNF;
-    using namespace mcs::ABNF::URI; // NOLINT
+    using namespace mcs::abnf;
+    using namespace mcs::abnf::uri; // NOLINT
 
     ////////////////////////////////////////////
     // 有效测试用例（应通过 static_assert 验证）

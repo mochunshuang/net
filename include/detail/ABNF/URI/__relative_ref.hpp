@@ -1,12 +1,12 @@
 #pragma once
 
 #include "./__relative_part.hpp"
-#include "__fragment.hpp"
-#include "__pchar.hpp"
-#include "__query.hpp"
+#include "./__fragment.hpp"
+#include "./__pchar.hpp"
+#include "./__query.hpp"
 #include <array>
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     // relative-ref  = relative-part [ "?" query ] [ "#" fragment ]
     constexpr bool relative_ref(default_span_t sp) noexcept
@@ -60,4 +60,4 @@ namespace mcs::ABNF::URI
         const auto k_f = sp.subspan(idx_1 + 1);
         return relative_part(k_r) && query(k_q) && fragment(k_f);
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

@@ -6,7 +6,7 @@
 #include "./__path_rootless.hpp"
 #include "./__path_empty.hpp"
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     /**
      * @brief
@@ -21,4 +21,4 @@ namespace mcs::ABNF::URI
         return path_abempty(sp) || path_absolute(sp) || path_noscheme(sp) ||
                path_rootless(sp) || path_empty(sp);
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

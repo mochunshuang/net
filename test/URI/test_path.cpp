@@ -7,8 +7,8 @@
 
 // NOLINTBEGIN
 
-using namespace mcs::ABNF::URI; // NOLINT
-using OCTET = mcs::ABNF::OCTET;
+using namespace mcs::abnf::uri; // NOLINT
+using OCTET = mcs::abnf::OCTET;
 
 // 辅助函数用于简化测试断言
 template <size_t N>
@@ -28,7 +28,7 @@ int main()
     // 1. path-abempty 测试 (以/开头或为空)
     { // 空路径
 
-        static_assert(path(mcs::ABNF::empty_span));
+        static_assert(path(mcs::abnf::empty_span));
     }
 
     { // 仅斜杠
@@ -97,7 +97,7 @@ int main()
     // 5. path-empty 测试
     { // 空路径
 
-        static_assert(path(mcs::ABNF::empty_span));
+        static_assert(path(mcs::abnf::empty_span));
     }
 
     // 无效路径测试

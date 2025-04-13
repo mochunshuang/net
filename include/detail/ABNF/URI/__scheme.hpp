@@ -3,7 +3,7 @@
 #include "../tool/__safe_subspan.hpp"
 #include <algorithm>
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     // scheme        = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
     // https://www.rfc-editor.org/rfc/rfc3986.html#appendix-A:~:text=scheme%20%20%20%20%20%20%20%20%3D%20ALPHA%20*(%20ALPHA%20/%20DIGIT%20/%20%22%2B%22%20/%20%22%2D%22%20/%20%22.%22%20)
@@ -21,4 +21,4 @@ namespace mcs::ABNF::URI
         });
     }
 
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

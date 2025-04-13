@@ -3,7 +3,7 @@
 #include "./__path_rootless.hpp"
 #include <expected>
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     // path-absolute = "/" [ segment-nz *( "/" segment ) ]
     constexpr CheckResult path_absolute(default_span_t sp) noexcept
@@ -21,4 +21,4 @@ namespace mcs::ABNF::URI
             return Fail(1 + k_ret.error().index());
         return Success{1 + k_ret->count};
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

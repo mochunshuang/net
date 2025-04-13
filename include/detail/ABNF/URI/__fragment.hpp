@@ -1,8 +1,8 @@
 #pragma once
 
-#include "__pchar.hpp"
+#include "./__pchar.hpp"
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     // fragment      = *( pchar / "/" / "?" )
     constexpr CheckResult fragment(default_span_t sp) noexcept
@@ -43,4 +43,4 @@ namespace mcs::ABNF::URI
         }
         return Success{k_size};
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

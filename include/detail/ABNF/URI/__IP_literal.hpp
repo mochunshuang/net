@@ -1,9 +1,9 @@
 #pragma once
 
-#include "./__IPv6address.hpp"
-#include "./__IPvFuture.hpp"
+#include "./__ipv6address.hpp"
+#include "./__ipvfuture.hpp"
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     // IP-literal    = "[" ( IPv6address / IPvFuture  ) "]"
     constexpr bool IP_literal(default_span_t sp) noexcept
@@ -18,4 +18,4 @@ namespace mcs::ABNF::URI
         const auto k_check_span = sp.subspan(1, k_size - 2);
         return IPv6address(k_check_span) || IPvFuture(k_check_span);
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

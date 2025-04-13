@@ -2,7 +2,7 @@
 
 #include "../__core_rules.hpp"
 
-namespace mcs::ABNF::tool
+namespace mcs::abnf::tool
 {
     constexpr auto split_span_first(default_span_t sp, octet_t c) noexcept
     {
@@ -26,4 +26,4 @@ namespace mcs::ABNF::tool
         }
         return std::pair{empty_span, sp}; // not find c in sp
     }
-}; // namespace mcs::ABNF::tool
+}; // namespace mcs::abnf::tool

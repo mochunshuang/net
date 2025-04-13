@@ -12,8 +12,8 @@ using OCTET = std::uint8_t;
 int main()
 {
 
-    using namespace mcs::ABNF;
-    using namespace mcs::ABNF::URI; // NOLINT
+    using namespace mcs::abnf;
+    using namespace mcs::abnf::uri; // NOLINT
 
     //================= userinfo 有效用例 =================
     constexpr auto userinfo_1 = "john.doe_123-~"_span;   // 仅 unreserved 字符

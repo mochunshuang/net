@@ -5,8 +5,8 @@
 
 // NOLINTBEGIN
 
-using OCTET = mcs::ABNF::OCTET;
-using namespace mcs::ABNF;
+using OCTET = mcs::abnf::OCTET;
+using namespace mcs::abnf;
 
 int main()
 {

@@ -5,7 +5,7 @@
 
 #include "../tool/__split_span.hpp"
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     // IPvFuture     = "v" 1*HEXDIG "." 1*( unreserved / sub-delims / ":" )
     constexpr bool IPvFuture(default_span_t sp) noexcept
@@ -46,4 +46,4 @@ namespace mcs::ABNF::URI
         }
         return true;
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

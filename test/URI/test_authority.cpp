@@ -10,8 +10,8 @@
 int main()
 {
 
-    using namespace mcs::ABNF;
-    using namespace mcs::ABNF::URI; // NOLINT
+    using namespace mcs::abnf;
+    using namespace mcs::abnf::uri; // NOLINT
 
     //================= authority 有效用例 =================
     // 完整结构：userinfo + IPv6 + port

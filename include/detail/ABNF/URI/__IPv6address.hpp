@@ -7,7 +7,7 @@
 
 #include "../tool/__split_span.hpp"
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     namespace detail
     {
@@ -157,4 +157,4 @@ namespace mcs::ABNF::URI
                (detail::check_common_front(front, 5) && h16(last)) ||  // NOLINT
                (detail::check_common_front(front, 6) && last.empty()); // NOLINT
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

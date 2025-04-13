@@ -8,10 +8,10 @@
 
 // NOLINTBEGIN
 
-using namespace mcs::ABNF::URI; // NOLINT
-using OCTET = mcs::ABNF::OCTET;
+using namespace mcs::abnf::uri; // NOLINT
+using OCTET = mcs::abnf::OCTET;
 
-namespace mcs::ABNF::URI::test
+namespace mcs::abnf::uri::test
 {
     // 辅助工具函数
     constexpr auto make_span2 = [](auto &&arr) {
@@ -107,13 +107,13 @@ namespace mcs::ABNF::URI::test
                                              ':', 'e', '/', 'f', 'g', 'h'};
     static_assert(path(make_span2(complex_path))); // 属于path-abempty
 
-}; // namespace mcs::ABNF::URI::test
+}; // namespace mcs::abnf::uri::test
 
 #include <iostream>
 
 int main()
 {
-    using namespace mcs::ABNF::URI::test;
+    using namespace mcs::abnf::uri::test;
     {
         { // 常规网站路径
             static constexpr OCTET website_path[] = {'/', 'u', 's', 'e', 'r', 's',

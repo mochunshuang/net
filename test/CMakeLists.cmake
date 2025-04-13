@@ -18,4 +18,4 @@ endif()
 auto_add_test_by_dir("base")
 auto_add_test_by_dir("ip")
 
-auto_add_test_by_dir("URI")
+auto_add_test_by_dir("uri")

@@ -5,10 +5,10 @@
 #include "./__query.hpp"
 #include "./__fragment.hpp"
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     // URI           = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
-    constexpr bool uri(default_span_t sp) noexcept
+    constexpr bool URI(default_span_t sp) noexcept
     {
         const auto k_size = sp.size();
         if (k_size < 2)
@@ -71,4 +71,4 @@ namespace mcs::ABNF::URI
         const auto k_fragment = sp.subspan(idx_2 + 1);
         return hier_part(k_hier) && query(k_query) && fragment(k_fragment);
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

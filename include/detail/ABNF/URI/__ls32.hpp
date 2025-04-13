@@ -1,11 +1,11 @@
 #pragma once
 
 #include "./__h16.hpp"
-#include "./__IPv4address.hpp"
+#include "./__ipv4address.hpp"
 #include <array>
 #include <cstddef>
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     // ls32          = ( h16 ":" h16 ) / IPv4address
     constexpr bool ls32(default_span_t sp) noexcept
@@ -28,4 +28,4 @@ namespace mcs::ABNF::URI
         }
         return IPv4address(sp);
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

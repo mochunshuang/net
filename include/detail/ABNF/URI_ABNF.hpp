@@ -1,37 +1,36 @@
 #pragma once
 
-#include "./URI/__uri.hpp"
-#include "./URI/__uri_reference.hpp"
-#include "./URI/__absolute_uri.hpp"
+#include "./uri/__uri.hpp"
+#include "./uri/__uri_reference.hpp"
+#include "./uri/__absolute_uri.hpp"
 
-#include "./URI/__scheme.hpp"
-#include "./URI/__authority.hpp"
+#include "./uri/__scheme.hpp"
+#include "./uri/__authority.hpp"
 
-#include "./URI/__path_rootless.hpp"
-#include "./URI/__path.hpp"
+#include "./uri/__path_rootless.hpp"
+#include "./uri/__path.hpp"
 
-#include "./URI/__IPv6address.hpp"
-#include "./URI/__IPv4address.hpp"
-#include "./URI/__IPvFuture.hpp"
-#include "./URI/__IP_literal.hpp"
+#include "./uri/__ipv6address.hpp"
+#include "./uri/__ipv4address.hpp"
+#include "./uri/__ipvfuture.hpp"
+#include "./uri/__ip_literal.hpp"
 
-#include "./URI/__query.hpp"
-#include "./URI/__fragment.hpp"
+#include "./uri/__query.hpp"
+#include "./uri/__fragment.hpp"
 
-#include "./URI/__segment_nz_nc.hpp"
-#include "./URI/__segment_nz.hpp"
-#include "./URI/__segment.hpp"
+#include "./uri/__segment_nz_nc.hpp"
+#include "./uri/__segment_nz.hpp"
+#include "./uri/__segment.hpp"
 
-#include "./URI/__host.hpp"
-#include "./URI/__port.hpp"
+#include "./uri/__host.hpp"
+#include "./uri/__port.hpp"
 
-#include "./URI/__userinfo.hpp"
+#include "./uri/__userinfo.hpp"
 
-#include "./URI/__authority.hpp"
-#include "./URI/__relative_part.hpp"
-#include "./URI/__relative_ref.hpp"
+#include "./uri/__relative_part.hpp"
+#include "./uri/__relative_ref.hpp"
 
-#include "./URI/__hier_part.hpp"
+#include "./uri/__hier_part.hpp"
 
 /**
  * @brief [ABNF-URI]

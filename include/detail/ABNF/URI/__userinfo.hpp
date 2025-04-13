@@ -2,7 +2,7 @@
 
 #include "./__reg_name.hpp"
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     // userinfo      = *( unreserved / pct-encoded / sub-delims / ":" )
     constexpr CheckResult userinfo(default_span_t sp) noexcept
@@ -34,4 +34,4 @@ namespace mcs::ABNF::URI
         }
         return Success{k_size};
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

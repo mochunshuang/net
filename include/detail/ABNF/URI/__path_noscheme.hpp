@@ -3,7 +3,7 @@
 #include "./__segment_nz_nc.hpp"
 #include "./__path_abempty.hpp"
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     // path-noscheme = segment-nz-nc *( "/" segment )
     constexpr CheckResult path_noscheme(default_span_t sp) noexcept
@@ -35,4 +35,4 @@ namespace mcs::ABNF::URI
             return Fail(d + k_ret.error().index());
         return Success{k_size};
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

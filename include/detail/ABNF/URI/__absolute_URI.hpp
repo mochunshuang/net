@@ -4,10 +4,10 @@
 #include "./__hier_part.hpp"
 #include "./__query.hpp"
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     // absolute-URI  = scheme ":" hier-part [ "?" query ]
-    constexpr bool absolute_uri(default_span_t sp) noexcept
+    constexpr bool absolute_URI(default_span_t sp) noexcept
     {
         const auto k_size = sp.size();
         if (k_size < 2)
@@ -46,4 +46,4 @@ namespace mcs::ABNF::URI
         const auto k_query = sp.subspan(idx_1 + 1);
         return hier_part(k_hier) && query(k_query);
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

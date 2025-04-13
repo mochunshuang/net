@@ -9,7 +9,7 @@
 #include <string_view>
 
 // NOLINTBEGIN
-using OCTET = mcs::ABNF::OCTET;
+using OCTET = mcs::abnf::OCTET;
 
 #include <array>
 #include <cstdint>
@@ -23,19 +23,19 @@ using OCTET = std::uint8_t;
 
 using OCTET = std::uint8_t;
 
-constexpr auto test_span(mcs::ABNF::default_span_t s)
+constexpr auto test_span(mcs::abnf::default_span_t s)
 {
     return s.size() > 0;
 }
 
-constexpr auto test_span_size(mcs::ABNF::default_span_t s)
+constexpr auto test_span_size(mcs::abnf::default_span_t s)
 {
     return s.size();
 }
 
 int main()
 {
-    using namespace mcs::ABNF::URI; // NOLINT
+    using namespace mcs::abnf::uri; // NOLINT
     constexpr auto v [[maybe_unused]] = make_array("123");
     // std::span<const OCTET> sp(v);
     [[maybe_unused]] constexpr auto v2 = test_span(make_array("123"));

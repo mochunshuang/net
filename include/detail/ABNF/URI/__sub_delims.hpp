@@ -3,7 +3,7 @@
 #include "../__core_rules.hpp"
 #include <array>
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     // sub-delims    = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
     constexpr bool sub_delims(octet_t c) noexcept
@@ -23,4 +23,4 @@ namespace mcs::ABNF::URI
         static_assert(k_sub_delims['!']);
         return k_sub_delims[c]; // NOLINT
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

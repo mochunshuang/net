@@ -2,7 +2,7 @@
 
 #include "../__core_rules.hpp"
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     /**
      * @brief
@@ -32,4 +32,4 @@ namespace mcs::ABNF::URI
         }
         return Fail(0);
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

@@ -10,8 +10,8 @@ using OCTET = std::uint8_t;
 int main()
 {
 
-    using namespace mcs::ABNF;
-    using namespace mcs::ABNF::URI; // NOLINT
+    using namespace mcs::abnf;
+    using namespace mcs::abnf::uri; // NOLINT
 
     //================= relative-ref 有效用例 =================
     // 基础结构组合测试

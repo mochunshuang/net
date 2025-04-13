@@ -11,8 +11,8 @@ using OCTET = std::uint8_t;
 int main()
 {
 
-    using namespace mcs::ABNF;
-    using namespace mcs::ABNF::URI; // NOLINT
+    using namespace mcs::abnf;
+    using namespace mcs::abnf::uri; // NOLINT
 
     //================= URI-reference 有效用例 =================
     // 完整URI形式
@@ -33,16 +33,16 @@ int main()
     constexpr auto noscheme_rel = "folder/file.txt"_span; // 无scheme路径
     constexpr auto frag_only = "#top"_span;               // 仅片段（合法relative-ref）
 
-    static_assert(uri_reference(full_uri));
-    static_assert(uri_reference(rel_ref_full));
-    static_assert(uri_reference(encoded_uri_ref));
-    static_assert(uri_reference(minimal_uri));
-    static_assert(uri_reference(urn_like));
-    static_assert(uri_reference(uri_with_empty));
-    static_assert(uri_reference(empty_ref));
-    static_assert(uri_reference(root_relative));
-    static_assert(uri_reference(noscheme_rel));
-    static_assert(uri_reference(frag_only));
+    static_assert(URI_reference(full_uri));
+    static_assert(URI_reference(rel_ref_full));
+    static_assert(URI_reference(encoded_uri_ref));
+    static_assert(URI_reference(minimal_uri));
+    static_assert(URI_reference(urn_like));
+    static_assert(URI_reference(uri_with_empty));
+    static_assert(URI_reference(empty_ref));
+    static_assert(URI_reference(root_relative));
+    static_assert(URI_reference(noscheme_rel));
+    static_assert(URI_reference(frag_only));
 
     //================= URI-reference 无效用例 =================
     // 结构污染
@@ -56,7 +56,7 @@ int main()
                     / path-rootless
                     / path-empty
         */
-        static_assert(uri(hybrid_ref));
+        static_assert(URI(hybrid_ref));
         {
             static_assert(scheme("http"_span));
 
@@ -83,27 +83,27 @@ int main()
     constexpr auto malformed_pct = "s:/%X"_span;  // 无效百分比编码
     constexpr auto incomplete_pct = "s:/%A"_span; // 不完整百分比编码
 
-    static_assert(uri_reference(hybrid_ref));
-    static_assert(uri_reference(double_scheme));
+    static_assert(URI_reference(hybrid_ref));
+    static_assert(URI_reference(double_scheme));
 
-    static_assert(uri_reference(colon_in_rel));
+    static_assert(URI_reference(colon_in_rel));
 
-    static_assert(!uri_reference(space_in_scheme));
-    static_assert(!uri_reference(unencoded_space));
-    static_assert(!uri_reference(ctrl_char_query));
-    static_assert(!uri_reference(bad_port_uri));
+    static_assert(!URI_reference(space_in_scheme));
+    static_assert(!URI_reference(unencoded_space));
+    static_assert(!URI_reference(ctrl_char_query));
+    static_assert(!URI_reference(bad_port_uri));
 
-    static_assert(uri_reference(rel_with_scheme));
+    static_assert(URI_reference(rel_with_scheme));
     {
-        static_assert(uri(rel_with_scheme));
+        static_assert(URI(rel_with_scheme));
     }
-    static_assert(uri_reference(invalid_urn));
+    static_assert(URI_reference(invalid_urn));
     {
-        static_assert(uri(invalid_urn));
+        static_assert(URI(invalid_urn));
     }
 
-    static_assert(!uri_reference(malformed_pct));
-    static_assert(!uri_reference(incomplete_pct));
+    static_assert(!URI_reference(malformed_pct));
+    static_assert(!URI_reference(incomplete_pct));
 
     // 特殊说明用例
     constexpr auto tricky_uri =
@@ -111,10 +111,10 @@ int main()
     // constexpr auto max_length_ref = string_view(8000, 'a') + "#end"_span; // 超长引用
     constexpr auto ipv6_rel_ref = "//[2001:db8::1]/path"_span; // relative-ref含IPv6
 
-    static_assert(uri_reference(tricky_uri));
-    static_assert(uri_reference(ipv6_rel_ref));
+    static_assert(URI_reference(tricky_uri));
+    static_assert(URI_reference(ipv6_rel_ref));
     {
-        static_assert(not uri(ipv6_rel_ref));
+        static_assert(not URI(ipv6_rel_ref));
         // relative-ref  = relative-part [ "?" query ] [ "#" fragment ]
         static_assert(relative_ref(ipv6_rel_ref));
         // relative-part = "//" authority path-abempty
@@ -129,7 +129,7 @@ int main()
             }
         }
     }
-    // static_assert(uri_reference(max_length_ref)); // 需运行时测试
+    // static_assert(URI_reference(max_length_ref)); // 需运行时测试
 
     return 0;
 }

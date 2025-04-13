@@ -3,20 +3,20 @@
 #include <cstdint>
 #include <expected>
 #include <limits>
-#include <span> // 改用 span 替代 string_view
+#include <span>
 
-#include "./detail/__ParseError.hpp"
-#include "./detail/__ParseResult.hpp"
+#include "./__detail/__error.hpp"
+#include "./__detail/__result.hpp"
 
 /**
  * @brief [ABNF Core Rules]
  * https://www.rfc-editor.org/rfc/rfc5234.html#:~:text=7%2Dbit%20ASCII.-,B.1.%20%20Core%20Rules,-Certain%20basic%20rules
  *
  */
-namespace mcs::ABNF
+namespace mcs::abnf
 {
-    using Success = detail::ParseResult;
-    using Info = detail::ParseError;
+    using Success = __detail::result;
+    using Info = __detail::error;
     using CheckResult = std::expected<Success, Info>;
 
     constexpr auto Fail(const size_t &idx) noexcept
@@ -145,4 +145,4 @@ namespace mcs::ABNF
         return c >= '!' && c <= '~';               // NOLINT
     }
 
-}; // namespace mcs::ABNF
+}; // namespace mcs::abnf

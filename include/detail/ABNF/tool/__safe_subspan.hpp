@@ -2,7 +2,7 @@
 
 #include "../__core_rules.hpp"
 
-namespace mcs::ABNF::tool
+namespace mcs::abnf::tool
 {
     inline constexpr auto safe_subspan = // NOLINT // NOLINTNEXTLINE
         [](default_span_t sp, std::size_t offset,
@@ -20,4 +20,4 @@ namespace mcs::ABNF::tool
 
             return sp.subspan(offset, k_actual_count);
         };
-}; // namespace mcs::ABNF::tool
+}; // namespace mcs::abnf::tool

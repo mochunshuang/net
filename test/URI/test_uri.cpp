@@ -11,8 +11,8 @@ using OCTET = std::uint8_t;
 int main()
 {
 
-    using namespace mcs::ABNF;
-    using namespace mcs::ABNF::URI; // NOLINT
+    using namespace mcs::abnf;
+    using namespace mcs::abnf::uri; // NOLINT
 
     //================= uri 有效用例 =================
     // 全要素组合测试
@@ -43,17 +43,17 @@ int main()
     constexpr auto delims_in_components =
         "s://!$&'()*+,;=@host/path?/?#/?"_span; // 各组件允许的特殊字符
 
-    EXPECT(uri(full_uri));
-    static_assert(not uri(encoded_uri));
-    static_assert(uri(authority_uri));
-    static_assert(uri(absolute_uri));
-    static_assert(uri(rootless_uri));
-    static_assert(uri(empty_hier_uri));
-    static_assert(uri(max_port_uri));
-    static_assert(uri(minimal_uri));
-    static_assert(uri(empty_query_frag));
-    // static_assert(uri(massive_query)); // 运行时测试
-    static_assert(uri(delims_in_components));
+    EXPECT(URI(full_uri));
+    static_assert(not URI(encoded_uri));
+    static_assert(URI(authority_uri));
+    static_assert(URI(absolute_uri));
+    static_assert(URI(rootless_uri));
+    static_assert(URI(empty_hier_uri));
+    static_assert(URI(max_port_uri));
+    static_assert(URI(minimal_uri));
+    static_assert(URI(empty_query_frag));
+    // static_assert(URI(massive_query)); // 运行时测试
+    static_assert(URI(delims_in_components));
 
     //================= uri 无效用例 =================
     // 结构错误
@@ -76,19 +76,19 @@ int main()
         "mailto:user@domain.com"_span;                   // mailto属于uri但不是URL
     constexpr auto urn_like = "urn:issn:1535-3613"_span; // URN格式（需特殊处理）
 
-    static_assert(!uri(no_scheme));
-    static_assert(uri(double_colon));
+    static_assert(!URI(no_scheme));
+    static_assert(URI(double_colon));
 
-    static_assert(!uri(fragment_before_query));
-    static_assert(!uri(space_in_scheme));
-    static_assert(!uri(unencoded_space));
-    static_assert(!uri(control_char));
-    static_assert(!uri(invalid_port));
-    static_assert(!uri(bad_path_rootless));
-    static_assert(!uri(illegal_fragment_char));
+    static_assert(!URI(fragment_before_query));
+    static_assert(!URI(space_in_scheme));
+    static_assert(!URI(unencoded_space));
+    static_assert(!URI(control_char));
+    static_assert(!URI(invalid_port));
+    static_assert(!URI(bad_path_rootless));
+    static_assert(!URI(illegal_fragment_char));
 
-    static_assert(uri(uri_without_hier)); // 根据RFC3986应为合法，需确认需求
-    static_assert(uri(urn_like));         // 根据RFC应为合法，需确认解析范围
+    static_assert(URI(uri_without_hier)); // 根据RFC3986应为合法，需确认需求
+    static_assert(URI(urn_like));         // 根据RFC应为合法，需确认解析范围
 
     // 特殊说明测试
     constexpr auto tricky_encoding =
@@ -96,10 +96,10 @@ int main()
     constexpr auto ambiguous_colon = "s:path:with:colons?q=1:2"_span; // 路径中的多个冒号
     constexpr auto empty_components = "s:? # "_span; // 空hier-part+查询+片段
 
-    static_assert(uri(tricky_encoding));
-    static_assert(uri(ambiguous_colon));
-    static_assert(uri("s:?#"_span));
-    static_assert(not uri(empty_components));
+    static_assert(URI(tricky_encoding));
+    static_assert(URI(ambiguous_colon));
+    static_assert(URI("s:?#"_span));
+    static_assert(not URI(empty_components));
 
     // 非ASCII测试（需UTF-8处理）//NOTE: 网络流传输的只有ASCII
     // constexpr auto unicode_uri =

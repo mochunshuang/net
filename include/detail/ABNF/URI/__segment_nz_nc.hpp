@@ -2,7 +2,7 @@
 
 #include "./__reg_name.hpp"
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     // segment-nz-nc = 1*( unreserved / pct-encoded / sub-delims / "@" )
     // ;non-zero-length segment without any colon ":"
@@ -35,4 +35,4 @@ namespace mcs::ABNF::URI
         }
         return Success{k_size};
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

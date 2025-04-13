@@ -2,7 +2,7 @@
 
 #include "./__segment.hpp"
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     // path-abempty  = *( "/" segment )
     constexpr CheckResult path_abempty(default_span_t sp) noexcept
@@ -41,4 +41,4 @@ namespace mcs::ABNF::URI
         }
         return Success{k_size};
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

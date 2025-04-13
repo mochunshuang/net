@@ -4,7 +4,7 @@
 #include "./__pct_encoded.hpp"
 #include "./__sub_delims.hpp"
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     // pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
     constexpr bool pchar(octet_t v) noexcept
@@ -17,4 +17,4 @@ namespace mcs::ABNF::URI
         static_assert(not unreserved('%') && not sub_delims('%'));
         return pct_encoded(a, b, c); // pct-encoded   = "%" HEXDIG HEXDIG
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

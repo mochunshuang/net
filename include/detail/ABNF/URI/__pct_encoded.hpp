@@ -2,7 +2,7 @@
 
 #include "../__core_rules.hpp"
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     // NOTE: Atomicity should be ensured so need 3 parameter
     // pct-encoded   = "%" HEXDIG HEXDIG
@@ -10,4 +10,4 @@ namespace mcs::ABNF::URI
     {
         return a == '%' && HEXDIG(b) && HEXDIG(c);
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

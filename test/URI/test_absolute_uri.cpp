@@ -10,8 +10,8 @@
 int main()
 {
 
-    using namespace mcs::ABNF;
-    using namespace mcs::ABNF::URI; // NOLINT
+    using namespace mcs::abnf;
+    using namespace mcs::abnf::uri; // NOLINT
 
     //================= absolute-URI 有效用例 =================
     // 基础结构组合测试
@@ -45,16 +45,16 @@ int main()
     constexpr auto uppercase_scheme = "MAILTO:user@domain"_span; // 大写scheme
     constexpr auto dotted_scheme = "com.example.data:/a"_span;   // 带点的scheme名
 
-    static_assert(absolute_uri(minimal_valid));
-    static_assert(absolute_uri(full_combo));
-    static_assert(absolute_uri(empty_hier));
-    static_assert(absolute_uri(type1_authority));
-    static_assert(absolute_uri(type2_absolute));
-    static_assert(absolute_uri(type3_rootless));
-    static_assert(absolute_uri(type4_empty));
-    static_assert(absolute_uri(encoded_query));
-    static_assert(not absolute_uri(complex_query)); // 需确保#被上层解析器过滤
-    static_assert(absolute_uri(empty_query));
+    static_assert(absolute_URI(minimal_valid));
+    static_assert(absolute_URI(full_combo));
+    static_assert(absolute_URI(empty_hier));
+    static_assert(absolute_URI(type1_authority));
+    static_assert(absolute_URI(type2_absolute));
+    static_assert(absolute_URI(type3_rootless));
+    static_assert(absolute_URI(type4_empty));
+    static_assert(absolute_URI(encoded_query));
+    static_assert(not absolute_URI(complex_query)); // 需确保#被上层解析器过滤
+    static_assert(absolute_URI(empty_query));
     // static_assert(absolute_URI(long_query));   // 运行时测试（constexpr可能不支持）
 
     //================= absolute-URI 无效用例 =================
@@ -82,20 +82,20 @@ int main()
     constexpr auto unencoded_space_query = "q:/?a b"_span; // 查询未编码空格
     constexpr auto control_char_query = "x:?a\x01b"_span;  // 控制字符
 
-    static_assert(!absolute_uri(missing_colon));
+    static_assert(!absolute_URI(missing_colon));
 
-    static_assert(absolute_uri(double_colon));
+    static_assert(absolute_URI(double_colon));
 
-    static_assert(!absolute_uri(fragment_attempt));
-    static_assert(!absolute_uri(num_scheme));
-    static_assert(!absolute_uri(invalid_scheme_char));
-    static_assert(!absolute_uri(bad_authority));
-    static_assert(!absolute_uri(invalid_rootless));
+    static_assert(!absolute_URI(fragment_attempt));
+    static_assert(!absolute_URI(num_scheme));
+    static_assert(!absolute_URI(invalid_scheme_char));
+    static_assert(!absolute_URI(bad_authority));
+    static_assert(!absolute_URI(invalid_rootless));
 
-    static_assert(absolute_uri(absolute_path_has_colon));
+    static_assert(absolute_URI(absolute_path_has_colon));
 
-    static_assert(!absolute_uri(unencoded_space_query));
-    static_assert(!absolute_uri(control_char_query));
+    static_assert(!absolute_URI(unencoded_space_query));
+    static_assert(!absolute_URI(control_char_query));
 
     // 极端测试用例
     // constexpr auto scheme_max_length =
@@ -104,7 +104,7 @@ int main()
     //     "s:" + string_view(10000, 'a') + "?q="_span;              // 超长hier-part
     constexpr auto nested_encoding = "s:%2F%2Fhost?%23frag"_span; // 编码关键字符（//和#）
 
-    static_assert(absolute_uri(nested_encoding)); // 应合法（编码后无特殊含义）
+    static_assert(absolute_URI(nested_encoding)); // 应合法（编码后无特殊含义）
     // static_assert(!absolute_URI(scheme_max_length)); // 长度限制依赖实现
 
     return 0;

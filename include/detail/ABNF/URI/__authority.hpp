@@ -4,7 +4,7 @@
 #include "./__host.hpp"
 #include "./__port.hpp"
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     // authority     = [ userinfo "@" ] host [ ":" port ]
     constexpr bool authority(default_span_t sp) noexcept
@@ -70,4 +70,4 @@ namespace mcs::ABNF::URI
         return host(k_h) && port(k_p);
     }
 
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

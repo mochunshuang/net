@@ -2,7 +2,7 @@
 
 #include "../__core_rules.hpp"
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     // h16           = 1*4HEXDIG
     constexpr CheckResult h16(default_span_t sp) noexcept
@@ -18,4 +18,4 @@ namespace mcs::ABNF::URI
         }
         return Success{k_size};
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

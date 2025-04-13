@@ -4,7 +4,7 @@
 #include "./__pct_encoded.hpp"
 #include "./__sub_delims.hpp"
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     //  reg-name      = *( unreserved / pct-encoded / sub-delims )
     constexpr CheckResult reg_name(default_span_t sp) noexcept
@@ -47,4 +47,4 @@ namespace mcs::ABNF::URI
         }
         return Success{k_size};
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

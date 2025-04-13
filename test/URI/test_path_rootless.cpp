@@ -12,7 +12,7 @@
 
 int main()
 {
-    using namespace mcs::ABNF::URI; // NOLINT
+    using namespace mcs::abnf::uri; // NOLINT
     {
         // NOTE: 不支持
         //  constexpr bool k_table[256] = {

@@ -7,7 +7,7 @@
 #include "./__path_empty.hpp"
 #include <cstddef>
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     /**
      * @brief
@@ -52,4 +52,4 @@ namespace mcs::ABNF::URI
         }
         return path_absolute(sp) || path_noscheme(sp) || path_empty(sp);
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

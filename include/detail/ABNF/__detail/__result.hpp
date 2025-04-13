@@ -2,10 +2,10 @@
 
 #include <cstddef>
 
-namespace mcs::ABNF::detail
+namespace mcs::abnf::__detail
 {
-    struct ParseResult
+    struct result
     {
         std::size_t count; // NOLINT
     };
-}; // namespace mcs::ABNF::detail
+}; // namespace mcs::abnf::__detail

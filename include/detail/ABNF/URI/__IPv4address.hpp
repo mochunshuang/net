@@ -3,7 +3,7 @@
 #include "./__dec_octet.hpp"
 #include <array>
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     // IPv4address   = dec-octet "." dec-octet "." dec-octet "." dec-octet
     constexpr bool IPv4address(default_span_t sp) noexcept
@@ -44,4 +44,4 @@ namespace mcs::ABNF::URI
                    dec_octet(sp.subspan(idx3 + 1));
         return false;
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

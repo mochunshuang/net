@@ -4,7 +4,7 @@
 
 // NOLINTBEGIN
 
-using OCTET = mcs::ABNF::OCTET;
+using OCTET = mcs::abnf::OCTET;
 constexpr auto make_span2 = [](auto &&arr) constexpr {
     return std::span<const OCTET>{arr};
 };
@@ -15,7 +15,7 @@ int main()
 // ls32 = h16 ":" h16 或 IPv4地址
 // 辅助宏定义
 #define LS32_TEST(arr, expect) \
-    static_assert(mcs::ABNF::URI::ls32(make_span2(arr)) == expect, #arr)
+    static_assert(mcs::abnf::uri::ls32(make_span2(arr)) == expect, #arr)
 
     // 案例组1：合法IPv4格式
     constexpr OCTET ipv4_valid1[] = {'1', '.', '2', '.', '3', '.', '4'}; // 1.2.3.4

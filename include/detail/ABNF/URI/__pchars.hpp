@@ -2,7 +2,7 @@
 
 #include "./__pchar.hpp"
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
 
     // pchars         = *pchar
@@ -40,4 +40,4 @@ namespace mcs::ABNF::URI
         }
         return Success{k_size};
     }
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri

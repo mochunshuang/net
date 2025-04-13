@@ -19,8 +19,8 @@ using OCTET = std::uint8_t;
 int main()
 {
 
-    using namespace mcs::ABNF;
-    using namespace mcs::ABNF::URI; // NOLINT
+    using namespace mcs::abnf;
+    using namespace mcs::abnf::uri; // NOLINT
 
     //================= IP-literal 有效用例 =================
     constexpr auto ipv6_1 = "[2001:db8::1]"_span;          // 标准 IPv6 缩写

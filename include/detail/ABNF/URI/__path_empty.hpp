@@ -2,7 +2,7 @@
 
 #include "../__core_rules.hpp"
 
-namespace mcs::ABNF::URI
+namespace mcs::abnf::uri
 {
     /**
    A rule of the form:
@@ -24,4 +24,4 @@ namespace mcs::ABNF::URI
         return sp.empty();
     }
 
-}; // namespace mcs::ABNF::URI
+}; // namespace mcs::abnf::uri
