@@ -1,3 +1,10 @@
+
+#if defined(_MSC_VER)
+
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
 #include <WinSock2.h>
 #include <MSWSock.h>
 #include <Windows.h>
@@ -280,3 +287,13 @@ int main()
     }
     return 0;
 }
+#else
+
+#include <iostream>
+
+int main()
+{
+    std::cout << "main done\n";
+    return 0;
+}
+#endif

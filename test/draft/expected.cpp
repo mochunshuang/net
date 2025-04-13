@@ -1,6 +1,6 @@
 
 #include <cassert>
-#include <cmath>
+
 #include <iostream>
 
 #include <expected>
@@ -27,7 +27,7 @@ std::expected<double, std::string> sqrtIfPositive(int x)
     {
         return std::unexpected("Negative value");
     }
-    return std::sqrt(x);
+    return x * x;
 }
 
 std::expected<int, std::string> getValue(bool success)

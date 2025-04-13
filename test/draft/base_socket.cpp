@@ -1,3 +1,6 @@
+
+#if defined(_MSC_VER)
+
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -12,12 +15,9 @@
 #include <string>
 #include <thread>
 
-#if defined(_MSC_VER)
-
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
-
 #include <winsock2.h>
 #include <mswsock.h>
 #include <windows.h>
@@ -1003,28 +1003,9 @@ int main()
 
 #else
 
-inline static std::atomic<bool> &get_exit_flag() noexcept // NOLINT
-{
-    static std::atomic<bool> exit_flag(false);
-    return exit_flag;
-}
-
-inline static void signal_handler(int signal) noexcept // NOLINT
-{
-    if (signal == SIGINT) // 捕获Ctrl+C信号
-    {
-        std::println("\nReceived SIGINT (Ctrl+C). Exiting...\n");
-        get_exit_flag().store(true, std::memory_order_release); // 设置标志位为true
-    }
-};
 int main()
 {
-    (void)std::signal(SIGINT, signal_handler);
-    while (!get_exit_flag())
-    {
-        std::cout << "do ... \n";
-    }
-    std::cout << "main done\n";
+
     return 0;
 }
 #endif

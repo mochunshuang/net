@@ -4,7 +4,7 @@
 
 int main()
 {
-    (void)std::signal(SIGINT, WAIT::signal_handler);
+    // (void)std::signal(SIGINT, WAIT::signal_handler);
     std::cout << "main done\n";
     return 0;
 }
