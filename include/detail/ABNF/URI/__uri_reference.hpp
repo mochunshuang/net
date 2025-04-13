@@ -1,6 +1,6 @@
 #pragma once
 
-#include "./__impl_uri.hpp"
+#include "./__uri.hpp"
 #include "./__relative_ref.hpp"
 
 namespace mcs::ABNF::URI
