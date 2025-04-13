@@ -1,8 +1,8 @@
 #pragma once
 
-#include "URI/__uri.hpp"
-#include "URI/__uri_reference.hpp"
-#include "URI/__absolute_uri.hpp"
+#include "./URI/__uri.hpp"
+#include "./URI/__uri_reference.hpp"
+#include "./URI/__absolute_uri.hpp"
 
 #include "./URI/__scheme.hpp"
 #include "./URI/__authority.hpp"
