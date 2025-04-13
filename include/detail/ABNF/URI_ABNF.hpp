@@ -1,4 +1,5 @@
 #pragma once
+
 #include "./URI/__scheme.hpp"
 #include "./URI/__authority.hpp"
 
@@ -27,6 +28,7 @@
 #include "./URI/__relative_ref.hpp"
 
 #include "./URI/__hier_part.hpp"
+
 #include "./URI/__uri.hpp"
 #include "./URI/__uri_reference.hpp"
 #include "./URI/__absolute_uri.hpp"
