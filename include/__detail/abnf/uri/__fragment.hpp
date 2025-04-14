@@ -7,7 +7,6 @@ namespace mcs::abnf::uri
     // fragment      = *( pchar / "/" / "?" )
     constexpr auto fragment(span_param_in sp) noexcept -> abnf_result auto
     {
-        using builder = result_builder<result<1>>;
         const auto k_size = sp.size();
         size_t index = 0;
         while (index < k_size)
@@ -40,8 +39,8 @@ namespace mcs::abnf::uri
                 ++index;
                 continue;
             }
-            return builder::fail(index);
+            return false;
         }
-        return builder::success(span{.start = 0, .count = k_size});
+        return true;
     }
 }; // namespace mcs::abnf::uri

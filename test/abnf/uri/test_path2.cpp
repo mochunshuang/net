@@ -207,18 +207,18 @@ int main()
                         { // 合法片段：包含编码后的# (%23)
                             static constexpr OCTET encoded_hash[] = {'f', 'r', '%', '2',
                                                                      '3', 'a', 'g'};
-                            static_assert(fragment(make_span2(encoded_hash)).has_value());
+                            static_assert(fragment(make_span2(encoded_hash)));
                         }
 
                         { // 非法片段：直接包含#
                             static constexpr OCTET raw_hash[] = {'f', 'r', '#', 'a', 'g'};
-                            static_assert(!fragment(make_span2(raw_hash)).has_value());
+                            static_assert(!fragment(make_span2(raw_hash)));
                         }
 
                         { // 合法查询：包含?和/
                             static constexpr OCTET valid_query[] = {'?', 'q', '=', '/',
                                                                     '1', '?', '2'};
-                            static_assert(query(make_span2(valid_query)).has_value());
+                            static_assert(query(make_span2(valid_query)));
                         }
                     }
 
