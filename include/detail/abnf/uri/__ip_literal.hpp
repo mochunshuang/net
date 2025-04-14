@@ -6,7 +6,7 @@
 namespace mcs::abnf::uri
 {
     // IP-literal    = "[" ( IPv6address / IPvFuture  ) "]"
-    constexpr bool IP_literal(default_span_t sp) noexcept
+    constexpr bool IP_literal(span_param_in sp) noexcept
     {
         const auto k_size = sp.size();
         if (k_size < 4)

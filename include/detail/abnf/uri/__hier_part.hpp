@@ -15,7 +15,7 @@ namespace mcs::abnf::uri
                  / path-rootless
                  / path-empty
      */
-    constexpr bool hier_part(default_span_t sp) noexcept
+    constexpr bool hier_part(span_param_in sp) noexcept
     {
         const auto k_size = sp.size();
         if (k_size > 2 && sp[0] == '/' && sp[1] == '/')

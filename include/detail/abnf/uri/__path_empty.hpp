@@ -19,7 +19,7 @@ namespace mcs::abnf::uri
      */
 
     // path-empty    = 0<pchar> ; path-empty      ; zero characters
-    constexpr bool path_empty(default_span_t sp) noexcept
+    constexpr bool path_empty(span_param_in sp) noexcept
     {
         return sp.empty();
     }

@@ -56,7 +56,7 @@ namespace mcs::abnf
     inline constexpr OCTET CR = 0x0D; // NOLINT
 
     // CRLF           =  CR LF
-    constexpr CheckResult CRLF(default_span_t pair) noexcept
+    constexpr CheckResult CRLF(span_param_in pair) noexcept
     {
         if (pair.size() != 2)
             return std::unexpected(Info(0));
@@ -85,7 +85,7 @@ namespace mcs::abnf
      *
      */
     // LWSP = *(WSP / CRLF WSP)  ;
-    constexpr CheckResult LWSP(default_span_t range) noexcept
+    constexpr CheckResult LWSP(span_param_in range) noexcept
     {
         std::size_t i = 0;
         const std::size_t k_size = range.size();

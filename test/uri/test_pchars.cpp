@@ -10,7 +10,7 @@
 int main()
 {
     { // 空输入测试
-        static_assert(mcs::abnf::uri::pchars(mcs::abnf::empty_span).has_value());
+        static_assert(mcs::abnf::uri::pchars(mcs::abnf::empty_span_param).has_value());
     }
 
     { // 纯unreserved字符测试

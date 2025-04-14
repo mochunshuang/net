@@ -10,7 +10,7 @@
 int main()
 {
     { // 空segment测试
-        static_assert(mcs::abnf::uri::segment(mcs::abnf::empty_span).has_value());
+        static_assert(mcs::abnf::uri::segment(mcs::abnf::empty_span_param).has_value());
     }
 
     { // 纯pchar字符测试

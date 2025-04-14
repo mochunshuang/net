@@ -6,7 +6,7 @@
 namespace mcs::abnf::uri
 {
     // URI-reference = URI / relative-ref
-    constexpr bool URI_reference(default_span_t sp) noexcept
+    constexpr bool URI_reference(span_param_in sp) noexcept
     {
         return URI(sp) || relative_ref(sp);
     }

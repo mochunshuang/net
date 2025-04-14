@@ -6,7 +6,7 @@
 namespace mcs::abnf::uri
 {
     // path-absolute = "/" [ segment-nz *( "/" segment ) ]
-    constexpr CheckResult path_absolute(default_span_t sp) noexcept
+    constexpr CheckResult path_absolute(span_param_in sp) noexcept
     {
         const auto k_size = sp.size();
         if (k_size == 0 || sp[0] != '/')

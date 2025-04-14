@@ -12,8 +12,7 @@ namespace mcs::abnf::uri
     namespace detail
     {
         // 1*6( h16 ":" ) ls32
-        constexpr bool check_common_tail(default_span_t sp,
-                                         const size_t &k_times) noexcept
+        constexpr bool check_common_tail(span_param_in sp, const size_t &k_times) noexcept
         {
             if (k_times == 0)
                 return false;
@@ -44,7 +43,7 @@ namespace mcs::abnf::uri
         // [ *1( h16 ":" ) h16 ]
         // ......
         // [ *6( h16 ":" ) h16 ]
-        constexpr bool check_common_front(default_span_t sp,
+        constexpr bool check_common_front(span_param_in sp,
                                           const size_t k_max_colons // 最大允许的冒号数
                                           ) noexcept
         {
@@ -103,13 +102,13 @@ namespace mcs::abnf::uri
             2001:db8::8a2e:370:7334
             fe80::
      */
-    constexpr bool IPv6address(default_span_t sp) noexcept
+    constexpr bool IPv6address(span_param_in sp) noexcept
     {
         const auto k_size = sp.size();
         if (k_size < 2) // [ *6( h16 ":" ) h16 ] "::"
             return false;
 
-        static_assert(not ls32(empty_span));
+        static_assert(not ls32(empty_span_param));
         // h16           = 1*4HEXDIG
         // HEXDIG         =  DIGIT / "A" / "B" / "C" / "D" / "E" / "F"
         // DIGIT          =  %x30-39; 0-9

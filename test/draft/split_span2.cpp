@@ -9,7 +9,7 @@
 
 using octet_t = std::uint8_t;
 using default_span_t = std::span<const char>;
-constexpr auto empty_span = default_span_t{};
+constexpr auto empty_span_param = default_span_t{};
 
 constexpr auto split_span_last(default_span_t sp, octet_t c) noexcept
 {
@@ -22,9 +22,9 @@ constexpr auto split_span_last(default_span_t sp, octet_t c) noexcept
         //  _Offset : _Count};
         if (sp[i] == c)
             return std::pair{sp.first(i),
-                             i + 1 == k_size ? empty_span : sp.subspan(i + 1)};
+                             i + 1 == k_size ? empty_span_param : sp.subspan(i + 1)};
     }
-    return std::pair{empty_span, sp}; // not find c in sp
+    return std::pair{empty_span_param, sp}; // not find c in sp
 }
 
 #include <iostream>

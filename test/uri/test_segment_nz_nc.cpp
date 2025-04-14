@@ -41,7 +41,7 @@ int main()
     }
 
     { // 空输入测试
-        static_assert(!mcs::abnf::uri::segment_nz_nc(empty_span).has_value());
+        static_assert(!mcs::abnf::uri::segment_nz_nc(empty_span_param).has_value());
     }
 
     { // 无效字符测试

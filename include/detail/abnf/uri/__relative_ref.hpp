@@ -9,11 +9,11 @@
 namespace mcs::abnf::uri
 {
     // relative-ref  = relative-part [ "?" query ] [ "#" fragment ]
-    constexpr bool relative_ref(default_span_t sp) noexcept
+    constexpr bool relative_ref(span_param_in sp) noexcept
     {
         const auto k_size = sp.size();
         // NOTE: no need check k_size > 0
-        static_assert(relative_part(empty_span));
+        static_assert(relative_part(empty_span_param));
 
         size_t idx_0 = k_size;
         size_t idx_1 = k_size;

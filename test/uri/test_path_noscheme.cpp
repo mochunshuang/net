@@ -34,7 +34,8 @@ int main()
     }
 
     { // 空输入测试
-        static_assert(!mcs::abnf::uri::path_noscheme(mcs::abnf::empty_span).has_value());
+        static_assert(
+            !mcs::abnf::uri::path_noscheme(mcs::abnf::empty_span_param).has_value());
     }
 
     { // 无效起始字符测试

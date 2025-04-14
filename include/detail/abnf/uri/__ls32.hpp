@@ -8,7 +8,7 @@
 namespace mcs::abnf::uri
 {
     // ls32          = ( h16 ":" h16 ) / IPv4address
-    constexpr bool ls32(default_span_t sp) noexcept
+    constexpr bool ls32(span_param_in sp) noexcept
     {
         const auto k_size = sp.size();
         if (k_size == 0)
@@ -16,7 +16,7 @@ namespace mcs::abnf::uri
 
         static_assert(not IPv4address(std::array<OCTET, 1>{':'}));
         static_assert(not h16(std::array<OCTET, 1>{':'}));
-        static_assert(not h16(empty_span)); // NOTE: ":"xxx is error case
+        static_assert(not h16(empty_span_param)); // NOTE: ":"xxx is error case
 
         if (const auto k_first = std::ranges::find(sp, ':');
             k_first != sp.end()) // find ':' in sp

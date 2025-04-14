@@ -6,7 +6,7 @@
 namespace mcs::abnf::uri
 {
     // port          = *DIGIT
-    constexpr bool port(default_span_t sp) noexcept
+    constexpr bool port(span_param_in sp) noexcept
     {
         if (sp.size() == 0)
             return true;

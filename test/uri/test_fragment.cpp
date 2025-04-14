@@ -12,7 +12,7 @@ using namespace mcs::abnf;
 int main()
 {
     { // 空片段测试
-        static_assert(mcs::abnf::uri::fragment(empty_span).has_value());
+        static_assert(mcs::abnf::uri::fragment(empty_span_param).has_value());
     }
 
     { // 纯pchar字符测试

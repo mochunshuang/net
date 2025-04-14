@@ -6,7 +6,7 @@
 namespace mcs::abnf::uri
 {
     // IPv4address   = dec-octet "." dec-octet "." dec-octet "." dec-octet
-    constexpr bool IPv4address(default_span_t sp) noexcept
+    constexpr bool IPv4address(span_param_in sp) noexcept
     {
         const auto k_size = sp.size();
         constexpr auto k_min_size = 7; // 1.1.1.1
@@ -36,7 +36,7 @@ namespace mcs::abnf::uri
                 break;
             }
         }
-        // NOTE: idx3 + 1 == sp.size() then the last dec-octet is empty_span
+        // NOTE: idx3 + 1 == sp.size() then the last dec-octet is empty_span_param
         if (idx1 < idx2 && idx2 < idx3 && idx3 + 1 < sp.size())
             return dec_octet(sp.first(idx1)) &&
                    dec_octet(sp.subspan(idx1 + 1, idx2 - idx1 - 1)) &&

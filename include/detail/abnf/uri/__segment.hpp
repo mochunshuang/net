@@ -5,7 +5,7 @@
 namespace mcs::abnf::uri
 {
     // segment       = *pchar
-    constexpr CheckResult segment(default_span_t sp) noexcept
+    constexpr CheckResult segment(span_param_in sp) noexcept
     {
         return pchars(sp);
     }

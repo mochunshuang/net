@@ -6,9 +6,10 @@
 namespace mcs::abnf::uri
 {
     // path-rootless = segment-nz *( "/" segment )
-    constexpr CheckResult path_rootless(default_span_t sp) noexcept
+    constexpr CheckResult path_rootless(span_param_in sp) noexcept
     {
-        static_assert(not segment_nz(empty_span)); // NOTE: so need sp.empty() is false
+        static_assert(
+            not segment_nz(empty_span_param)); // NOTE: so need sp.empty() is false
 
         const auto k_size = sp.size();
         if (k_size == 0)

@@ -26,8 +26,8 @@ namespace mcs::abnf
                       std::numeric_limits<OCTET>::max() == 0xFF,
                   "OCTET range error!");
 
-    using default_span_t = const std::span<const OCTET> &;
+    using span_param_in = const std::span<const OCTET> &;
     using octet_t = const OCTET &;
-    inline constexpr auto empty_span = std::span<const OCTET>{}; // NOLINT
+    inline constexpr auto empty_span_param = std::span<const OCTET>{}; // NOLINT
 
 }; // namespace mcs::abnf

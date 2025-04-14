@@ -5,7 +5,7 @@
 namespace mcs::abnf::uri
 {
     // userinfo      = *( unreserved / pct-encoded / sub-delims / ":" )
-    constexpr CheckResult userinfo(default_span_t sp) noexcept
+    constexpr CheckResult userinfo(span_param_in sp) noexcept
     {
         const auto k_size = sp.size();
         if (k_size == 0)

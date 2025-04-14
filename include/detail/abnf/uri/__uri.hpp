@@ -8,7 +8,7 @@
 namespace mcs::abnf::uri
 {
     // URI           = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
-    constexpr bool URI(default_span_t sp) noexcept
+    constexpr bool URI(span_param_in sp) noexcept
     {
         const auto k_size = sp.size();
         if (k_size < 2)

@@ -8,7 +8,7 @@
 namespace mcs::abnf::uri
 {
     // IPvFuture     = "v" 1*HEXDIG "." 1*( unreserved / sub-delims / ":" )
-    constexpr bool IPvFuture(default_span_t sp) noexcept
+    constexpr bool IPvFuture(span_param_in sp) noexcept
     {
         //
         const auto k_size = sp.size();

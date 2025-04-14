@@ -7,7 +7,7 @@
 namespace mcs::abnf::uri
 {
     // authority     = [ userinfo "@" ] host [ ":" port ]
-    constexpr bool authority(default_span_t sp) noexcept
+    constexpr bool authority(span_param_in sp) noexcept
     {
         const auto k_size = sp.size();
         if (k_size == 0)

@@ -5,7 +5,7 @@
 namespace mcs::abnf::uri
 {
     // h16           = 1*4HEXDIG
-    constexpr CheckResult h16(default_span_t sp) noexcept
+    constexpr CheckResult h16(span_param_in sp) noexcept
     {
         const auto k_size = sp.size();
         if (k_size == 0 || k_size > 4)

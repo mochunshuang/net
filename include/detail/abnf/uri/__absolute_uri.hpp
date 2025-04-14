@@ -7,7 +7,7 @@
 namespace mcs::abnf::uri
 {
     // absolute-URI  = scheme ":" hier-part [ "?" query ]
-    constexpr bool absolute_URI(default_span_t sp) noexcept
+    constexpr bool absolute_URI(span_param_in sp) noexcept
     {
         const auto k_size = sp.size();
         if (k_size < 2)

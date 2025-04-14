@@ -84,7 +84,7 @@ int main()
     static_assert(!relative_ref(fragment_before_query));
     static_assert(relative_ref(multiple_query)); // NOTE: relative-part empty is allow
     {
-        static_assert(relative_part(empty_span));
+        static_assert(relative_part(empty_span_param));
     }
     static_assert(!relative_ref(multiple_fragment));
     static_assert(!relative_ref(unencoded_space));

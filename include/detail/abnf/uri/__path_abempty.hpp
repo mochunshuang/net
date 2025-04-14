@@ -5,7 +5,7 @@
 namespace mcs::abnf::uri
 {
     // path-abempty  = *( "/" segment )
-    constexpr CheckResult path_abempty(default_span_t sp) noexcept
+    constexpr CheckResult path_abempty(span_param_in sp) noexcept
     {
         const auto k_size = sp.size();
         if (k_size == 0)
@@ -15,8 +15,8 @@ namespace mcs::abnf::uri
             return Fail(0);
 
         // handle: 1*( "/" segment )
-        static_assert(segment(empty_span)); // NOTE: so '/' is good case
-        size_t index = 1;                   // check_span start index
+        static_assert(segment(empty_span_param)); // NOTE: so '/' is good case
+        size_t index = 1;                         // check_span start index
         while (index < k_size)
         {
             // NOTE: check segment until find '/' or other error char

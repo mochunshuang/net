@@ -4,7 +4,7 @@
 
 namespace mcs::abnf::tool
 {
-    constexpr auto split_span_first(default_span_t sp, octet_t c) noexcept
+    constexpr auto split_span_first(span_param_in sp, octet_t c) noexcept
     {
         // NOTE: first(i): i < k_size is ok
         // NOTE: subspan(i+1): i+1 <=k_size is ok
@@ -14,9 +14,9 @@ namespace mcs::abnf::tool
             if (sp[i] == c)
                 return std::pair{sp.first(i), sp.subspan(i + 1)};
         }
-        return std::pair{sp, empty_span}; // not find c in sp
+        return std::pair{sp, empty_span_param}; // not find c in sp
     }
-    constexpr auto split_span_last(default_span_t sp, octet_t c) noexcept
+    constexpr auto split_span_last(span_param_in sp, octet_t c) noexcept
     {
         const auto k_size = sp.size();
         for (size_t i = k_size; i-- > 0;)
@@ -24,6 +24,6 @@ namespace mcs::abnf::tool
             if (sp[i] == c)
                 return std::pair{sp.first(i), sp.subspan(i + 1)};
         }
-        return std::pair{empty_span, sp}; // not find c in sp
+        return std::pair{empty_span_param, sp}; // not find c in sp
     }
 }; // namespace mcs::abnf::tool

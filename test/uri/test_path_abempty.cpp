@@ -12,7 +12,8 @@ int main()
     using namespace mcs::abnf::uri; // NOLINT
     {
         // 空路径测试
-        static_assert(mcs::abnf::uri::path_abempty(mcs::abnf::empty_span).has_value());
+        static_assert(
+            mcs::abnf::uri::path_abempty(mcs::abnf::empty_span_param).has_value());
     }
 
     { // 仅斜杠测试

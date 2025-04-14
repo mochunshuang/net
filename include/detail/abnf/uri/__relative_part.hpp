@@ -16,7 +16,7 @@ namespace mcs::abnf::uri
                  / path-noscheme
                  / path-empty
      */
-    constexpr bool relative_part(default_span_t sp) noexcept
+    constexpr bool relative_part(span_param_in sp) noexcept
     {
         const auto k_size = sp.size();
         if (k_size > 2 && sp[0] == '/' && sp[1] == '/')

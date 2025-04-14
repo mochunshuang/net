@@ -6,7 +6,7 @@ namespace mcs::abnf::uri
 {
 
     // pchars         = *pchar
-    constexpr CheckResult pchars(default_span_t sp) noexcept
+    constexpr CheckResult pchars(span_param_in sp) noexcept
     {
         const auto k_size = sp.size();
         size_t index = 0;

@@ -7,7 +7,7 @@
 namespace mcs::abnf::uri
 {
     //  reg-name      = *( unreserved / pct-encoded / sub-delims )
-    constexpr CheckResult reg_name(default_span_t sp) noexcept
+    constexpr CheckResult reg_name(span_param_in sp) noexcept
     {
         const auto k_size = sp.size();
         if (k_size == 0)

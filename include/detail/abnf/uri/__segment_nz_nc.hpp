@@ -6,7 +6,7 @@ namespace mcs::abnf::uri
 {
     // segment-nz-nc = 1*( unreserved / pct-encoded / sub-delims / "@" )
     // ;non-zero-length segment without any colon ":"
-    constexpr CheckResult segment_nz_nc(default_span_t sp) noexcept
+    constexpr CheckResult segment_nz_nc(span_param_in sp) noexcept
     {
         const auto k_size = sp.size();
         if (k_size == 0)

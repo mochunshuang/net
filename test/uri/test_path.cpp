@@ -28,7 +28,7 @@ int main()
     // 1. path-abempty 测试 (以/开头或为空)
     { // 空路径
 
-        static_assert(path(mcs::abnf::empty_span));
+        static_assert(path(mcs::abnf::empty_span_param));
     }
 
     { // 仅斜杠
@@ -97,7 +97,7 @@ int main()
     // 5. path-empty 测试
     { // 空路径
 
-        static_assert(path(mcs::abnf::empty_span));
+        static_assert(path(mcs::abnf::empty_span_param));
     }
 
     // 无效路径测试

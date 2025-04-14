@@ -97,7 +97,7 @@ int main()
     }
 
     // 空值边界
-    static_assert(relative_part(empty_span)); // 允许空
+    static_assert(relative_part(empty_span_param)); // 允许空
 
     static_assert(relative_part(mixed_type1));
 

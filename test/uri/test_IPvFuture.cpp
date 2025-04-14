@@ -23,12 +23,12 @@ using OCTET = std::uint8_t;
 
 using OCTET = std::uint8_t;
 
-constexpr auto test_span(mcs::abnf::default_span_t s)
+constexpr auto test_span(mcs::abnf::span_param_in s)
 {
     return s.size() > 0;
 }
 
-constexpr auto test_span_size(mcs::abnf::default_span_t s)
+constexpr auto test_span_size(mcs::abnf::span_param_in s)
 {
     return s.size();
 }

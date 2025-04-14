@@ -12,7 +12,7 @@ namespace mcs::abnf::uri
      *           / "2" %x30-34 DIGIT     ; 200-249
      *           / "25" %x30-35          ; 250-255
      */
-    constexpr CheckResult dec_octet(default_span_t sp) noexcept
+    constexpr CheckResult dec_octet(span_param_in sp) noexcept
     {
         const auto k_size = sp.size();
 

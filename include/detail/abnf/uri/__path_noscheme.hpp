@@ -6,9 +6,10 @@
 namespace mcs::abnf::uri
 {
     // path-noscheme = segment-nz-nc *( "/" segment )
-    constexpr CheckResult path_noscheme(default_span_t sp) noexcept
+    constexpr CheckResult path_noscheme(span_param_in sp) noexcept
     {
-        static_assert(not segment_nz_nc(empty_span)); // NOTE: so need sp.empty() is false
+        static_assert(
+            not segment_nz_nc(empty_span_param)); // NOTE: so need sp.empty() is false
 
         const auto k_size = sp.size();
         if (k_size == 0)
