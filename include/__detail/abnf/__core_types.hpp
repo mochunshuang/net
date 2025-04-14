@@ -1,21 +1,20 @@
 #pragma once
 
-#include "./__detail/__error.hpp"
-#include "./__detail/__result.hpp"
-#include <expected>
 #include <limits>
 #include <span>
+#include "./__detail/__result_builder.hpp"
+#include "./__detail/__result.hpp"
+#include "__detail/__error.hpp"
+#include "__detail/__span.hpp"
 
 namespace mcs::abnf
 {
-    using Success = __detail::result;
-    using Info = __detail::error;
-    using CheckResult = std::expected<Success, Info>;
-
-    constexpr auto Fail(const size_t &idx) noexcept
-    {
-        return std::unexpected<Info>(idx);
-    }
+    using __detail::result_builder;
+    using __detail::result;
+    using __detail::error;
+    using __detail::span;
+    using __detail::invalid_span;
+    using __detail::empty_validspan;
 
     /**
      * @brief OCTET          =  %x00-FF

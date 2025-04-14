@@ -6,14 +6,15 @@
 namespace mcs::abnf::uri
 {
     // path-rootless = segment-nz *( "/" segment )
-    constexpr CheckResult path_rootless(span_param_in sp) noexcept
+    constexpr auto path_rootless(span_param_in sp) noexcept -> abnf_result auto
     {
         static_assert(
             not segment_nz(empty_span_param)); // NOTE: so need sp.empty() is false
 
+        using builder = result_builder<result<1>>;
         const auto k_size = sp.size();
         if (k_size == 0)
-            return Fail(0);
+            return builder::fail(0);
 
         // NOTE: '/' is not segment_nz then can split
         static_assert(not segment_nz(std::array<OCTET, 1>{'/'}));
@@ -32,7 +33,7 @@ namespace mcs::abnf::uri
         // handle: 1*( "/" segment )
         // NOTE: path-abempty  = *( "/" segment )
         if (const auto k_ret = path_abempty(sp.subspan(d)); not k_ret)
-            return Fail(d + k_ret.error().index());
-        return Success{k_size};
+            return builder::fail(d + k_ret.error().index());
+        return builder::success(span{.start = 0, .count = k_size});
     }
 }; // namespace mcs::abnf::uri

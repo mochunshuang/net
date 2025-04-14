@@ -30,21 +30,21 @@ int main()
     static_assert(
         [] {
             constexpr OCTET lwsp1[] = {' ', '\t', CR, LF, ' '};
-            return LWSP(lwsp1).has_value();
+            return LWSP(lwsp1);
         }(),
         "LWSP test 1 failed");
 
     static_assert(
         [] {
             constexpr OCTET lwsp2[] = {' ', 'a'};
-            return !LWSP(lwsp2).has_value();
+            return !LWSP(lwsp2);
         }(),
         "LWSP test 2 failed");
 
     static_assert( // 不能单独  CR LF
         not[] {
             constexpr OCTET lwsp3[] = {CR, LF};
-            return LWSP(lwsp3).has_value();
+            return LWSP(lwsp3);
         }(),
         "LWSP test 3 failed");
 
@@ -52,14 +52,14 @@ int main()
     static_assert(
         [] {
             constexpr OCTET crlf1[] = {CR, LF};
-            return CRLF(crlf1).has_value();
+            return CRLF(crlf1);
         }(),
         "CRLF test 1 failed");
 
     static_assert(
         [] {
             constexpr OCTET crlf2[] = {CR, 'a'};
-            return !CRLF(crlf2).has_value();
+            return !CRLF(crlf2);
         }(),
         "CRLF test 2 failed");
 
@@ -101,9 +101,9 @@ int main()
             static constexpr OCTET validCRLF[] = {CR, LF};
             static constexpr OCTET invalidCRLF1[] = {CR, 'A'};
             static constexpr OCTET invalidCRLF2[] = {'A', LF};
-            static_assert(CRLF(validCRLF).has_value());
-            static_assert(!CRLF(invalidCRLF1).has_value());
-            static_assert(!CRLF(invalidCRLF2).has_value());
+            static_assert(CRLF(validCRLF));
+            static_assert(!CRLF(invalidCRLF1));
+            static_assert(!CRLF(invalidCRLF2));
         }
 
         { // WSP测试
@@ -115,9 +115,9 @@ int main()
             static constexpr OCTET validLWSP1[] = {SP, HTAB};
             static constexpr OCTET validLWSP2[] = {CR, LF, SP};
             static constexpr OCTET invalidLWSP[] = {'A', SP};
-            static_assert(LWSP(validLWSP1).has_value());
-            static_assert(LWSP(validLWSP2).has_value());
-            static_assert(!LWSP(invalidLWSP).has_value());
+            static_assert(LWSP(validLWSP1));
+            static_assert(LWSP(validLWSP2));
+            static_assert(!LWSP(invalidLWSP));
         }
 
         { // VCHAR测试

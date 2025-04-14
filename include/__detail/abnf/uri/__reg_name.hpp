@@ -7,11 +7,12 @@
 namespace mcs::abnf::uri
 {
     //  reg-name      = *( unreserved / pct-encoded / sub-delims )
-    constexpr CheckResult reg_name(span_param_in sp) noexcept
+    constexpr auto reg_name(span_param_in sp) noexcept -> abnf_result auto
     {
+        using builder = result_builder<result<1>>;
         const auto k_size = sp.size();
         if (k_size == 0)
-            return Success{0};
+            return builder::success(span{.start = 0, .count = k_size});
 
         size_t index = 0;
         while (index < k_size)
@@ -43,8 +44,8 @@ namespace mcs::abnf::uri
                     continue;
                 }
             }
-            return Fail(index);
+            return builder::fail(index);
         }
-        return Success{k_size};
+        return builder::success(span{.start = 0, .count = k_size});
     }
 }; // namespace mcs::abnf::uri

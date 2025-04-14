@@ -5,14 +5,15 @@
 namespace mcs::abnf::uri
 {
     // path-abempty  = *( "/" segment )
-    constexpr CheckResult path_abempty(span_param_in sp) noexcept
+    constexpr auto path_abempty(span_param_in sp) noexcept -> abnf_result auto
     {
+        using builder = result_builder<result<1>>;
         const auto k_size = sp.size();
         if (k_size == 0)
-            return Success{0};
+            return builder::success(span{});
 
         if (k_size > 0 && sp[0] != '/')
-            return Fail(0);
+            return builder::fail(0);
 
         // handle: 1*( "/" segment )
         static_assert(segment(empty_span_param)); // NOTE: so '/' is good case
@@ -20,10 +21,11 @@ namespace mcs::abnf::uri
         while (index < k_size)
         {
             // NOTE: check segment until find '/' or other error char
-            const auto k_ret = segment(sp.subspan(index));
+            const auto k_span = sp.subspan(index);
+            const auto k_ret = segment(k_span);
             if (k_ret)
             {
-                index += k_ret->count;
+                index += k_span.size();
                 continue;
             }
 
@@ -37,8 +39,8 @@ namespace mcs::abnf::uri
                 ++index;
                 continue;
             }
-            return Fail(index);
+            return builder::fail(index);
         }
-        return Success{k_size};
+        return builder::success(span{.start = 0, .count = k_size});
     }
 }; // namespace mcs::abnf::uri

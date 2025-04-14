@@ -29,11 +29,6 @@ namespace mcs::abnf::__detail
         {
         }
 
-        constexpr reference operator[](const std::size_t &index) noexcept
-        {
-            return spans_[index];
-        }
-
         [[nodiscard]] consteval std::size_t size()
         {
             return N;

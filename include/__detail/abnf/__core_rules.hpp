@@ -1,6 +1,7 @@
 #pragma once
 
 #include "./__core_types.hpp"
+#include "./__core_concepts.hpp"
 
 /**
  * @brief [ABNF Core Rules]
@@ -10,27 +11,27 @@
 namespace mcs::abnf
 {
     // ALPHA          =  %x41-5A / %x61-7A   ; A-Z / a-z
-    constexpr bool ALPHA(octet_t c) noexcept
+    constexpr abnf_result auto ALPHA(octet_t c) noexcept
     {
         return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
     }
     // BIT            =  "0" / "1"
-    constexpr bool BIT(octet_t c) noexcept
+    constexpr abnf_result auto BIT(octet_t c) noexcept
     {
         return c == '1' || c == '0';
     }
     // CHAR           =  %x01-7F
-    constexpr bool CHAR(octet_t c) noexcept
+    constexpr abnf_result auto CHAR(octet_t c) noexcept
     {
         return c >= 0X01 && c <= 0X7F; // NOLINT
     }
     // CTL            =  %x00-1F / %x7F
-    constexpr bool CTL(octet_t c) noexcept
+    constexpr abnf_result auto CTL(octet_t c) noexcept
     {
         return c <= 0X1F || c == 0x7F; // NOLINT
     }
     // DIGIT          =  %x30-39
-    constexpr bool DIGIT(octet_t c) noexcept
+    constexpr abnf_result auto DIGIT(octet_t c) noexcept
     {
         static_assert('0' == 0x30);    // NOLINT
         return (c >= '0' && c <= '9'); // NOLINT
@@ -41,7 +42,7 @@ namespace mcs::abnf
 
     // NOTE: 不区分大小写除非特别说明
     //  HEXDIG         =  DIGIT / "A" / "B" / "C" / "D" / "E" / "F"
-    constexpr bool HEXDIG(octet_t c) noexcept
+    constexpr abnf_result auto HEXDIG(octet_t c) noexcept
     {
         return DIGIT(c) || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
     }
@@ -56,24 +57,22 @@ namespace mcs::abnf
     inline constexpr OCTET CR = 0x0D; // NOLINT
 
     // CRLF           =  CR LF
-    constexpr CheckResult CRLF(span_param_in pair) noexcept
+    constexpr abnf_result auto CRLF(octet_t a, octet_t b) noexcept
     {
-        if (pair.size() != 2)
-            return std::unexpected(Info(0));
-        if (pair[0] == CR)
-        {
-            if (pair[1] == LF)
-                return Success{2};
-            return std::unexpected(Info(1));
-        }
-        return std::unexpected(Info(0));
+        return a == CR && b == LF;
+    }
+    constexpr abnf_result auto CRLF(span_param_in sp) noexcept
+    {
+        if (sp.size() != 2)
+            return false;
+        return CRLF(sp[0], sp[1]);
     }
 
     // SP             =  %x20
     inline constexpr OCTET SP = 0x20; // NOLINT
 
     // WSP            =  SP / HTAB; white space
-    constexpr bool WSP(octet_t c) noexcept
+    constexpr abnf_result auto WSP(octet_t c) noexcept
     {
         return c == SP || c == HTAB;
     }
@@ -85,7 +84,7 @@ namespace mcs::abnf
      *
      */
     // LWSP = *(WSP / CRLF WSP)  ;
-    constexpr CheckResult LWSP(span_param_in range) noexcept
+    constexpr abnf_result auto LWSP(span_param_in range) noexcept
     {
         std::size_t i = 0;
         const std::size_t k_size = range.size();
@@ -97,21 +96,21 @@ namespace mcs::abnf
             {
                 if (range[i] == CR && i + 2 < k_size)
                 {
-                    if (range[i + 1] != LF)
-                        return std::unexpected{Info{i + 1}};
-                    if (not WSP(range[i + 2]))
-                        return std::unexpected{Info{i + 2}};
-                    i += 3;
-                    continue;
+                    if (range[i + 1] == LF && WSP(range[i + 2]))
+                    {
+                        i += 3;
+                        continue;
+                    }
+                    return false;
                 }
-                return std::unexpected{Info{i}};
+                return false;
             }
         }
-        return Success{k_size};
+        return true;
     }
 
     //  VCHAR          =  %x21-7E; visible (printing) characters
-    constexpr bool VCHAR(octet_t c) noexcept
+    constexpr abnf_result auto VCHAR(octet_t c) noexcept
     {
         static_assert('!' == 0x21 && '~' == 0x7E); // NOLINT
         return c >= '!' && c <= '~';               // NOLINT
