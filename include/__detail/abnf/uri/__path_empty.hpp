@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../__core_rules.hpp"
+#include "../__core_types.hpp"
 
 namespace mcs::abnf::uri
 {

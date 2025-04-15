@@ -6,7 +6,7 @@
 #include "./__path_rootless.hpp"
 #include "./__path_empty.hpp"
 
-namespace mcs::abnf::uri
+namespace mcs::rfc::uri
 {
     /**
      * @brief
@@ -16,5 +16,24 @@ namespace mcs::abnf::uri
      *           / path-rootless   ; begins with a segment
      *           / path-empty      ; zero characters
      */
+    struct path
+    {
+        enum type : id_type
+        {
+            PATH_ABEMPTY,
+            PATH_ABSOLUTE,
+            PATH_NOSCHEME,
+            PATH_ROOTLESS,
+            PATH_EMPTY
+        };
+        // 定义一个构造函数模板即可。变参解决
+    };
 
-}; // namespace mcs::abnf::uri
+    constexpr ReturnType<path> make_path(span_param_in sp) noexcept
+    {
+        if (parse::path(sp))
+            return path{};
+        return err_index(0);
+    }
+
+}; // namespace mcs::rfc::uri

@@ -1,23 +1,20 @@
 #pragma once
 
-namespace mcs::abnf::uri
+#include "../__abnf.hpp"
+#include "../__core_types.hpp"
+
+namespace mcs::rfc::uri
 {
+    struct IPv6address
+    {
+        IPv6address(id_type id, span_param_in /*sp*/) {}
+    };
+    constexpr ReturnType<IPv6address> make_IPv6address(span_param_in sp) noexcept
+    {
+        // TODO(mcs): 多种高级语义化的过程时，给个id是自然的
+        if (parse::IPvFuture(sp))
+            return IPv6address{0, sp};
+        return err_index(0);
+    }
 
-    /**
-    IPv6address  =                            6( h16 ":" ) ls32
-                 /                       "::" 5( h16 ":" ) ls32
-                 / [               h16 ] "::" 4( h16 ":" ) ls32
-                 / [ *1( h16 ":" ) h16 ] "::" 3( h16 ":" ) ls32
-                 / [ *2( h16 ":" ) h16 ] "::" 2( h16 ":" ) ls32
-                 / [ *3( h16 ":" ) h16 ] "::"    h16 ":"   ls32
-                 / [ *4( h16 ":" ) h16 ] "::"              ls32
-                 / [ *5( h16 ":" ) h16 ] "::"              h16
-                 / [ *6( h16 ":" ) h16 ] "::"
-
-    NOTE: "::" can only appearing once:
-            ::1
-            2001:db8::8a2e:370:7334
-            fe80::
-     */
-
-}; // namespace mcs::abnf::uri
+}; // namespace mcs::rfc::uri

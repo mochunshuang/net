@@ -11,7 +11,7 @@ namespace mcs::rfc::uri
     // URI           = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
     class URI
     {
-        scheme s_;
+        path_absolute s_;
         hier_part hP_;
         std::optional<query> q_;
         std::optional<fragment> f_;
@@ -34,5 +34,12 @@ namespace mcs::rfc::uri
             std::forward_like<decltype(self)>(self.f_);
         }
     };
+
+    constexpr ReturnType<URI> make_reg_name(span_param_in sp) noexcept
+    {
+        if (parse::URI(sp))
+            return URI{};
+        return err_index(0);
+    }
 
 }; // namespace mcs::rfc::uri
