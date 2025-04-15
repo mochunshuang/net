@@ -1,7 +1,10 @@
 
 
 #include "../test_head.hpp"
+#include <array>
 #include <cassert>
+#include <iostream>
+#include <string_view>
 
 // NOLINTBEGIN
 
@@ -42,12 +45,89 @@ int main()
     constexpr auto delims_in_components =
         "s://!$&'()*+,;=@host/path?/?#/?"_span; // 各组件允许的特殊字符
 
-    EXPECT(URI(full_uri));
+    {
+        auto v = URI(full_uri);
+        HAS_VALUE(v);
+        {
+            // "https://user:pass@[v1.a]:80/path?q=1#frag"_span;
+            // URI           = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
+            auto [s, h, q, f] = v.value();
+            auto spn0 = full_uri.subspan(s.start, s.count);
+            EXPECT(std::string(spn0.begin(), spn0.end()) == "https");
+            {
+                // NOTE: 工具测试
+                REQUIRE_TRUE(equal_value(make_stdspan(full_uri, s), "https"),
+                             "must equal https");
+            }
+
+            auto spn1 = full_uri.subspan(h.start, h.count);
+            EXPECT(std::string(spn1.begin(), spn1.end()) == "//user:pass@[v1.a]:80/path");
+
+            auto spn2 = full_uri.subspan(q.start, q.count);
+            EXPECT(std::string(spn2.begin(), spn2.end()) == "q=1");
+
+            auto spn3 = full_uri.subspan(f.start, f.count);
+            EXPECT(std::string(spn3.begin(), spn3.end()) == "frag");
+
+            auto str = std::string_view("https");
+            assert(str.size() == spn0.size());
+            for (std::size_t i = 0; i < spn0.size(); ++i)
+            {
+                assert(static_cast<OCTET>(str[i]) == spn0[i]);
+            }
+            {
+                // NOTE:  string_view 天生是字符序列 和 span 可以匹配
+                constexpr const char *c = "%3D%26";
+                constexpr auto str = std::string_view(c);
+                constexpr std::size_t size = str.size();
+                std::cout << "str: " << str << '\n'; // str: %3D%26
+                constexpr auto arr =
+                    std::array<OCTET, size>{'%', '3', 'D', '%', '2', '6'};
+                const std::span<const OCTET> span = arr; // NOTE: 不要引用或指向 右值
+                for (std::size_t i = 0; i < size; ++i)
+                {
+                    EXPECT(static_cast<OCTET>(str[i]) == span[i]);
+                }
+
+                // 统一处理
+                REQUIRE_TRUE(equal_value(span, str), "must equal_value span and str");
+                REQUIRE_TRUE(equal_span(span, span), "must equal two span");
+            }
+        }
+    }
     static_assert(not URI(encoded_uri));
     static_assert(URI(authority_uri));
     static_assert(URI(absolute_uri));
     static_assert(URI(rootless_uri));
     static_assert(URI(empty_hier_uri));
+    {
+        // constexpr auto empty_hier_uri = "m:#fragment"_span;
+        auto v = URI(empty_hier_uri);
+        auto [s, h, q, f] = v.value();
+        REQUIRE_TRUE(equal_value(make_stdspan(empty_hier_uri, s), "m"),
+                     "must equal_value m");
+
+        REQUIRE_TRUE(h != invalid_span, "must equal_value");
+        REQUIRE_TRUE(tool::is_valid_span(h));
+        // NOTE: empty_span is valid_span
+        REQUIRE_TRUE(tool::is_empty_span(h));
+
+        // NOTE: is_valid_span mean not set value
+        REQUIRE_FALSE(tool::is_valid_span(q));
+
+        // for span{}
+        REQUIRE_FALSE(tool::is_valid_span(span{}));
+        REQUIRE_TRUE(tool::is_empty_span(span{}));
+
+        REQUIRE_TRUE(tool::is_valid_span(f));
+        {
+            auto fra = tool::make_stdspan(empty_hier_uri, f);
+            auto str = std::string_view("fragment");
+            REQUIRE_TRUE(fra.size() == str.size(), "fra.size() == str.size()");
+        }
+        REQUIRE_TRUE(tool::equal_value(tool::make_stdspan(empty_hier_uri, f), "fragment"),
+                     "f is fragment");
+    }
     static_assert(URI(max_port_uri));
     static_assert(URI(minimal_uri));
     static_assert(URI(empty_query_frag));

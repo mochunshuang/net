@@ -1,12 +1,16 @@
 #pragma once
 
-#include <cstdint>
-#include <limits>
-#include <span>
+#include "./__detail/__types.hpp"
 #include "./__detail/__result_builder.hpp"
 #include "./__detail/__result.hpp"
-#include "__detail/__error.hpp"
-#include "__detail/__span.hpp"
+#include "./__detail/__error.hpp"
+#include "./__detail/__span.hpp"
+
+#include "./tool/__make_stdspan.hpp"
+#include "./tool/__equal_value.hpp"
+#include "./tool/__equal_span.hpp"
+#include "./tool/__is_valid_span.hpp"
+#include "./tool/__is_empty_span.hpp"
 
 namespace mcs::abnf
 {
@@ -15,19 +19,22 @@ namespace mcs::abnf
     using __detail::error;
     using __detail::span;
     using __detail::invalid_span;
-    using __detail::empty_validspan;
 
     /**
      * @brief OCTET          =  %x00-FF
      *                          ; 8 bits of data
      */
-    using OCTET = std::uint8_t;
-    static_assert(std::numeric_limits<OCTET>::min() == 0 && // NOLINTNEXTLINE
-                      std::numeric_limits<OCTET>::max() == 0xFF,
-                  "OCTET range error!");
+    using __detail::OCTET;
 
-    using span_param_in = const std::span<const OCTET> &;
-    using octet_t = const OCTET &;
-    inline constexpr auto empty_span_param = std::span<const OCTET>{}; // NOLINT
+    using __detail::span_param_in;
+    using __detail::octet_param_in;
+    using __detail::empty_span_param;
+
+    // help
+    using tool::make_stdspan;
+    using tool::equal_value;
+    using tool::equal_span;
+    using tool::is_valid_span;
+    using tool::is_empty_span;
 
 }; // namespace mcs::abnf

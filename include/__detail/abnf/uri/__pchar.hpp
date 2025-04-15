@@ -7,11 +7,11 @@
 namespace mcs::abnf::uri
 {
     // pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
-    constexpr bool pchar(octet_t v) noexcept
+    constexpr bool pchar(octet_param_in v) noexcept
     {
         return unreserved(v) || sub_delims(v) || (v == ':' || v == '@');
     }
-    constexpr bool pchar(octet_t a, octet_t b, octet_t c) noexcept
+    constexpr bool pchar(octet_param_in a, octet_param_in b, octet_param_in c) noexcept
     {
         // NOTE: pchar Can be overloaded Because the following assertion holds true
         static_assert(not unreserved('%') && not sub_delims('%'));

@@ -6,7 +6,7 @@
 namespace mcs::abnf::uri
 {
     // sub-delims    = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
-    constexpr bool sub_delims(octet_t c) noexcept
+    constexpr bool sub_delims(octet_param_in c) noexcept
     {
         static_assert(std::numeric_limits<decltype(auto(c))>::max() == 255); // NOLINT
         static_assert(std::numeric_limits<decltype(auto(c))>::min() == 0);   // NOLINT

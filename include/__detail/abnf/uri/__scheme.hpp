@@ -16,7 +16,7 @@ namespace mcs::abnf::uri
             return false;
 
         const auto k_remaining = tool::safe_subspan(range, 1);
-        return std::ranges::all_of(k_remaining, [](octet_t v) noexcept -> bool {
+        return std::ranges::all_of(k_remaining, [](octet_param_in v) noexcept -> bool {
             return ALPHA(v) || DIGIT(v) || v == '+' || v == '-' || v == '.';
         });
     }

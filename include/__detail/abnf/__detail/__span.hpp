@@ -12,7 +12,7 @@ namespace mcs::abnf::__detail
         std::size_t count{};                                                     // NOLINT
         bool operator==(const span &) const = default;
     };
-    constexpr inline span empty_validspan{0, 0}; // NOLINT
-    constexpr inline span invalid_span{};        // NOLINT
+    // NOTE: invalid is an initial statement
+    constexpr inline span invalid_span{}; // NOLINT
 
 }; // namespace mcs::abnf::__detail

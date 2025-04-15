@@ -6,7 +6,7 @@
 namespace mcs::abnf::uri
 {
     // reserved      = gen-delims / sub-delims
-    constexpr bool reserved(octet_t c) noexcept
+    constexpr bool reserved(octet_param_in c) noexcept
     {
         return gen_delims(c) || sub_delims(c);
     }

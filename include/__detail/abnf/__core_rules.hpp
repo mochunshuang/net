@@ -11,27 +11,27 @@
 namespace mcs::abnf
 {
     // ALPHA          =  %x41-5A / %x61-7A   ; A-Z / a-z
-    constexpr abnf_result auto ALPHA(octet_t c) noexcept
+    constexpr abnf_result auto ALPHA(octet_param_in c) noexcept
     {
         return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
     }
     // BIT            =  "0" / "1"
-    constexpr abnf_result auto BIT(octet_t c) noexcept
+    constexpr abnf_result auto BIT(octet_param_in c) noexcept
     {
         return c == '1' || c == '0';
     }
     // CHAR           =  %x01-7F
-    constexpr abnf_result auto CHAR(octet_t c) noexcept
+    constexpr abnf_result auto CHAR(octet_param_in c) noexcept
     {
         return c >= 0X01 && c <= 0X7F; // NOLINT
     }
     // CTL            =  %x00-1F / %x7F
-    constexpr abnf_result auto CTL(octet_t c) noexcept
+    constexpr abnf_result auto CTL(octet_param_in c) noexcept
     {
         return c <= 0X1F || c == 0x7F; // NOLINT
     }
     // DIGIT          =  %x30-39
-    constexpr abnf_result auto DIGIT(octet_t c) noexcept
+    constexpr abnf_result auto DIGIT(octet_param_in c) noexcept
     {
         static_assert('0' == 0x30);    // NOLINT
         return (c >= '0' && c <= '9'); // NOLINT
@@ -42,7 +42,7 @@ namespace mcs::abnf
 
     // NOTE: 不区分大小写除非特别说明
     //  HEXDIG         =  DIGIT / "A" / "B" / "C" / "D" / "E" / "F"
-    constexpr abnf_result auto HEXDIG(octet_t c) noexcept
+    constexpr abnf_result auto HEXDIG(octet_param_in c) noexcept
     {
         return DIGIT(c) || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
     }
@@ -57,7 +57,7 @@ namespace mcs::abnf
     inline constexpr OCTET CR = 0x0D; // NOLINT
 
     // CRLF           =  CR LF
-    constexpr abnf_result auto CRLF(octet_t a, octet_t b) noexcept
+    constexpr abnf_result auto CRLF(octet_param_in a, octet_param_in b) noexcept
     {
         return a == CR && b == LF;
     }
@@ -72,7 +72,7 @@ namespace mcs::abnf
     inline constexpr OCTET SP = 0x20; // NOLINT
 
     // WSP            =  SP / HTAB; white space
-    constexpr abnf_result auto WSP(octet_t c) noexcept
+    constexpr abnf_result auto WSP(octet_param_in c) noexcept
     {
         return c == SP || c == HTAB;
     }
@@ -110,7 +110,7 @@ namespace mcs::abnf
     }
 
     //  VCHAR          =  %x21-7E; visible (printing) characters
-    constexpr abnf_result auto VCHAR(octet_t c) noexcept
+    constexpr abnf_result auto VCHAR(octet_param_in c) noexcept
     {
         static_assert('!' == 0x21 && '~' == 0x7E); // NOLINT
         return c >= '!' && c <= '~';               // NOLINT

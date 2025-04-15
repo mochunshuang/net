@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <expected>
 #include <source_location>
 #include <span>
 #include <string_view>
@@ -131,6 +132,28 @@ namespace mcstest
         EXPECT(v);          \
     else                    \
         UNEXPECT(message)
+
+template <typename V, typename E>
+constexpr auto HAS_VALUE(const std::expected<V, E> &e, const char *msg = "")
+{
+    if (e.has_value())
+        EXPECT(true);
+    else
+        UNEXPECT(msg);
+}
+
+constexpr auto REQUIRE_TRUE(const bool &b, const char *msg = "")
+{
+    if (b)
+        EXPECT(true);
+    else
+        UNEXPECT(msg);
+}
+
+constexpr auto REQUIRE_FALSE(const bool &b, const char *msg = "")
+{
+    REQUIRE_TRUE(not b, msg);
+}
 
 using OCTET = std::uint8_t;
 template <size_t N>
