@@ -19,6 +19,7 @@ namespace mcs::abnf
     using __detail::error;
     using __detail::span;
     using __detail::invalid_span;
+    using simple_result = result_builder<void>;
 
     /**
      * @brief OCTET          =  %x00-FF
