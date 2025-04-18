@@ -13,7 +13,7 @@ namespace mcs::abnf::http
         if (k_size < 2)
             return simple_result::fail(0);
 
-        if (sp[0] != DQUOTE && sp[k_size - 1] != DQUOTE)
+        if (sp[0] != DQUOTE || sp[k_size - 1] != DQUOTE)
             return simple_result::fail(0);
 
         for (std::size_t i{1}, end = k_size - 1; i < end;)

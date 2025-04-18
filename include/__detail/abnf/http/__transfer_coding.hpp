@@ -2,9 +2,9 @@
 
 #include "./__token.hpp"
 #include "./__ows.hpp"
-#include "./__transfer_parameter.hpp"
-#include "__quoted_pair.hpp"
-#include "__tchar.hpp"
+#include "./__quoted_pair.hpp"
+#include "./__tchar.hpp"
+#include "./__qdtext.hpp"
 #include <cassert>
 
 namespace mcs::abnf::http
@@ -13,6 +13,7 @@ namespace mcs::abnf::http
     // quoted-pair = "\" ( HTAB / SP / VCHAR / obs-text )
     // quoted-string = DQUOTE *( qdtext / quoted-pair ) DQUOTE
     // token = 1*tchar
+    // OWS = *( SP / HTAB )
     // BWS = OWS
     // token = 1*tchar
     // transfer-parameter = token BWS "=" BWS ( token / quoted-string )
@@ -20,9 +21,13 @@ namespace mcs::abnf::http
     // transfer-coding = token *( OWS ";" OWS transfer-parameter )
     constexpr abnf_result auto transfer_coding(span_param_in sp) noexcept
     {
-        const auto k_ret = token(sp);
-        if (k_ret)
+        const auto k_size = sp.size();
+        if (k_size == 0)
             return simple_result::fail(0);
+
+        const auto k_ret = token(sp);
+        if (k_ret) // only token
+            return simple_result::success();
 
         // NOTE: can`t simple split by ';' or by DQUOTE
         static_assert(qdtext(';') && DQUOTE == '"');
@@ -30,22 +35,22 @@ namespace mcs::abnf::http
         static_assert(VCHAR(DQUOTE) && not tchar(DQUOTE));
 
         // check *( OWS ";" OWS transfer-parameter )
-        const auto k_size = sp.size();
         std::size_t index = k_ret.error().index();
+        static_assert(not tchar(';'));
         while (index < k_size)
         {
             auto ret = OWS(sp.subspan(index));
-            if (ret) // NOTE: 1、OWS part
+            if (ret) // NOTE: 1、OWS part. must error
                 break;
             index += ret.error().index();
 
             if (sp[index] != ';') // NOTE: 2、";" part
                 return simple_result::fail(index);
 
-            ret = OWS(sp.subspan(index)); // NOTE: 3、OWS part
+            ret = OWS(sp.subspan(index + 1)); // NOTE: 3、OWS part
             if (ret)
                 break;
-            index += ret.error().index();
+            index = index + 1 + ret.error().index();
 
             // NOTE: token is no sp or HTAB
             //  OWS = *( SP / HTAB )

@@ -6,9 +6,9 @@ namespace mcs::abnf::http
 {
     // NOTE: %x57 =='w',%x2F =='/'
     // weak = %x57.2F ; W/
-    constexpr abnf_result auto weak(span_param_in sp) noexcept
+    constexpr abnf_result auto weak(octet_param_in a, octet_param_in b) noexcept
     {
         static_assert(0x57 == 'W' && 0x2F == '/'); // NOLINT
-        return sp.size() == 2 && sp[0] == 'W' && sp[1] == '/';
+        return a == 'W' && b == '/';
     }
 }; // namespace mcs::abnf::http

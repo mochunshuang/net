@@ -6,6 +6,14 @@
 
 namespace mcs::abnf::http
 {
+    /**
+    qdtext = HTAB / SP / "!" / %x23-5B ; '#'-'['
+           / %x5D-7E ; ']'-'~'
+           / obs-text
+    */
+    // obs-text = %x80-FF
+    // quoted-pair = "\" ( HTAB / SP / VCHAR / obs-text )
+    // quoted-string = DQUOTE *( qdtext / quoted-pair ) DQUOTE
     // token = 1*tchar
     // transfer-parameter = token BWS "=" BWS ( token / quoted-string )
     constexpr abnf_result auto transfer_parameter(span_param_in sp) noexcept
