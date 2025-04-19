@@ -13,3 +13,6 @@
 #include "./http/__token.hpp"
 #include "./http/__token68.hpp"
 #include "./http/__time_of_day.hpp"
+#include "./http/__t_codings.hpp"
+#include "./http/__day_name.hpp"
+#include "./http/__rfc850_date.hpp"
