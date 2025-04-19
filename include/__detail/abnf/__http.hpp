@@ -16,3 +16,4 @@
 #include "./http/__t_codings.hpp"
 #include "./http/__day_name.hpp"
 #include "./http/__rfc850_date.hpp"
+#include "./http/__received_protocol.hpp"

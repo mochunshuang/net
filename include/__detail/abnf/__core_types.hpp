@@ -11,6 +11,7 @@
 #include "./tool/__equal_span.hpp"
 #include "./tool/__is_valid_span.hpp"
 #include "./tool/__is_empty_span.hpp"
+#include "./tool/__find_index.hpp"
 
 namespace mcs::abnf
 {
