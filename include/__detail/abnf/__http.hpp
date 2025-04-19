@@ -17,3 +17,6 @@
 #include "./http/__day_name.hpp"
 #include "./http/__rfc850_date.hpp"
 #include "./http/__received_protocol.hpp"
+#include "./http/__received_by.hpp"
+#include "./http/__range_set.hpp"
+#include "./http/__ranges_specifier.hpp"

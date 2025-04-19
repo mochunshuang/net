@@ -12,6 +12,7 @@
 #include "./tool/__is_valid_span.hpp"
 #include "./tool/__is_empty_span.hpp"
 #include "./tool/__find_index.hpp"
+#include "./tool/__split_span.hpp"
 
 namespace mcs::abnf
 {
@@ -38,5 +39,8 @@ namespace mcs::abnf
     using tool::equal_span;
     using tool::is_valid_span;
     using tool::is_empty_span;
+    using tool::find_index;
+    using tool::split_span_first;
+    using tool::split_span_last;
 
 }; // namespace mcs::abnf
