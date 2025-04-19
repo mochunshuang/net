@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../__core_rules.hpp"
 #include "../tool/__safe_subspan.hpp"
 #include <algorithm>
 

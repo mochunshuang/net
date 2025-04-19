@@ -20,3 +20,4 @@
 #include "./http/__received_by.hpp"
 #include "./http/__range_set.hpp"
 #include "./http/__ranges_specifier.hpp"
+#include "./http/__partial_uri.hpp"
