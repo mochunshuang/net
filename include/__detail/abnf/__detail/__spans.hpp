@@ -29,7 +29,7 @@ namespace mcs::abnf::__detail
         {
         }
 
-        [[nodiscard]] consteval std::size_t size()
+        [[nodiscard]] static consteval std::size_t size()
         {
             return N;
         }

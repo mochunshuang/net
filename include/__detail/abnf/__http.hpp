@@ -23,3 +23,5 @@
 #include "./http/__partial_uri.hpp"
 #include "./http/__parameter.hpp"
 #include "./http/__parameters.hpp"
+#include "./http/__media_type.hpp"
+#include "./http/__media_range.hpp"
