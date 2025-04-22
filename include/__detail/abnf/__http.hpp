@@ -25,3 +25,9 @@
 #include "./http/__parameters.hpp"
 #include "./http/__media_type.hpp"
 #include "./http/__media_range.hpp"
+
+/**
+ * @brief [ABNF-HTTP]
+ * https://www.rfc-editor.org/rfc/rfc9110.html#RFC5322:~:text=RFC%209110-,HTTP%20Semantics,-Abstract
+ *
+ */
