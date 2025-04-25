@@ -4,6 +4,7 @@
 
 namespace mcs::abnf::uri
 {
+    // ABNF 的书写顺序看似自上而下，但实际解析需遵循 最长匹配优先（Longest Match First）
     /**
      * @brief
      * dec-octet = DIGIT                 ; 0-9
@@ -12,6 +13,12 @@ namespace mcs::abnf::uri
      *           / "2" %x30-34 DIGIT     ; 200-249
      *           / "25" %x30-35          ; 250-255
      */
-    using dec_octet = alternative<DIGIT,sequence<Range<0x31,0x39>>>;
+    using dec_octet = alternative< // 优先尝试最长规则 //NOTE: 优先处理特殊
+        sequence<SensitiveChar<'2'>, SensitiveChar<'5'>, Range<0x30, 0x35>>, // NOLINT
+        sequence<SensitiveChar<'2'>, Range<0x30, 0x34>, DIGIT>,              // NOLINT
+        sequence<SensitiveChar<'1'>, times<2, DIGIT>>,                       // NOLINT
+        sequence<Range<0x31, 0x39>, DIGIT>,                                  // NOLINT
+        DIGIT                                                                // NOLINT
+        >;
 
 }; // namespace mcs::abnf::uri
