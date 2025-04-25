@@ -1,27 +1,20 @@
 #pragma once
 
-#include "./__operate_result.hpp"
+#include "./__operable_rule.hpp"
 
 namespace mcs::abnf::operators
 {
-    template <typename... Rules>
-    inline constexpr auto alternative = [](detail::octets_view_in sp) noexcept { // NOLINT
+    template <operable_rule... Rule>
+    struct alternative
+    {
+        using rule_concept = detail::rule_t;
 
+        constexpr auto operator()(detail::const_parser_ctx ctx) const noexcept
+            -> detail::consumed_result
+        {
+            detail::consumed_result res;
+            ((res = Rule{}(ctx)) || ...);
+            return res;
+        }
     };
-    template <>
-    inline constexpr auto alternative<> =
-        [](detail::octets_view_in sp) noexcept { // NOLINT
-
-        };
-    template <typename R0>
-    inline constexpr auto alternative<R0> =
-        [](detail::octets_view_in sp) noexcept { // NOLINT
-
-        };
-
-    template <typename R0, typename R1>
-    inline constexpr auto alternative<R0, R1> =
-        [](detail::octets_view_in sp) noexcept { // NOLINT
-
-        };
 }; // namespace mcs::abnf::operators

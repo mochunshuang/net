@@ -1,25 +1,11 @@
 #pragma once
 
-#include "../__abnf.hpp"
+#include "../generate/__range.hpp"
 
 namespace mcs::abnf::core
 {
     // CHAR           =  %x01-7F
-    struct CHAR
-    {
-        using rule_concept = rule_t;
-
-        static constexpr bool parse(octet_in c) noexcept
-        {
-            return c >= 0X01 && c <= 0X7F; // NOLINT
-        }
-
-        static constexpr auto parse(const_parser_ctx ctx) noexcept -> consumed_result
-        {
-            if (!ctx.empty() && parse(ctx.root_span[ctx.cur_index]))
-                return 1;
-            return std::nullopt;
-        }
-    };
+    using CHAR = generate::Range<0x01, 0x7F>; // NOLINT
+    inline constexpr CHAR Char{};             // NOLINT
 
 }; // namespace mcs::abnf::core

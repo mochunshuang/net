@@ -1,26 +1,11 @@
 #pragma once
 
-#include "../__abnf.hpp"
+#include "../generate/__char.hpp"
 
 namespace mcs::abnf::core
 {
     // DQUOTE         =  %x22 ;" (Double Quote)
-    struct DQUOTE
-    {
-        using rule_concept = rule_t;
-
-        static constexpr bool parse(octet_in c) noexcept
-        {
-            constexpr octet k_dquote = 0x22;
-            return c == k_dquote;
-        }
-
-        static constexpr auto parse(const_parser_ctx ctx) noexcept -> consumed_result
-        {
-            if (!ctx.empty() && parse(ctx.root_span[ctx.cur_index]))
-                return 1;
-            return std::nullopt;
-        }
-    };
-
+    using DQUOTE = generate::SensitiveChar<0x22>;      // NOLINT
+    inline constexpr DQUOTE dquote{};                  // NOLINT
+    inline constexpr detail::octet dquote_value{0x22}; // NOLINT
 }; // namespace mcs::abnf::core

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../__abnf.hpp"
+#include "../operators/__zero_or_more.hpp"
+#include "../operators/__alternative.hpp"
+#include "../operators/__sequence.hpp"
+#include "./__wsp.hpp"
+#include "./__crlf.hpp"
 
 namespace mcs::abnf::core
 {
-    struct LWSP_TYPE
-    {
-    };
-
     /**
      * @brief 避免在邮件头中使用，因为它可能导致解析问题。
      *
@@ -15,15 +15,8 @@ namespace mcs::abnf::core
      *
      */
     // LWSP = *(WSP / CRLF WSP)  ;
-    struct LWSP
-    {
-        using rule_concept = rule_t;
-
-        static constexpr auto parse(octets_view_in input) noexcept -> consumed_result
-        {
-            (void)input;
-            return std::nullopt;
-        }
-    };
+    using LWSP = operators::zero_or_more<
+        operators::alternative<WSP, operators::sequence<CRLF, WSP>>>;
+    inline constexpr LWSP lwsp{}; // NOLINT
 
 }; // namespace mcs::abnf::core

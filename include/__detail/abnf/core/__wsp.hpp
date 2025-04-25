@@ -2,25 +2,11 @@
 
 #include "./__sp.hpp"
 #include "./__htab.hpp"
+#include "../operators/__alternative.hpp"
 
 namespace mcs::abnf::core
 {
     // WSP            =  SP / HTAB; white space
-    struct WSP
-    {
-        using rule_concept = abnf::rule_t;
-
-        static constexpr bool parse(octet_in c) noexcept
-        {
-            return SP::parse(c) || HTAB::parse(c);
-        }
-
-        static constexpr auto parse(const_parser_ctx ctx) noexcept -> consumed_result
-        {
-            if (!ctx.empty() && parse(ctx.root_span[ctx.cur_index]))
-                return 1;
-            return std::nullopt;
-        }
-    };
-
+    using WSP = operators::alternative<SP, HTAB>;
+    inline constexpr WSP wsp{}; // NOLINT
 }; // namespace mcs::abnf::core

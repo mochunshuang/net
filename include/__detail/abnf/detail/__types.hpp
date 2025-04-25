@@ -1,9 +1,11 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <limits>
 #include <optional>
 #include <span>
+#include <utility>
 
 namespace mcs::abnf::detail
 {
@@ -28,36 +30,55 @@ namespace mcs::abnf::detail
     };
 
     using consumed_result = std::optional<std::size_t>;
+    constexpr auto make_consumed_result(size_t v) noexcept -> consumed_result
+    {
+        return {v};
+    }
 
     struct parser_ctx
     {
-        octets_view root_span;
-        std::size_t cur_index{};
-        std::size_t end_index{};
-    };
+        octets_view root_span;   // NOLINT
+        std::size_t cur_index{}; // NOLINT
+        std::size_t end_index{}; // NOLINT
 
-    constexpr parser_ctx make_parser_ctx(octets_view_in span) noexcept
-    {
-        return {.root_span = span, .cur_index = 0, .end_index = span.size()};
-    }
-    struct const_parser_ctx
-    {
-        const octets_view &root_span; // NOLINT
-        const std::size_t &cur_index; // NOLINT
-        const std::size_t &end_index; // NOLINT
-        constexpr explicit const_parser_ctx(parser_ctx &ctx) noexcept
-            : root_span(ctx.root_span), cur_index(ctx.cur_index), end_index(ctx.end_index)
-        {
-        }
         [[nodiscard]] constexpr auto size() const noexcept
         {
             return end_index - cur_index;
         }
         [[nodiscard]] constexpr auto empty() const noexcept
         {
-            return end_index <= cur_index;
+            return end_index == cur_index;
+        }
+        [[nodiscard]] constexpr auto valid() const noexcept
+        {
+            return cur_index < end_index;
         }
     };
+
+    constexpr parser_ctx make_parser_ctx(octets_view_in span) noexcept
+    {
+        return {.root_span = span, .cur_index = 0, .end_index = span.size()};
+    }
+    using const_parser_ctx = const parser_ctx &;
+    // struct const_parser_ctx
+    // {
+    //     const octets_view &root_span; // NOLINT
+    //     const std::size_t &cur_index; // NOLINT
+    //     const std::size_t &end_index; // NOLINT
+    //     constexpr explicit const_parser_ctx(parser_ctx &ctx) noexcept
+    //         : root_span(ctx.root_span), cur_index(ctx.cur_index),
+    //         end_index(ctx.end_index)
+    //     {
+    //     }
+    //     [[nodiscard]] constexpr auto size() const noexcept
+    //     {
+    //         return end_index - cur_index;
+    //     }
+    //     [[nodiscard]] constexpr auto empty() const noexcept
+    //     {
+    //         return end_index <= cur_index;
+    //     }
+    // };
 
     using parser_ctx_in = parser_ctx;
 

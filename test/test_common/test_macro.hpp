@@ -10,6 +10,8 @@
 #include <sstream>
 #include <utility>
 
+#include "../../include/__detail/abnf/detail/__types.hpp"
+
 namespace mcstest
 {
     struct test_counter
@@ -206,4 +208,11 @@ template <make_oct a>
 consteval auto operator""_oct()
 {
     return a.oct[0];
+}
+
+template <make_span S>
+consteval decltype(auto) operator""_ctx()
+{
+    using mcs::abnf::detail::make_parser_ctx;
+    return make_parser_ctx(std::span{S.octets, S.size()});
 }

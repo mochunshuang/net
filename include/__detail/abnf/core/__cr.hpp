@@ -1,26 +1,11 @@
 #pragma once
 
-#include "../__abnf.hpp"
+#include "../generate/__char.hpp"
 
 namespace mcs::abnf::core
 {
     // CR             =  %x0D
-    struct CR
-    {
-        using rule_concept = rule_t;
-
-        static constexpr bool parse(octet_in c) noexcept
-        {
-            constexpr octet k_lf = 0x0D;
-            return c == k_lf;
-        }
-
-        static constexpr auto parse(const_parser_ctx ctx) noexcept -> consumed_result
-        {
-            if (!ctx.empty() && parse(ctx.root_span[ctx.cur_index]))
-                return 1;
-            return std::nullopt;
-        }
-    };
-
+    using CR = generate::SensitiveChar<0x0D>;      // NOLINT
+    inline constexpr CR cr{};                      // NOLINT
+    inline constexpr detail::octet cr_value{0x0D}; // NOLINT
 }; // namespace mcs::abnf::core
