@@ -8,7 +8,7 @@
 namespace mcs::abnf::generate
 {
     template <detail::octet C>
-    struct Char
+    struct InsensitiveChar
     {
         using rule_concept = detail::rule_t;
 

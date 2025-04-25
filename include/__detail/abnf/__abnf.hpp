@@ -25,6 +25,8 @@
 #include "./core/__sp.hpp"
 #include "./core/__vchar.hpp"
 #include "./core/__wsp.hpp"
+#include "./generate/__char.hpp"
+#include "./generate/__range.hpp"
 
 namespace mcs::abnf
 {
@@ -94,5 +96,9 @@ namespace mcs::abnf
     using core::htab_value;
     using core::sp_value;
     using core::dquote_value;
+
+    using generate::InsensitiveChar;
+    using generate::SensitiveChar;
+    using generate::Range;
 
 }; // namespace mcs::abnf
