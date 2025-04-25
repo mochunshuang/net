@@ -1,6 +1,7 @@
 #include <cassert>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <type_traits>
 #include "./__product_type.hpp"
 
@@ -30,6 +31,20 @@ struct product
 template <typename... T> // NOLINTNEXTLINE
 product(T &&...r) -> product<std::remove_cvref_t<T>...>;
 
+struct no_copy_no_move_type
+{
+    no_copy_no_move_type() : val(0) {}
+    explicit no_copy_no_move_type(int v) : val(v) {}
+    ~no_copy_no_move_type() = default;
+
+    no_copy_no_move_type(const no_copy_no_move_type &) = delete;
+    no_copy_no_move_type &operator=(const no_copy_no_move_type &) = delete;
+
+    no_copy_no_move_type &operator=(no_copy_no_move_type &&) = delete;
+    no_copy_no_move_type(no_copy_no_move_type &&) = delete;
+    int val; // NOLINT
+};
+
 void construction2()
 {
     /*
@@ -43,6 +58,29 @@ product(T &&...t) : impl{std::forward<T>(t)...} {} |             ~~~~^~~~
     product b1(42, std::string("test"), 3.14); // 允许
     static_assert(not std::is_class<decltype("test")>::value);
     static_assert(not std::is_class<decltype(1)>::value);
+
+    // product<no_copy_no_move_type> b2(no_copy_no_move_type{1}); // NOTE: 做不到
+    draft::__detail::product_type<no_copy_no_move_type> b2{
+        no_copy_no_move_type{}}; // 可以
+}
+
+template <typename... T>
+struct Tuple
+{
+  private:
+    std::tuple<T...> impl;
+
+  public:
+    explicit Tuple(T &&...t) : impl{std::forward<T>(t)...} {}
+};
+template <typename... T> // NOLINTNEXTLINE
+Tuple(T &&...r) -> Tuple<std::remove_cvref_t<T>...>;
+
+void construction3()
+{
+    Tuple b1(42, std::string("test"), 3.14);
+    // Tuple b2(no_copy_no_move_type{1}); // NOTE: 做不到
+    // std::tuple<no_copy_no_move_type> b2{no_copy_no_move_type{}}; // 做不到
 }
 
 void test_construction_and_access()

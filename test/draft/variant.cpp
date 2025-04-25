@@ -1,6 +1,8 @@
 #include <cassert>
+#include <cstdint>
 #include <variant>
 #include <type_traits>
+#include <vector>
 
 // NOLINTBEGIN
 
@@ -52,6 +54,25 @@ int main()
     // 检查 var_ 的实际类型
     assert(std::holds_alternative<A>(obj1.getVariant()));
     assert(std::holds_alternative<B>(obj2.getVariant()));
+
+    {
+        struct A
+        {
+            int v;
+        };
+        struct B
+        {
+            int v;
+        };
+
+        std::variant<std::monostate, A, B> v;
+        v = A{};
+        v = B{};
+        {
+            // std::variant<std::monostate, A, A> v;
+            // v = A{}; // 编译期失败
+        }
+    }
     return 0;
 }
 // NOLINTEND

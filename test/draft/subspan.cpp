@@ -1,3 +1,4 @@
+#include <array>
 #include <cassert>
 #include <iostream>
 #include <span>
@@ -200,6 +201,19 @@ int main()
             assert(sub13[0] == s[0 + 1]);
             assert(sub13[0] == 6);
         }
+    }
+    {
+        static constexpr std::array<int, 10> arr = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        constexpr std::span<const int> s(arr);
+        constexpr auto sub0 = s.subspan(5, 3);
+        static_assert(sub0[0] == 6);
+        static_assert(sub0[2] == 8);
+
+        constexpr auto sub00 = sub0.subspan(1, 2);
+        static_assert(sub00[1] == 8);
+
+        constexpr const auto &a = sub00[1];
+        static_assert(&a == &sub0[2]);
     }
 
     return 0;
