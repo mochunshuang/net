@@ -1,6 +1,7 @@
 
 #include "../test_abnf.hpp"
 #include "./test_uri.hpp"
+#include <cassert>
 
 // NOLINTBEGIN
 using namespace mcs::abnf;
@@ -15,6 +16,18 @@ int main()
     { // 最小长度IPv4 (1.1.1.1)
         static constexpr octet min_ip[] = {'1', '.', '1', '.', '1', '.', '1'};
         static_assert(ipv4address(make_parser_ctx(min_ip)));
+        {
+            auto ctx = make_parser_ctx(min_ip);
+            auto ip = *ipv4address.parse(ctx);
+            std::string ip_str(ip.value.begin(), ip.value.end());
+            assert(ip_str == std::string_view{"1.1.1.1"});
+        }
+        {
+            auto ctx = make_parser_ctx(min_ip);
+            auto ip = *ipv4address.parse(ctx);
+            std::string ip_str(ip.value.begin(), ip.value.end());
+            assert(ip_str == std::string_view{"1.1.1.1"});
+        }
     }
 
     { // 标准IPv4 (192.168.1.1)
@@ -41,8 +54,9 @@ int main()
         static constexpr octet wrong_dots1[] = {'.', '1', '.', '1', '.', '1', '.', '1'};
         static constexpr octet wrong_dots2[] = {'1', '.', '1', '.', '1', '.', '1', '.'};
         static_assert(!ipv4address(make_parser_ctx(wrong_dots1)));
-        // NOTE: 最后的点，被截断了
+        // NOTE: 最后的点. 不参与 运算的。 要求全部满足才行
         static_assert(ipv4address(make_parser_ctx(wrong_dots2)));
+        static_assert(*ipv4address(make_parser_ctx(wrong_dots2)) == 7);
     }
 
     { // 无效格式 - 包含非数字字符

@@ -27,6 +27,7 @@
 #include "./core/__wsp.hpp"
 #include "./generate/__char.hpp"
 #include "./generate/__range.hpp"
+#include "./generate/__any_of.hpp"
 
 namespace mcs::abnf
 {
@@ -100,5 +101,6 @@ namespace mcs::abnf
     using generate::InsensitiveChar;
     using generate::SensitiveChar;
     using generate::Range;
+    using generate::any_of;
 
 }; // namespace mcs::abnf

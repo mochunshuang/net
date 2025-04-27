@@ -30,6 +30,10 @@ namespace mcs::abnf::uri
         };
         using result_type = __type;
 
+        // static constexpr auto operator()(detail::const_parser_ctx ctx) noexcept
+        //     -> consumed_result
+        // {
+        // }
         static constexpr auto parse(detail::parser_ctx ctx) -> std::optional<result_type>
         {
 

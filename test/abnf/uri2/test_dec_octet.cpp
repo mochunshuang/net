@@ -1,6 +1,8 @@
 
 #include "../test_abnf.hpp"
 #include "./test_uri.hpp"
+#include <cassert>
+#include <string_view>
 
 // NOLINTBEGIN
 using namespace mcs::abnf;
@@ -89,6 +91,14 @@ int main()
             static constexpr octet min_ip[] = {'1', '.', '1', '.', '1', '.', '1'};
             static_assert(IPv4address{}(make_parser_ctx(min_ip)));
             static_assert(IPv4address{}(make_parser_ctx(min_ip)).value() == 7);
+
+            std::string ip_str(min_ip, min_ip + sizeof(min_ip));
+            assert(ip_str == std::string_view{"1.1.1.1"});
+            {
+                std::span sp = min_ip;
+                std::string ip_str(sp.begin(), sp.end());
+                assert(ip_str == std::string_view{"1.1.1.1"});
+            }
         }
         { // 1.1.1.
             static constexpr octet min_ip[] = {'1', '.', '1', '.', '1', '.'};

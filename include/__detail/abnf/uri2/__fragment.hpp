@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../detail/__types.hpp"
+#include "./__pchar.hpp"
 #include <string>
 
 namespace mcs::abnf::uri
@@ -11,19 +11,21 @@ namespace mcs::abnf::uri
         struct __type
         {
             using domain = fragment;
-            detail::absolute_span value;
+            detail::octets_view value;
         };
         using result_type = __type;
 
         static constexpr auto parse(detail::parser_ctx ctx) -> std::optional<result_type>
         {
-
+            using fragment =
+                zero_or_more<alternative<pchar, SensitiveChar<'/'>, SensitiveChar<'?'>>>;
+            if (auto ret = fragment{}(ctx))
+                return result_type{.value = ctx.root_span.subspan(ctx.cur_index, *ret)};
             return std::nullopt;
         }
-        static constexpr auto build(const result_type &ctx)
+        static constexpr auto build(const result_type &ctx) noexcept
         {
-            std::string fragment;
-            return fragment;
+            return std::string(ctx.value.begin(), ctx.value.end());
         }
     };
 
