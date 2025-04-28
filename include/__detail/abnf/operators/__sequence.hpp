@@ -1,6 +1,7 @@
 #pragma once
 
 #include "./__operable_rule.hpp"
+#include "./__transaction.hpp"
 #include <utility>
 
 namespace mcs::abnf::operators
@@ -10,47 +11,17 @@ namespace mcs::abnf::operators
     {
         using rule_concept = detail::rule_t;
 
-        constexpr auto operator()(detail::const_parser_ctx ctx) const noexcept
+        constexpr auto operator()(detail::parser_ctx &ctx) const noexcept
             -> detail::consumed_result
         {
-            std::size_t total = 0;
-            detail::parser_ctx copy_ctx = ctx;
-            auto apply_rule = [&]<typename R>(R &&r) constexpr noexcept -> bool {
-                if (auto res = std::forward<R>(r)(copy_ctx))
-                {
-                    total += *res;
-                    copy_ctx.cur_index += *res;
-                    return true;
-                }
-                return false;
+            transaction trans{ctx};
+            std::size_t old_index = ctx.cur_index;
+            auto apply_rule = [&]<typename R>(R &&r) noexcept -> bool {
+                return static_cast<bool>(std::forward<R>(r)(ctx));
             };
             return static_cast<bool>((apply_rule(Rule{}) && ...))
-                       ? detail::make_consumed_result(total)
-                       : std::nullopt;
-        }
-    };
-
-    template <operable_rule... Rule>
-    struct sequence_with_callback
-    {
-        using rule_concept = detail::rule_t;
-
-        constexpr auto operator()(detail::const_parser_ctx ctx) const noexcept
-            -> detail::consumed_result
-        {
-            std::size_t total = 0;
-            detail::parser_ctx copy_ctx = ctx;
-            auto apply_rule = [&]<typename R>(R &&r) constexpr noexcept -> bool {
-                if (auto res = std::forward<R>(r)(copy_ctx))
-                {
-                    total += *res;
-                    copy_ctx.cur_index += *res;
-                    return true;
-                }
-                return false;
-            };
-            return static_cast<bool>((apply_rule(Rule{}) && ...))
-                       ? detail::make_consumed_result(total)
+                       ? (trans.commit(),
+                          detail::make_consumed_result(ctx.cur_index - old_index))
                        : std::nullopt;
         }
     };

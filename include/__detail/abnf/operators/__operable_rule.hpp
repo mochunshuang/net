@@ -6,7 +6,7 @@
 namespace mcs::abnf::operators
 {
     template <typename Rule>
-    concept operable = requires(Rule &&rule, detail::const_parser_ctx ctx) {
+    concept operable = requires(Rule &&rule, detail::parser_ctx &ctx) {
         {
             std::forward<Rule>(rule)(ctx)
         } noexcept -> std::same_as<detail::consumed_result>;

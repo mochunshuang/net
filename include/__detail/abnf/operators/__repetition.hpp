@@ -1,6 +1,7 @@
 #pragma once
 
 #include "./__operable_rule.hpp"
+#include "./__transaction.hpp"
 
 namespace mcs::abnf::operators
 {
@@ -9,22 +10,22 @@ namespace mcs::abnf::operators
     {
         using rule_concept = detail::rule_t;
 
-        constexpr auto operator()(detail::const_parser_ctx ctx) const noexcept
+        constexpr auto operator()(detail::parser_ctx &ctx) const noexcept
             -> detail::consumed_result
         {
-            std::size_t total = 0;
+            transaction trans{ctx};
+            std::size_t old_index = ctx.cur_index;
             std::size_t count = 0;
-            detail::parser_ctx copy_ctx = ctx;
-            while (count <= Max && copy_ctx.valid())
+            while (count <= Max && ctx.valid())
             {
-                auto res = Rule{}(copy_ctx);
-                if (!res)
+                if (auto ret = Rule{}(ctx); not ret)
                     break;
-                total += *res;
-                copy_ctx.cur_index += *res;
                 ++count;
             }
-            return (count >= Min) ? detail::make_consumed_result(total) : std::nullopt;
+            return (count >= Min)
+                       ? (trans.commit(),
+                          detail::make_consumed_result(ctx.cur_index - old_index))
+                       : std::nullopt;
         };
     };
 }; // namespace mcs::abnf::operators
