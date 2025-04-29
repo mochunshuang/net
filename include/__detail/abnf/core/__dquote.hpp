@@ -5,7 +5,6 @@
 namespace mcs::abnf::core
 {
     // DQUOTE         =  %x22 ;" (Double Quote)
-    using DQUOTE = generate::SensitiveChar<0x22>;      // NOLINT
-    inline constexpr DQUOTE dquote{};                  // NOLINT
+    using DQUOTE = generate::CharSensitive<0x22>;      // NOLINT
     inline constexpr detail::octet dquote_value{0x22}; // NOLINT
 }; // namespace mcs::abnf::core

@@ -18,7 +18,7 @@ namespace mcs::abnf::uri
         using rule = times<0, pchar>;
         using rule_concept = rule_t;
 
-        static constexpr auto operator()(const_parser_ctx ctx) noexcept -> consumed_result
+        static constexpr auto operator()(parser_ctx_ref ctx) noexcept -> consumed_result
         {
             if (auto ret = rule{}(ctx))
                 return make_consumed_result(*ret);

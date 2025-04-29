@@ -19,7 +19,7 @@ namespace mcs::abnf::uri
             sequence<ALPHA,
                      zero_or_more<alternative<ALPHA, DIGIT, any_of<'+', '-', '.'>>>>;
 
-        static constexpr auto operator()(const_parser_ctx ctx) noexcept -> consumed_result
+        static constexpr auto operator()(parser_ctx ctx) noexcept -> consumed_result
         {
             if (auto ret = rule{}(ctx))
                 return make_consumed_result(*ret);

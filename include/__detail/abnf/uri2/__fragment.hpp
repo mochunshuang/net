@@ -18,7 +18,7 @@ namespace mcs::abnf::uri
         static constexpr auto parse(detail::parser_ctx ctx) -> std::optional<result_type>
         {
             using fragment =
-                zero_or_more<alternative<pchar, SensitiveChar<'/'>, SensitiveChar<'?'>>>;
+                zero_or_more<alternative<pchar, CharSensitive<'/'>, CharSensitive<'?'>>>;
             if (auto ret = fragment{}(ctx))
                 return result_type{.value = ctx.root_span.subspan(ctx.cur_index, *ret)};
             return std::nullopt;

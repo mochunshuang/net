@@ -17,6 +17,5 @@ namespace mcs::abnf::core
     // LWSP = *(WSP / CRLF WSP)  ;
     using LWSP = operators::zero_or_more<
         operators::alternative<WSP, operators::sequence<CRLF, WSP>>>;
-    inline constexpr LWSP lwsp{}; // NOLINT
 
 }; // namespace mcs::abnf::core

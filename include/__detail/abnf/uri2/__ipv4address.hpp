@@ -3,7 +3,6 @@
 #include "../__abnf.hpp"
 #include "./__dec_octet.hpp"
 #include <cstddef>
-#include <cstdint>
 #include <string>
 #include <utility>
 
@@ -18,37 +17,21 @@ namespace mcs::abnf::uri
             octets_view value;
         };
         using result_type = __type;
+        using rule_concept = rule_t;
         using rule =
-            sequence<dec_octet, InsensitiveChar<'.'>, dec_octet, InsensitiveChar<'.'>,
-                     dec_octet, InsensitiveChar<'.'>, dec_octet>;
+            sequence<dec_octet, CharInsensitive<'.'>, dec_octet, CharInsensitive<'.'>,
+                     dec_octet, CharInsensitive<'.'>, dec_octet>;
 
-        static constexpr auto operator()(detail::const_parser_ctx ctx) noexcept
+        static constexpr auto operator()(detail::parser_ctx_ref ctx) noexcept
             -> consumed_result
         {
-            const size_t k_min_length = 7;
-            if (ctx.size() >= k_min_length)
-            {
-                if (auto ret = rule{}(ctx))
-                    return make_consumed_result(*ret);
-            }
+            if (auto ret = rule{}(ctx))
+                return make_consumed_result(*ret);
             return std::nullopt;
         }
         static constexpr auto parse(detail::parser_ctx &ctx) noexcept
             -> std::optional<result_type>
         {
-            struct Callback
-            {
-                constexpr auto operator()(const_parser_ctx ctx) noexcept
-                    -> consumed_result
-                {
-                    if (index < 3)
-                        dots[index++] = ctx.cur_index;
-                    return make_consumed_result(0);
-                }
-                size_t dots[3]{SIZE_MAX};
-                size_t index = 0;
-            } callback;
-
             if (auto ret = operator()(ctx))
                 return result_type{
                     .value = ctx.root_span.subspan(

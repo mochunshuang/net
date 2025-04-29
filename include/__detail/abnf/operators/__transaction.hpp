@@ -7,15 +7,15 @@ namespace mcs::abnf::operators
     struct transaction
     {
       public:
-        explicit transaction(detail::parser_ctx &ctx) noexcept
+        constexpr explicit transaction(detail::parser_ctx_ref ctx) noexcept
             : ctx_{ctx}, index_{ctx.cur_index}
         {
         }
-        void commit() noexcept
+        constexpr void commit() noexcept
         {
             committed_ = true;
         }
-        ~transaction() noexcept
+        constexpr ~transaction() noexcept
         {
             if (not committed_)
                 ctx_.cur_index = index_;
@@ -26,7 +26,7 @@ namespace mcs::abnf::operators
         transaction &operator=(transaction &&) = delete;
 
       private:
-        detail::parser_ctx &ctx_;
+        detail::parser_ctx_ref ctx_;
         size_t index_;
         bool committed_{false};
     };

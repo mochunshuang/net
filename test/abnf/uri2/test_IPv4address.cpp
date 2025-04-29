@@ -11,23 +11,14 @@ using namespace mcs::abnf::uri;
 
 int main()
 {
-    constexpr IPv4address ipv4address{};
+
+    constexpr auto ipv4address = [](auto ctx) constexpr {
+        return mcs::abnf::uri::IPv4address{}(ctx);
+    };
 
     { // 最小长度IPv4 (1.1.1.1)
         static constexpr octet min_ip[] = {'1', '.', '1', '.', '1', '.', '1'};
         static_assert(ipv4address(make_parser_ctx(min_ip)));
-        {
-            auto ctx = make_parser_ctx(min_ip);
-            auto ip = *ipv4address.parse(ctx);
-            std::string ip_str(ip.value.begin(), ip.value.end());
-            assert(ip_str == std::string_view{"1.1.1.1"});
-        }
-        {
-            auto ctx = make_parser_ctx(min_ip);
-            auto ip = *ipv4address.parse(ctx);
-            std::string ip_str(ip.value.begin(), ip.value.end());
-            assert(ip_str == std::string_view{"1.1.1.1"});
-        }
     }
 
     { // 标准IPv4 (192.168.1.1)

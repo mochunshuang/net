@@ -8,8 +8,7 @@ namespace mcs::abnf::core
 {
     // HEXDIG         =  DIGIT / "A" / "B" / "C" / "D" / "E" / "F"
     using HEXDIG = operators::alternative<
-        DIGIT, generate::InsensitiveChar<'A'>, generate::InsensitiveChar<'B'>,
-        generate::InsensitiveChar<'C'>, generate::InsensitiveChar<'D'>,
-        generate::InsensitiveChar<'E'>, generate::InsensitiveChar<'F'>>;
-    inline constexpr HEXDIG hexdig{}; // NOLINT
+        DIGIT, generate::CharInsensitive<'A'>, generate::CharInsensitive<'B'>,
+        generate::CharInsensitive<'C'>, generate::CharInsensitive<'D'>,
+        generate::CharInsensitive<'E'>, generate::CharInsensitive<'F'>>;
 }; // namespace mcs::abnf::core

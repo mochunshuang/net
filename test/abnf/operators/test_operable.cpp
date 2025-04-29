@@ -9,19 +9,22 @@ using namespace mcs::abnf::operators;
 
 int main()
 {
-    {
-        consumed_result foo(const_parser_ctx) noexcept;
-        struct Bar
-        {
-            consumed_result operator()(const_parser_ctx) noexcept;
-        };
-        auto lambda = [](const_parser_ctx) noexcept -> consumed_result {
-            return {};
-        };
 
-        static_assert(not operable<decltype(foo)>); // 函数
-        static_assert(operable<Bar>);               // 仿函数
-        static_assert(operable<decltype(lambda)>);  // Lambda
+    using Rule = generate::CharInsensitive<'A'>;
+
+    constexpr auto rule = [](detail::parser_ctx ctx) constexpr {
+        return Rule{}(ctx);
+    };
+    static_assert(rule("a"_ctx).has_value());
+    static_assert(rule("A"_ctx).has_value());
+
+    {
+        using Rule = generate::CharSensitive<'A'>;
+        constexpr auto rule = [](detail::parser_ctx ctx) constexpr {
+            return Rule{}(ctx);
+        };
+        static_assert(not rule("a"_ctx).has_value());
+        static_assert(rule("A"_ctx).has_value());
     }
     std::cout << "main done\n";
     return 0;

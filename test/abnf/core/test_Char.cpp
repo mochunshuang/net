@@ -10,6 +10,9 @@ using namespace mcs::abnf;
 int main()
 {
     TEST("Char") = [] {
+        constexpr auto Char = [](auto ctx) constexpr {
+            return static_cast<bool>(mcs::abnf::CHAR{}(ctx));
+        };
         static_assert(Char("0"_ctx));
         static_assert(Char("1"_ctx));
 

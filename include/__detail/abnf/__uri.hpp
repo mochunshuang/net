@@ -2,6 +2,7 @@
 
 #include "./uri2/__dec_octet.hpp"
 #include "./uri2/__ipv4address.hpp"
+#include "./uri2/__ipv6address.hpp"
 
 /**
  * @brief [ABNF-uri2]

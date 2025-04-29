@@ -6,6 +6,6 @@
 namespace mcs::abnf::generate
 {
     template <detail::octet... C>
-    using any_of = operators::alternative<SensitiveChar<C>...>;
+    using any_of = operators::alternative<CharSensitive<C>...>;
 
 }; // namespace mcs::abnf::generate

@@ -11,6 +11,9 @@ using namespace mcs::abnf;
 int main()
 {
     TEST("lwsp") = [] {
+        constexpr auto lwsp = [](auto ctx) constexpr {
+            return mcs::abnf::LWSP{}(ctx);
+        };
         static_assert(lwsp("0"_ctx));
         static_assert(lwsp("0"_ctx).value() == 0);
 

@@ -11,6 +11,9 @@ using namespace mcs::abnf;
 int main()
 {
     TEST("hexdig") = [] {
+        constexpr auto hexdig = [](auto ctx) constexpr {
+            return mcs::abnf::HEXDIG{}(ctx);
+        };
         static_assert(hexdig("0"_ctx));
         static_assert(hexdig("9"_ctx));
         static_assert(hexdig("A"_ctx));

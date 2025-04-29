@@ -5,7 +5,6 @@
 namespace mcs::abnf::core
 {
     // LF             =  %x0A
-    using LF = generate::SensitiveChar<0x0A>;      // NOLINT
-    inline constexpr LF lf{};                      // NOLINT
+    using LF = generate::CharSensitive<0x0A>;      // NOLINT
     inline constexpr detail::octet lf_value{0x0A}; // NOLINT
 }; // namespace mcs::abnf::core

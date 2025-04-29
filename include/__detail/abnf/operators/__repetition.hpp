@@ -1,22 +1,23 @@
 #pragma once
 
-#include "./__operable_rule.hpp"
+#include "../detail/__concept.hpp"
 #include "./__transaction.hpp"
+#include "./__operators_rule.hpp"
 
 namespace mcs::abnf::operators
 {
-    template <size_t Min, size_t Max, operable_rule Rule>
+    template <size_t Min, size_t Max, detail::rule Rule>
     struct repetition
     {
         using rule_concept = detail::rule_t;
 
-        constexpr auto operator()(detail::parser_ctx &ctx) const noexcept
+        constexpr auto operator()(detail::parser_ctx_ref ctx) const noexcept
             -> detail::consumed_result
         {
             transaction trans{ctx};
             std::size_t old_index = ctx.cur_index;
             std::size_t count = 0;
-            while (count <= Max && ctx.valid())
+            while (count < Max && ctx.valid())
             {
                 if (auto ret = Rule{}(ctx); not ret)
                     break;
@@ -28,4 +29,8 @@ namespace mcs::abnf::operators
                        : std::nullopt;
         };
     };
+
+    template <size_t Min, size_t Max, typename T>
+    inline constexpr bool is_operators_rule<repetition<Min, Max, T>> = true; // NOLINT
+
 }; // namespace mcs::abnf::operators

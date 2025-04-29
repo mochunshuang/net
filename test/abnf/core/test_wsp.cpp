@@ -11,6 +11,9 @@ using namespace mcs::abnf;
 int main()
 {
     TEST("wsp") = [] {
+        constexpr auto wsp = [](auto ctx) constexpr {
+            return mcs::abnf::WSP{}(ctx);
+        };
         static_assert(not wsp("0"_ctx));
         static_assert(not wsp("9"_ctx));
         static_assert(not wsp("A"_ctx));

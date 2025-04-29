@@ -10,6 +10,9 @@ using namespace mcs::abnf;
 int main()
 {
     TEST("BIT") = [] {
+        constexpr auto bit = [](auto ctx) constexpr {
+            return static_cast<bool>(mcs::abnf::BIT{}(ctx));
+        };
         // 有效BIT测试
         static_assert(bit("1"_ctx));
         static_assert(bit("1aaa"_ctx));

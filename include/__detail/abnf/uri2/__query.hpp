@@ -16,9 +16,9 @@ namespace mcs::abnf::uri
         using rule_concept = rule_t;
         using result_type = __type;
         using rule =
-            zero_or_more<alternative<pchar, SensitiveChar<'/'>, SensitiveChar<'?'>>>;
+            zero_or_more<alternative<pchar, CharSensitive<'/'>, CharSensitive<'?'>>>;
 
-        static constexpr auto operator()(const_parser_ctx ctx) noexcept -> consumed_result
+        static constexpr auto operator()(parser_ctx_ref ctx) noexcept -> consumed_result
         {
             if (auto ret = rule{}(ctx))
                 return make_consumed_result(*ret);

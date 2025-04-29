@@ -8,5 +8,4 @@ namespace mcs::abnf::core
 {
     // CRLF           =  CR LF
     using CRLF = operators::sequence<CR, LF>;
-    inline constexpr CRLF crlf{}; // NOLINT
 }; // namespace mcs::abnf::core

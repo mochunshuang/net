@@ -8,5 +8,4 @@ namespace mcs::abnf::core
 {
     // WSP            =  SP / HTAB; white space
     using WSP = operators::alternative<SP, HTAB>;
-    inline constexpr WSP wsp{}; // NOLINT
 }; // namespace mcs::abnf::core

@@ -10,6 +10,9 @@ using namespace mcs::abnf;
 int main()
 {
     TEST("dquote") = [] {
+        constexpr auto dquote = [](auto ctx) constexpr {
+            return mcs::abnf::DQUOTE{}(ctx);
+        };
         static_assert(not dquote("1"_ctx));
         static_assert(!dquote("1aaa"_ctx));
 

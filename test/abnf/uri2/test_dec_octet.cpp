@@ -12,7 +12,9 @@ using namespace mcs::abnf::uri;
 
 int main()
 {
-    constexpr dec_octet dec_octet_ruler{};
+    constexpr auto dec_octet_ruler = [](auto ctx) constexpr {
+        return mcs::abnf::uri::dec_octet{}(ctx);
+    };
     {                                            // 测试单个数字 0-9
         static constexpr octet valid1[] = {'0'}; // NOLINT
         static constexpr octet valid2[] = {'5'}; // NOLINT
@@ -85,12 +87,15 @@ int main()
     }
     { // IPv4address   = dec-octet "." dec-octet "." dec-octet "." dec-octet
         using IPv4address =
-            sequence<dec_octet, InsensitiveChar<'.'>, dec_octet, InsensitiveChar<'.'>,
-                     dec_octet, InsensitiveChar<'.'>, dec_octet>;
+            sequence<dec_octet, CharInsensitive<'.'>, dec_octet, CharInsensitive<'.'>,
+                     dec_octet, CharInsensitive<'.'>, dec_octet>;
+        constexpr auto IPv4address_ruler = [](auto ctx) constexpr {
+            return mcs::abnf::uri::IPv4address{}(ctx);
+        };
         { // 最小长度IPv4 (1.1.1.1)
             static constexpr octet min_ip[] = {'1', '.', '1', '.', '1', '.', '1'};
-            static_assert(IPv4address{}(make_parser_ctx(min_ip)));
-            static_assert(IPv4address{}(make_parser_ctx(min_ip)).value() == 7);
+            static_assert(IPv4address_ruler(make_parser_ctx(min_ip)));
+            static_assert(IPv4address_ruler(make_parser_ctx(min_ip)).value() == 7);
 
             std::string ip_str(min_ip, min_ip + sizeof(min_ip));
             assert(ip_str == std::string_view{"1.1.1.1"});
@@ -102,7 +107,7 @@ int main()
         }
         { // 1.1.1.
             static constexpr octet min_ip[] = {'1', '.', '1', '.', '1', '.'};
-            static_assert(not IPv4address{}(make_parser_ctx(min_ip)));
+            static_assert(not IPv4address_ruler(make_parser_ctx(min_ip)));
         }
     }
 

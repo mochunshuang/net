@@ -19,7 +19,7 @@ namespace mcs::abnf::uri
         using result_type = __type;
         using rule = zero_or_more<alternative<unreserved, pct_encoded, sub_delims>>;
 
-        static constexpr auto operator()(const_parser_ctx ctx) noexcept -> consumed_result
+        static constexpr auto operator()(parser_ctx ctx) noexcept -> consumed_result
         {
             if (auto ret = rule{}(ctx))
                 return make_consumed_result(*ret);

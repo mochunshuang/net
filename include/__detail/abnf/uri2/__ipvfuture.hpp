@@ -11,7 +11,7 @@ namespace mcs::abnf::uri
         struct __type
         {
             using domain = IPvFuture;
-            detail::absolute_span value;
+            detail::octets_view value;
         };
         using result_type = __type;
 

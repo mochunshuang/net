@@ -12,9 +12,12 @@ int main()
     TEST("ALPHA") = [] {
         static constexpr OCTET test_char = 'A';
         constexpr std::span<const OCTET> s(&test_char, 1);
+        constexpr auto alpha = [](parser_ctx ctx) constexpr {
+            return mcs::abnf::ALPHA{}(ctx);
+        };
 
         // 使用 static_assert 验证解析结果
-        static_assert(ALPHA{}(make_parser_ctx(s)));
+        static_assert(alpha(make_parser_ctx(s)));
         static_assert(alpha(make_parser_ctx(s)).value() == 1);
         static_assert(*alpha(make_parser_ctx(s)) == 1);
 

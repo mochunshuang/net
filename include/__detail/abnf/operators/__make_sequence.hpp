@@ -1,15 +1,18 @@
 #pragma once
 
-#include "./__operable_rule.hpp"
+#include "../detail/__concept.hpp"
 #include "./__product_type.hpp"
 #include "./__transaction.hpp"
+#include "./__operators_rule.hpp"
 
 namespace mcs::abnf::operators
 {
-    template <operable_rule... Rule>
+    template <detail::rule... Rule>
     struct make_sequence : product_type<Rule...>
     {
-        constexpr auto operator()(detail::parser_ctx &ctx) noexcept
+        using rule_concept = detail::rule_t;
+
+        constexpr auto operator()(detail::parser_ctx_ref ctx) noexcept
             -> detail::consumed_result
         {
             transaction trans{ctx};
@@ -26,5 +29,8 @@ namespace mcs::abnf::operators
 
     template <typename... T>
     make_sequence(T &&...r) -> make_sequence<std::decay_t<T>...>;
+
+    template <typename... T>
+    inline constexpr bool is_operators_rule<make_sequence<T...>> = true; // NOLINT
 
 }; // namespace mcs::abnf::operators

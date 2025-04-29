@@ -10,6 +10,9 @@ using namespace mcs::abnf;
 int main()
 {
     TEST("ctl") = [] {
+        constexpr auto ctl = [](auto ctx) constexpr {
+            return mcs::abnf::CTL{}(ctx);
+        };
         static_assert(ctl("\0x00"_ctx));
         static_assert(ctl("\0x1F"_ctx));
         static_assert(ctl("\0x7F"_ctx));

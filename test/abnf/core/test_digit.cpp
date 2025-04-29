@@ -10,6 +10,9 @@ using namespace mcs::abnf;
 int main()
 {
     TEST("digit") = [] {
+        constexpr auto digit = [](auto ctx) constexpr {
+            return mcs::abnf::DIGIT{}(ctx);
+        };
         static_assert(digit("0"_ctx));
         static_assert(digit("9"_ctx));
 

@@ -7,6 +7,6 @@
 namespace mcs::abnf::uri
 {
     //   pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
-    using pchar = alternative<unreserved, pct_encoded, sub_delims, SensitiveChar<':'>,
-                              SensitiveChar<'@'>>;
+    using pchar = alternative<unreserved, pct_encoded, sub_delims, CharSensitive<':'>,
+                              CharSensitive<'@'>>;
 }; // namespace mcs::abnf::uri

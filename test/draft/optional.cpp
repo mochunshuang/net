@@ -128,6 +128,12 @@ int main()
         };
         std::optional<none> v;
         assert(not v);
+        auto ret = []() -> bool {
+            return static_cast<bool>([] {
+                return std::optional<none>{none{}};
+            }());
+        }();
+        assert(ret == true);
     }
 
     std::cout << "main done\n";

@@ -8,29 +8,29 @@
 namespace mcs::abnf::generate
 {
     template <detail::octet C>
-    struct InsensitiveChar
+    struct CharInsensitive
     {
         using rule_concept = detail::rule_t;
 
-        constexpr auto operator()(detail::const_parser_ctx ctx) const noexcept
+        constexpr static auto operator()(detail::parser_ctx_ref ctx) noexcept
             -> detail::consumed_result
         {
-            return !ctx.empty() && (tool::to_upper(C) == ctx.root_span[ctx.cur_index] ||
-                                    tool::to_lower(C) == ctx.root_span[ctx.cur_index])
-                       ? detail::make_consumed_result(1)
+            return !ctx.empty() && (tool::to_upper(ctx.root_span[ctx.cur_index]) == C ||
+                                    tool::to_lower(ctx.root_span[ctx.cur_index]) == C)
+                       ? (ctx.cur_index += 1, detail::make_consumed_result(1))
                        : std::nullopt;
         }
     };
     template <detail::octet C>
-    struct SensitiveChar
+    struct CharSensitive
     {
         using rule_concept = detail::rule_t;
 
-        constexpr auto operator()(detail::const_parser_ctx ctx) const noexcept
+        constexpr static auto operator()(detail::parser_ctx_ref ctx) noexcept
             -> detail::consumed_result
         {
             return !ctx.empty() && ctx.root_span[ctx.cur_index] == C
-                       ? detail::make_consumed_result(1)
+                       ? (ctx.cur_index += 1, detail::make_consumed_result(1))
                        : std::nullopt;
         }
     };

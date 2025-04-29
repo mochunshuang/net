@@ -1,28 +1,29 @@
 #pragma once
 
-#include "./__operable_rule.hpp"
+#include "../detail/__concept.hpp"
 #include "./__transaction.hpp"
-#include <utility>
+#include "./__operators_rule.hpp"
 
 namespace mcs::abnf::operators
 {
-    template <operable_rule... Rule>
+    template <detail::rule... Rule>
     struct sequence
     {
         using rule_concept = detail::rule_t;
 
-        constexpr auto operator()(detail::parser_ctx &ctx) const noexcept
+        constexpr auto operator()(detail::parser_ctx_ref ctx) const noexcept
             -> detail::consumed_result
         {
             transaction trans{ctx};
             std::size_t old_index = ctx.cur_index;
-            auto apply_rule = [&]<typename R>(R &&r) noexcept -> bool {
-                return static_cast<bool>(std::forward<R>(r)(ctx));
-            };
-            return static_cast<bool>((apply_rule(Rule{}) && ...))
+            return static_cast<bool>((Rule{}(ctx) && ...))
                        ? (trans.commit(),
                           detail::make_consumed_result(ctx.cur_index - old_index))
                        : std::nullopt;
         }
     };
+
+    template <typename... T>
+    inline constexpr bool is_operators_rule<sequence<T...>> = true; // NOLINT
+
 }; // namespace mcs::abnf::operators

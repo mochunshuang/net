@@ -11,6 +11,9 @@ using namespace mcs::abnf;
 int main()
 {
     TEST("vchar") = [] {
+        constexpr auto vchar = [](auto ctx) constexpr {
+            return mcs::abnf::VCHAR{}(ctx);
+        };
         static_assert(vchar("!"_ctx));
         static_assert(vchar("!"_ctx).value() == 1);
 
