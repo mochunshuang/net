@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../detail/__types.hpp"
-#include "../detail/__concept.hpp"
 
 namespace mcs::abnf::generate
 {

@@ -3,7 +3,6 @@
 #include "../detail/__types.hpp"
 #include "../tool/__to_upper.hpp"
 #include "../tool/__to_lower.hpp"
-#include "../detail/__concept.hpp"
 
 namespace mcs::abnf::generate
 {
