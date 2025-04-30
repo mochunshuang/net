@@ -3,6 +3,7 @@
 #include "./test_uri.hpp"
 #include <cassert>
 #include <string_view>
+#include <utility>
 
 // NOLINTBEGIN
 using namespace mcs::abnf;
@@ -128,7 +129,7 @@ int main()
             auto ret = ipliteral_rule.parse(cxt);
 
             assert(ret);
-            IP_literal::result_type obj = *ret;
+            IP_literal::result_type obj = *std::move(ret);
             assert(
                 std::holds_alternative<IP_literal::result_type::IPvFuture_t>(obj.value));
             assert(obj.value.index() == 2);
