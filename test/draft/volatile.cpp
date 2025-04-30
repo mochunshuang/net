@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <iostream>
 #include <span>
+#include <string_view>
 // NOLINTBEGIN
 struct A
 {
@@ -104,12 +105,25 @@ int main()
         struct Base
         {
             using type = int;
+            static constexpr auto fun()
+            {
+                return 0;
+            }
         };
 
         struct A : Base
         {
+            static constexpr auto fun()
+            {
+                return std::string_view{"ok"};
+            }
         };
-        using name = A::type; // OK
+        using name [[maybe_unused]] = A::type; // OK
+        static_assert(A{}.fun() == "ok");
+        static_assert(A::fun() == "ok");
+
+        static_assert(A::Base::fun() == 0);
+        static_assert(Base::fun() == 0);
     }
     std::cout << "main done\n";
     return 0;

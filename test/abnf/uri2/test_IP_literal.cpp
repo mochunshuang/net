@@ -2,6 +2,7 @@
 #include "../test_abnf.hpp"
 #include "./test_uri.hpp"
 #include <cassert>
+#include <string_view>
 
 // NOLINTBEGIN
 using namespace mcs::abnf;
@@ -98,6 +99,53 @@ int main()
         static_assert(!ipliteral_rule(invalid_future_5));
 
         static_assert(!ipliteral_rule(invalid_mix_2));
+    }
+
+    // build 测试
+    {
+        // IPv6address_t
+        {
+            constexpr auto valid_ipv6_1 = "[2001:db8::1]"_ctx; // 标准 IPv6 缩写
+            auto ipliteral_rule = mcs::abnf::uri::IP_literal{};
+            auto cxt = valid_ipv6_1;
+            auto ret = ipliteral_rule.parse(cxt);
+            assert(ret);
+            IP_literal::result_type obj = *ret;
+            assert(std::holds_alternative<IP_literal::result_type::IPv6address_t>(
+                obj.value));
+            assert(obj.value.index() == 1);
+
+            assert(std::string_view{"[2001:db8::1]"} == IP_literal::build(obj));
+            assert(std::string_view{"[2001:db8::1]"} ==
+                   IP_literal::result_type::IPv6address_t::domain::build(
+                       std::get<1>(obj.value)));
+        }
+        // IPvFuture 有效用例
+        {
+            constexpr auto valid_future_1 = "[v1.a]"_ctx; // 最小合法结构
+            auto ipliteral_rule = mcs::abnf::uri::IP_literal{};
+            auto cxt = valid_future_1;
+            auto ret = ipliteral_rule.parse(cxt);
+
+            assert(ret);
+            IP_literal::result_type obj = *ret;
+            assert(
+                std::holds_alternative<IP_literal::result_type::IPvFuture_t>(obj.value));
+            assert(obj.value.index() == 2);
+
+            assert(std::string_view{"[v1.a]"} == IP_literal::build(obj));
+            assert(std::string_view{"[v1.a]"} ==
+                   IP_literal::result_type::IPvFuture_t::domain::build(
+                       std::get<2>(obj.value)));
+        }
+        // IPv6 无效用例
+        {
+            constexpr auto invalid_ipv6_1 = "[:::1]"_ctx; // 连续三个冒号
+            auto ipliteral_rule = mcs::abnf::uri::IP_literal{};
+            auto cxt = invalid_ipv6_1;
+            auto ret = ipliteral_rule.parse(cxt);
+            assert(not ret);
+        }
     }
 
     std::cout << "main done\n";

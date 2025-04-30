@@ -7,33 +7,62 @@
 
 namespace mcs::abnf::uri
 {
-    namespace rules
-    {
-        using IP_literal_rule =
-            sequence<CharInsensitive<'['>, alternative<IPv6address, IPvFuture>,
-                     CharInsensitive<']'>>;
-    };
     // IP-literal    = "[" ( IPv6address / IPvFuture  ) "]"
-    struct IP_literal : SimpleRule<IP_literal, rules::IP_literal_rule>
+    struct IP_literal
     {
         struct __type
         {
             using domain = IP_literal;
             using IPv6address_t = IPv6address::result_type;
             using IPvFuture_t = IPvFuture::result_type;
-            std::variant<std::monostate, IPv6address_t, IPv6address_t> value;
+            std::variant<std::monostate, IPv6address_t, IPvFuture_t> value;
         };
         using result_type = __type;
 
-        static constexpr auto parse(detail::parser_ctx ctx) -> std::optional<result_type>
+        static constexpr auto operator()(detail::parser_ctx_ref ctx) noexcept
+            -> detail::consumed_result
         {
-
+            using rule =
+                sequence<CharInsensitive<'['>, alternative<IPv6address, IPvFuture>,
+                         CharInsensitive<']'>>;
+            auto ret = rule{}(ctx);
+            return ret ? detail::make_consumed_result(*ret) : std::nullopt;
+        }
+        static constexpr auto parse(detail::parser_ctx_ref ctx) noexcept
+            -> std::optional<result_type>
+        {
+            auto begin{ctx.cur_index};
+            auto id = 0;
+            auto IPv6address_callback = [&](const detail::parser_ctx & /*ctx*/) noexcept {
+                id = 1;
+            };
+            auto rule = make_sequence{
+                CharInsensitive<'['>{},
+                make_alternative{with_callback(IPv6address{}, IPv6address_callback),
+                                 IPvFuture{}},
+                CharInsensitive<']'>{}};
+            if (auto ret = rule(ctx))
+            {
+                return id == 1
+                           ? result_type{.value =
+                                             result_type::IPv6address_t{
+                                                 .value =
+                                                     ctx.root_span.subspan(begin, *ret)}}
+                           : result_type{
+                                 .value = result_type::IPvFuture_t{
+                                     .value = ctx.root_span.subspan(begin, *ret)}};
+            }
             return std::nullopt;
         }
-        static constexpr auto build(const result_type &ctx)
+
+        static constexpr auto build(const result_type &ctx) noexcept
         {
-            std::string IP_literal;
-            return IP_literal;
+            if (ctx.value.index() == 1)
+                return result_type::IPv6address_t::domain::build(std::get<1>(ctx.value));
+            if (ctx.value.index() == 2)
+                return result_type::IPvFuture_t::domain::build(std::get<2>(ctx.value));
+            std::string ip_literal;
+            return ip_literal;
         }
     };
 

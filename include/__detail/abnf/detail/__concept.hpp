@@ -12,7 +12,6 @@ namespace mcs::abnf::detail
                               {
                                   std::forward<Rule>(rule)(ctx)
                               } noexcept -> std::same_as<detail::consumed_result>;
-                              requires std::is_default_constructible_v<Rule>;
                           };
 
     template <typename Rule>

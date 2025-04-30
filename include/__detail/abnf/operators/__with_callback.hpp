@@ -12,6 +12,8 @@ namespace mcs::abnf::operators
         }
     struct with_callback
     {
+        using rule_concept = detail::rule_t;
+
         std::decay_t<Rule> rule; // NOLINT
         Callback &callback;      // NOLINT
 

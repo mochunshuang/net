@@ -12,6 +12,7 @@
 #include "./operators/__make_sequence.hpp"
 #include "./operators/__max_times.hpp"
 #include "./operators/__with_callback.hpp"
+#include "./operators/__make_alternative.hpp"
 #include "./core/__alpha.hpp"
 #include "./core/__bit.hpp"
 #include "./core/__char.hpp"
@@ -53,6 +54,7 @@ namespace mcs::abnf
     using detail::rule;
 
     using operators::alternative;
+    using operators::make_alternative;
     using operators::optional;
     using operators::repetition;
     using operators::sequence;

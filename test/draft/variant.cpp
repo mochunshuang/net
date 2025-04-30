@@ -1,5 +1,6 @@
 #include <cassert>
 #include <cstdint>
+#include <string>
 #include <variant>
 #include <type_traits>
 #include <vector>
@@ -54,6 +55,14 @@ int main()
     // 检查 var_ 的实际类型
     assert(std::holds_alternative<A>(obj1.getVariant()));
     assert(std::holds_alternative<B>(obj2.getVariant()));
+    {
+        std::variant<int, std::string> v = "abc";
+        assert(v.index() == 1);
+        v = 0;
+        assert(v.index() == 0);
+        v = "abc";
+        assert(v.index() == 1);
+    }
 
     {
         struct A
@@ -67,7 +76,16 @@ int main()
 
         std::variant<std::monostate, A, B> v;
         v = A{};
+        assert(v.index() == 1);
         v = B{};
+
+        assert(v.index() == 2);
+        auto b [[maybe_unused]] = std::get<2>(v);
+
+        v.emplace<A>(2);
+        assert(v.index() == 1);
+        v.emplace<B>(B{});
+        assert(v.index() == 2);
         {
             // std::variant<std::monostate, A, A> v;
             // v = A{}; // 编译期失败
