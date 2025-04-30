@@ -7,8 +7,14 @@
 
 namespace mcs::abnf::uri
 {
+    namespace rules
+    {
+        using IP_literal_rule =
+            sequence<CharInsensitive<'['>, alternative<IPv6address, IPvFuture>,
+                     CharInsensitive<']'>>;
+    };
     // IP-literal    = "[" ( IPv6address / IPvFuture  ) "]"
-    struct IP_literal
+    struct IP_literal : SimpleRule<IP_literal, rules::IP_literal_rule>
     {
         struct __type
         {

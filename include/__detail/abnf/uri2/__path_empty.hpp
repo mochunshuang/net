@@ -1,13 +1,11 @@
 #pragma once
 
-#include "../detail/__types.hpp"
-#include "./__segment.hpp"
-#include "./__segment_nz.hpp"
 #include "__pchar.hpp"
 #include <optional>
 
 namespace mcs::abnf::uri
 {
+
     // path-empty    = 0<pchar> ; path-empty      ; zero characters
     struct path_empty
     {
@@ -18,21 +16,17 @@ namespace mcs::abnf::uri
         using rule = times<0, pchar>;
         using rule_concept = rule_t;
 
-        static constexpr auto operator()(parser_ctx_ref ctx) noexcept -> consumed_result
+        static constexpr auto operator()(detail::parser_ctx_ref ctx) noexcept
+            -> detail::consumed_result
         {
-            if (auto ret = rule{}(ctx))
-                return make_consumed_result(*ret);
-            return std::nullopt;
+            auto ret = rule{}(ctx);
+            return ret ? detail::make_consumed_result(*ret) : std::nullopt;
         }
-        static constexpr auto parse(parser_ctx &ctx) noexcept
+        static constexpr auto parse(detail::parser_ctx_ref ctx) noexcept
             -> std::optional<result_type>
         {
-            if (auto ret = operator()(ctx))
-            {
-                std::exchange(ctx.cur_index, ctx.cur_index + *ret);
-                return {};
-            }
-            return std::nullopt;
+            auto ret = operator()(ctx);
+            return ret ? std::optional<result_type>{} : std::nullopt;
         }
         static constexpr auto build(const result_type & /*ctx*/) noexcept
         {

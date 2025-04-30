@@ -31,7 +31,7 @@
 #include "./generate/__range.hpp"
 #include "./generate/__any_of.hpp"
 #include "./generate/__check_char.hpp"
-#include "./generate/__base_rule.hpp"
+#include "./generate/__simple_rule.hpp"
 
 namespace mcs::abnf
 {
@@ -90,6 +90,6 @@ namespace mcs::abnf
     using generate::Range;
     using generate::any_of;
     using generate::assert_not_is_char;
-    using generate::base_rule;
+    using generate::SimpleRule;
 
 }; // namespace mcs::abnf

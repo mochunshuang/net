@@ -60,7 +60,7 @@ int main()
 
         // 因此 应该是 满足case_0的，为什么不满足呢？
         constexpr auto case_0 = [](auto ctx) constexpr {
-            return mcs::abnf::uri::__detail::IPv6_0{}(ctx);
+            return mcs::abnf::uri::rules::__detail::IPv6_0{}(ctx);
         };
         static_assert(case_0(detail::make_parser_ctx(std::span{case1})));
         {

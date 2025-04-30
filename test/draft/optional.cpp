@@ -134,6 +134,21 @@ int main()
             }());
         }();
         assert(ret == true);
+
+        {
+            auto fun = [] {
+                return std::optional<none>{none{}};
+            };
+            // NOTE: 是不合法的
+            //  auto fun2 = [&] {
+            //      return (auto ret = fun()) ? std::optional<none>{none{}} :
+            //      std::nullopt;
+            //  };
+            [[maybe_unused]] auto fun3 = [&] {
+                auto ret = fun();
+                return ret ? std::optional<none>{none{}} : std::nullopt;
+            };
+        }
     }
 
     std::cout << "main done\n";

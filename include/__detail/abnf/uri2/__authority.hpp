@@ -65,8 +65,9 @@ namespace mcs::abnf::uri
 
             authority.append(ctx.host);
 
+            // NOTE: 检验端口大小
             if (not ctx.port)
-                authority.append(":").append(std::to_string(ctx.port.value()));
+                authority.append(":").append(ctx.port.value());
             return authority;
         }
     };
