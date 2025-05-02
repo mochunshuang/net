@@ -16,7 +16,7 @@ int main()
     auto id = 0;
     auto A_callback = [&](const detail::parser_ctx & /*ctx*/) noexcept {
         id = 1;
-        std::cout << "A_callback called\n";
+        std::cout << "A_callback called \n";
     };
     auto B_callback = [&](const detail::parser_ctx & /*ctx*/) noexcept {
         id = 2;

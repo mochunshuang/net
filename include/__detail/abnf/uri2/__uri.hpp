@@ -28,7 +28,7 @@ namespace mcs::abnf::uri
         };
         using result_type = __type;
 
-        static constexpr auto parse(detail::parser_ctx ctx) -> std::optional<result_type>
+        static constexpr auto parse(parser_ctx_ref ctx) -> std::optional<result_type>
         {
 
             return std::nullopt;

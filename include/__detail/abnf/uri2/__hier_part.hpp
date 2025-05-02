@@ -40,12 +40,23 @@ namespace mcs::abnf::uri
                 value;
         };
         using result_type = __type;
-        static constexpr auto parse(detail::parser_ctx ctx) -> std::optional<result_type>
+        using rule_concept = rule_t;
+
+        static constexpr auto operator()(parser_ctx_ref ctx) noexcept -> consumed_result
+        {
+            using rule = alternative<sequence<CharInsensitive<'/'>, CharInsensitive<'/'>>,
+                                     IPv4address, reg_name>;
+            auto ret = rule{}(ctx);
+            return ret ? detail::make_consumed_result(*ret) : std::nullopt;
+        }
+
+        static constexpr auto parse(parser_ctx_ref ctx) noexcept
+            -> std::optional<result_type>
         {
 
             return std::nullopt;
         }
-        static constexpr auto build(const result_type &ctx)
+        static constexpr auto build(const result_type &ctx) noexcept
         {
 
             std::string hier_part;

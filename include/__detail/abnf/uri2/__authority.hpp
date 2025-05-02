@@ -38,11 +38,42 @@ namespace mcs::abnf::uri
 
       public:
         using result_type = __type;
+        using rule_concept = rule_t;
 
-        static constexpr auto parse(detail::parser_ctx ctx) noexcept
+        static constexpr auto operator()(parser_ctx_ref ctx) noexcept -> consumed_result
+        {
+            using rule = sequence<optional<sequence<userinfo, CharSensitive<'@'>>>, host,
+                                  optional<sequence<CharSensitive<':'>, port>>>;
+            auto ret = rule{}(ctx);
+            return ret ? detail::make_consumed_result(*ret) : std::nullopt;
+        }
+
+        static constexpr auto parse(parser_ctx_ref ctx) noexcept
             -> std::optional<result_type>
         {
-
+            auto index0 = k_max_size_value;
+            auto index1 = k_max_size_value;
+            auto index0_callback = [&](size_t begin, size_t end) noexcept {
+                if (begin < end)
+                    index0 = end;
+            };
+            auto index1_callback = [&](size_t begin, size_t end) noexcept {
+                if (begin < end)
+                    index1 = end;
+            };
+            auto userinfo_seq = make_sequence{
+                userinfo{}, watch_index{CharSensitive<'@'>{}, index0_callback}};
+            auto port_seq =
+                make_sequence{watch_index{CharSensitive<':'>{}, index1_callback}, port{}};
+            auto rule = make_sequence{
+                make_repetition<0, 1, decltype(userinfo_seq)>{userinfo_seq}, host{},
+                make_repetition<0, 1, decltype(port_seq)>{port_seq}};
+            if (auto ret = rule(ctx))
+            {
+                if (index0 != k_max_size_value)
+                {
+                }
+            }
             return std::nullopt;
         }
         static constexpr auto build(const result_type &ctx) noexcept

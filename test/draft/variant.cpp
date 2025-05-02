@@ -1,6 +1,9 @@
+#include <algorithm>
 #include <cassert>
 #include <cstdint>
+#include <optional>
 #include <string>
+#include <tuple>
 #include <variant>
 #include <type_traits>
 #include <vector>
@@ -77,6 +80,11 @@ int main()
         std::variant<std::monostate, A, B> v;
         v = A{};
         assert(v.index() == 1);
+        {
+            // NOTE: std::variant 和普通类型一样
+            auto v2 = std::move(v);
+            assert(v2.index() == 1);
+        }
         v = B{};
 
         assert(v.index() == 2);
@@ -90,6 +98,111 @@ int main()
             // std::variant<std::monostate, A, A> v;
             // v = A{}; // 编译期失败
         }
+    }
+    {
+
+        struct Rule
+        {
+            using T [[maybe_unused]] = B;
+            struct __type
+            {
+                using value_type = std::variant<std::monostate, A, B>;
+
+                value_type value;
+
+                __type() = default;
+                explicit __type(value_type &&v) noexcept : value(std::move(v)) {}
+                __type &operator=(value_type &&v) noexcept
+                {
+                    this->value = std::move(v);
+                    return *this;
+                }
+            };
+            using result_type = __type;
+        };
+        std::tuple<Rule::result_type> ret;
+        auto get_A = [] {
+            return std::variant<std::monostate, A, B>{A{1}};
+        };
+        auto get_B = [] {
+            return std::variant<std::monostate, A, B>{B{1}};
+        };
+        Rule::result_type v{get_A()};
+        {
+            Rule::result_type v;
+            v = Rule::result_type{get_A()};
+        }
+        assert(std::get<0>(ret).value.index() == 0);
+
+        std::get<0>(ret) = Rule::result_type{get_A()};
+        assert(std::get<0>(ret).value.index() == 1);
+
+        std::get<0>(ret) = Rule::result_type{get_B()};
+        assert(std::get<0>(ret).value.index() == 2);
+
+        std::get<0>(ret) = Rule::result_type{std::variant<std::monostate, A, B>{A{1}}};
+        assert(std::get<0>(ret).value.index() == 1);
+
+        std::get<0>(ret) = Rule::result_type{B{1}};
+        assert(std::get<0>(ret).value.index() == 2);
+        {
+            Rule::result_type ret;
+            assert(ret.value.index() == 0);
+            ret = Rule::result_type{B{1}};
+            assert(ret.value.index() == 2);
+        }
+        {
+            auto get_A = [](int v) -> std::optional<A> {
+                return v != 0 ? std::make_optional(A{1}) : std ::nullopt;
+            };
+            auto get_B = [](int v) -> std::optional<B> {
+                return v != 0 ? std::make_optional(B{1}) : std ::nullopt;
+            };
+            auto get_ret = [&](int v0, int v1) -> std::optional<Rule::result_type> {
+                {
+                    Rule::result_type ret;
+                    using value_type = Rule::result_type::value_type;
+                    if (get_A(v0))
+                        ret = Rule::result_type{value_type{get_A(v0).value()}};
+                    // NOTE: 没有开启隐式转换
+                    //  ret = Rule::result_type::value_type{get_A(v0).value()};
+                    //  ret = V{get_A(v0).value()};
+                }
+                if (auto r = get_A(v0))
+                    return Rule::result_type{*r};
+                if (auto r = get_B(v1))
+                    return Rule::result_type{*r};
+                return std::nullopt;
+            };
+            {
+                std::optional<Rule::result_type> ret = get_ret(0, 0);
+                assert(not ret);
+            }
+            {
+                std::optional<Rule::result_type> ret = get_ret(1, 0);
+                assert(ret);
+                assert(ret.value().value.index() == 1);
+                assert(std::holds_alternative<A>(ret.value().value));
+                {
+                    std::optional<Rule::result_type> ret;
+                    // NOTE: 需要定义赋值操作
+                    ret = Rule::result_type::value_type{*get_A(1)};
+                    assert(ret.value().value.index() == 1);
+                    assert(std::holds_alternative<A>(ret.value().value));
+                }
+            }
+            {
+                std::optional<Rule::result_type> ret = get_ret(0, 1);
+                assert(ret);
+                assert((*ret).value.index() == 2);
+                assert(std::holds_alternative<B>(ret.value().value));
+            }
+        }
+    }
+    {
+        std::optional<A> ret1;
+        std::optional<B> ret2;
+        bool ok = ret1 || ret2;
     }
     return 0;
 }

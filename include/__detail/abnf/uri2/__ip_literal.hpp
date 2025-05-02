@@ -18,9 +18,9 @@ namespace mcs::abnf::uri
             std::variant<std::monostate, IPv6address_t, IPvFuture_t> value;
         };
         using result_type = __type;
+        using rule_concept = rule_t;
 
-        static constexpr auto operator()(detail::parser_ctx_ref ctx) noexcept
-            -> detail::consumed_result
+        static constexpr auto operator()(parser_ctx_ref ctx) noexcept -> consumed_result
         {
             using rule =
                 sequence<CharInsensitive<'['>, alternative<IPv6address, IPvFuture>,
@@ -28,7 +28,7 @@ namespace mcs::abnf::uri
             auto ret = rule{}(ctx);
             return ret ? detail::make_consumed_result(*ret) : std::nullopt;
         }
-        static constexpr auto parse(detail::parser_ctx_ref ctx) noexcept
+        static constexpr auto parse(parser_ctx_ref ctx) noexcept
             -> std::optional<result_type>
         {
             auto begin{ctx.cur_index};

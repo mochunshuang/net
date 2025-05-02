@@ -27,6 +27,10 @@ struct product
 
   public:
     explicit product(T &&...t) : impl{std::forward<T>(t)...} {}
+    auto &get()
+    {
+        return impl.template get<0>();
+    }
 };
 template <typename... T> // NOLINTNEXTLINE
 product(T &&...r) -> product<std::remove_cvref_t<T>...>;
@@ -62,6 +66,18 @@ product(T &&...t) : impl{std::forward<T>(t)...} {} |             ~~~~^~~~
     // product<no_copy_no_move_type> b2(no_copy_no_move_type{1}); // NOTE: 做不到
     draft::__detail::product_type<no_copy_no_move_type> b2{
         no_copy_no_move_type{}}; // 可以
+
+    auto get_value = b1.get();
+    assert(get_value == 42);
+    {
+        draft::__detail::product_type<int, double> impl{0, 2.0};
+        auto &get_value = impl.get<0>();
+        assert(get_value == 0);
+        assert(impl.get<1>() == 2.0);
+
+        std::get<0>(impl) = 1;
+        assert(impl.get<0>() == 1);
+    }
 }
 
 template <typename... T>

@@ -29,7 +29,8 @@ namespace mcs::abnf::generate
         {
             auto begin{ctx.cur_index};
             auto ret = operator()(ctx);
-            return ret ? result_type{.value = ctx.root_span.subspan(begin, *ret)}
+            return ret ? std::make_optional(
+                             result_type{.value = ctx.root_span.subspan(begin, *ret)})
                        : std::nullopt;
         }
         static constexpr auto build(const result_type &ctx) noexcept

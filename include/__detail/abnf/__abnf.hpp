@@ -13,6 +13,8 @@
 #include "./operators/__max_times.hpp"
 #include "./operators/__with_callback.hpp"
 #include "./operators/__make_alternative.hpp"
+#include "./operators/__make_repetition.hpp"
+#include "./operators/__watch_index.hpp"
 #include "./core/__alpha.hpp"
 #include "./core/__bit.hpp"
 #include "./core/__char.hpp"
@@ -57,6 +59,7 @@ namespace mcs::abnf
     using operators::make_alternative;
     using operators::optional;
     using operators::repetition;
+    using operators::make_repetition;
     using operators::sequence;
     using operators::make_sequence;
     using operators::times;
@@ -64,6 +67,7 @@ namespace mcs::abnf
     using operators::zero_or_more;
     using operators::one_or_more;
     using operators::with_callback;
+    using operators::watch_index;
 
     using core::ALPHA;
     using core::BIT;

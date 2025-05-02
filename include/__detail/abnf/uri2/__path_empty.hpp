@@ -16,13 +16,12 @@ namespace mcs::abnf::uri
         using rule = times<0, pchar>;
         using rule_concept = rule_t;
 
-        static constexpr auto operator()(detail::parser_ctx_ref ctx) noexcept
-            -> detail::consumed_result
+        static constexpr auto operator()(parser_ctx_ref ctx) noexcept -> consumed_result
         {
             auto ret = rule{}(ctx);
             return ret ? detail::make_consumed_result(*ret) : std::nullopt;
         }
-        static constexpr auto parse(detail::parser_ctx_ref ctx) noexcept
+        static constexpr auto parse(parser_ctx_ref ctx) noexcept
             -> std::optional<result_type>
         {
             auto ret = operator()(ctx);
