@@ -33,7 +33,7 @@ namespace mcs::abnf::uri
         {
             auto begin{ctx.cur_index};
             auto id = 0;
-            auto IPv6address_callback = [&](const detail::parser_ctx & /*ctx*/) noexcept {
+            auto IPv6address_callback = [&](const parser_ctx & /*ctx*/) noexcept {
                 id = 1;
             };
             auto rule = make_sequence{

@@ -279,7 +279,7 @@ struct make_repetition : product_type<Rule>
     constexpr auto parse(parser_ctx_ref ctx) noexcept -> std::optional<result_type>
     {
         transaction trans{ctx};
-        auto &[rule] = *this;
+        auto &rule = this->template get<0>();
         std::size_t begin = ctx.cur_index;
         std::size_t count = 0;
         while (count < Max && ctx.valid())
@@ -292,6 +292,38 @@ struct make_repetition : product_type<Rule>
                    ? (trans.commit(),
                       std::make_optional(result_type{
                           .value = ctx.root_span.subspan(begin, ctx.cur_index)}))
+                   : std::nullopt;
+    }
+    static constexpr auto build(const result_type &ctx) noexcept
+    {
+        return std::string(ctx.value.begin(), ctx.value.end());
+    }
+};
+
+template <typename Rule>
+struct CharRule : product_type<Rule>
+{
+    using rule_concept = rule_t;
+
+    struct __type
+    {
+        using domain = CharRule;
+        octets_view value;
+    };
+    using result_type = __type;
+
+    constexpr auto operator()(parser_ctx_ref ctx) noexcept -> consumed_result
+    {
+        auto &rule = this->template get<0>();
+        auto ret = rule(ctx);
+        return ret ? make_consumed_result(*ret) : std::nullopt;
+    }
+    constexpr auto parse(parser_ctx_ref ctx) noexcept -> std::optional<result_type>
+    {
+        auto begin{ctx.cur_index};
+        auto ret = operator()(ctx);
+        return ret ? std::make_optional(
+                         result_type{.value = ctx.root_span.subspan(begin, *ret)})
                    : std::nullopt;
     }
     static constexpr auto build(const result_type &ctx) noexcept
@@ -467,6 +499,40 @@ int main()
                 >;
             ComplexRule rule = ComplexRule{
                 make_repetition<1, 2, A_rule>{A_rule{}},
+                make_alternative{B_rule{}, make_sequence{A_rule{}, B_rule{}}}};
+            using Rule = decltype(rule);
+
+            octet str1[] = {'A', 'B'}; // NOLINT (1次A + B)
+            std::span<octet> span1{str1};
+            parser_ctx ctx1{.root_span = span1, .cur_index = 0, .end_index = 2};
+            auto ret1 = rule.parse(ctx1);
+            assert(ret1);
+            assert(Rule::build(ret1.value()) == "AB");
+
+            octet str2[] = {'A', 'A', 'A', 'B'}; // NOLINT (2次A + AB)
+            std::span<octet> span2{str2};
+            parser_ctx ctx2{.root_span = span2, .cur_index = 0, .end_index = 4};
+            auto ret2 = rule.parse(ctx2);
+            assert(ret2);
+            assert(ctx2.cur_index == 4); // 匹配2次A + AB
+            assert(Rule::build(ret2.value()) == "AAAB");
+
+            octet str3[] = {'A', 'C'}; // NOLINT (无效）
+            std::span<octet> span3{str3};
+            parser_ctx ctx3{.root_span = span3, .cur_index = 0, .end_index = 2};
+            auto ret3 = rule.parse(ctx3);
+            assert(!ret3);
+        }
+        // CharRule<CharSensitive<'A'>> 安全混用
+        {
+            // 测试用例3：复杂嵌套（序列包含重复和选择）
+            using ComplexRule = make_sequence<
+                make_repetition<1, 2, CharRule<CharSensitive<'A'>>>,    // 1-2次A
+                make_alternative<B_rule, make_sequence<A_rule, B_rule>> // B 或 AB
+                >;
+            ComplexRule rule = ComplexRule{
+                make_repetition<1, 2, CharRule<CharSensitive<'A'>>>{
+                    CharRule<CharSensitive<'A'>>{}},
                 make_alternative{B_rule{}, make_sequence{A_rule{}, B_rule{}}}};
             using Rule = decltype(rule);
 
