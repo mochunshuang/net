@@ -14,6 +14,7 @@ namespace mcs::abnf::uri
     // IPv4address   = dec-octet "." dec-octet "." dec-octet "." dec-octet
     struct IPv4address : SimpleRule<IPv4address, rules::IPv4address_rule>
     {
+                          using SimpleRule<IPv4address, rules::IPv4address_rule>::SimpleRule;
     };
 
 }; // namespace mcs::abnf::uri

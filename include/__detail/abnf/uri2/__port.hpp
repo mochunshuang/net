@@ -11,6 +11,7 @@ namespace mcs::abnf::uri
     // port          = *DIGIT
     struct port : SimpleRule<port, rules::port_rule>
     {
+        using SimpleRule<port, rules::port_rule>::SimpleRule;
     };
 
 }; // namespace mcs::abnf::uri

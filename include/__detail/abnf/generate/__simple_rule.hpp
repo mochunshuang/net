@@ -9,6 +9,10 @@ namespace mcs::abnf::generate
     template <typename Domain, operators::operators_rule Rule>
     struct SimpleRule
     {
+      private:
+        SimpleRule() = default;
+
+      public:
         using rule_concept = detail::rule_t;
 
         struct __type
@@ -37,6 +41,7 @@ namespace mcs::abnf::generate
         {
             return std::string(ctx.value.begin(), ctx.value.end());
         }
+        friend Domain;
     };
 
 }; // namespace mcs::abnf::generate

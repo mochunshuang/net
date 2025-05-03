@@ -14,6 +14,7 @@ namespace mcs::abnf::uri
     //  reg-name      = *( unreserved / pct-encoded / sub-delims )
     struct reg_name : SimpleRule<reg_name, rules::reg_name_rule>
     {
+        using SimpleRule<reg_name, rules::reg_name_rule>::SimpleRule;
     };
 
 }; // namespace mcs::abnf::uri

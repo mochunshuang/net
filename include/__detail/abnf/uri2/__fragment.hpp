@@ -13,6 +13,7 @@ namespace mcs::abnf::uri
     // fragment      = *( pchar / "/" / "?" )
     struct fragment : SimpleRule<fragment, rules::fragment_rule>
     {
+                                  using SimpleRule<fragment, rules::fragment_rule>::SimpleRule;
     };
 
 }; // namespace mcs::abnf::uri

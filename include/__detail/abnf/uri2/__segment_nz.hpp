@@ -11,5 +11,6 @@ namespace mcs::abnf::uri
     // segment-nz    = 1*pchar
     struct segment_nz : SimpleRule<segment_nz, rules::segment_nz_rule>
     {
+        using SimpleRule<segment_nz, rules::segment_nz_rule>::SimpleRule;
     };
 }; // namespace mcs::abnf::uri

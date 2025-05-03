@@ -13,6 +13,7 @@ namespace mcs::abnf::uri
     // path-noscheme = segment-nz-nc *( "/" segment )
     struct path_noscheme : SimpleRule<path_noscheme, rules::path_noscheme_rule>
     {
+                using SimpleRule<path_noscheme, rules::path_noscheme_rule>::SimpleRule;
     };
 
 }; // namespace mcs::abnf::uri

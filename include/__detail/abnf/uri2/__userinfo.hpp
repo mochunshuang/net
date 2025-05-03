@@ -14,6 +14,7 @@ namespace mcs::abnf::uri
     // userinfo      = *( unreserved / pct-encoded / sub-delims / ":" )
     struct userinfo : SimpleRule<userinfo, rules::userinfo_rule>
     {
+        using SimpleRule<userinfo, rules::userinfo_rule>::SimpleRule;
     };
 
 }; // namespace mcs::abnf::uri

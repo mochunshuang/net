@@ -15,6 +15,7 @@ namespace mcs::abnf::uri
     // path-absolute = "/" [ segment-nz *( "/" segment ) ]
     struct path_absolute : SimpleRule<path_absolute, rules::path_absolute_rule>
     {
+                      using SimpleRule<path_absolute, rules::path_absolute_rule>::SimpleRule;
     };
 
 }; // namespace mcs::abnf::uri
