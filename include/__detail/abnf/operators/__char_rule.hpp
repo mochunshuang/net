@@ -18,14 +18,15 @@ namespace mcs::abnf::operators
         };
         using result_type = __type;
 
-        constexpr auto operator()(detail::parser_ctx_ref ctx) noexcept
+        constexpr auto operator()(detail::parser_ctx_ref ctx) const noexcept
             -> detail::consumed_result
         {
             auto &rule = this->template get<0>();
             auto ret = rule(ctx);
-            return ret ? detail::make_consumed_result(*ret) : std::nullopt;
+            return ret ? (ctx.cur_index += 1, detail::make_consumed_result(*ret))
+                       : std::nullopt;
         }
-        constexpr auto parse(detail::parser_ctx_ref ctx) noexcept
+        constexpr auto parse(detail::parser_ctx_ref ctx) const noexcept
             -> std::optional<result_type>
         {
             auto begin{ctx.cur_index};

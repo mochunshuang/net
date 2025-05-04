@@ -14,7 +14,7 @@ namespace mcs::abnf::operators
     {
         using rule_concept = detail::rule_t;
 
-        constexpr auto operator()(detail::parser_ctx_ref ctx) noexcept
+        constexpr auto operator()(detail::parser_ctx_ref ctx) const noexcept
             -> detail::consumed_result
         {
             transaction trans{ctx};
@@ -41,7 +41,7 @@ namespace mcs::abnf::operators
         };
         using result_type = __type;
 
-        constexpr auto parse(detail::parser_ctx_ref ctx) noexcept
+        constexpr auto parse(detail::parser_ctx_ref ctx) const noexcept
             -> std::optional<result_type>
         {
             transaction trans{ctx};
