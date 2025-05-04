@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
+#include <iostream>
 #include <optional>
 #include <string>
 #include <tuple>
@@ -196,14 +197,20 @@ int main()
                 assert(ret);
                 assert((*ret).value.index() == 2);
                 assert(std::holds_alternative<B>(ret.value().value));
+
+                // 等价 (*ret).value.index() == 2
+                assert(ret->value.index() == 2);
             }
         }
     }
     {
         std::optional<A> ret1;
         std::optional<B> ret2;
-        bool ok = ret1 || ret2;
+        bool ok [[maybe_unused]] = ret1 || ret2;
     }
+    {
+    }
+    std::cout << "done\n";
     return 0;
 }
 // NOLINTEND

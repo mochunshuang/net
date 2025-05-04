@@ -2,6 +2,7 @@
 
 #include "../detail/__types.hpp"
 #include "__product_type.hpp"
+#include "./__transaction.hpp"
 #include <string>
 
 namespace mcs::abnf::operators
@@ -21,9 +22,10 @@ namespace mcs::abnf::operators
         constexpr auto operator()(detail::parser_ctx_ref ctx) const noexcept
             -> detail::consumed_result
         {
+            transaction trans{ctx};
             auto &rule = this->template get<0>();
             auto ret = rule(ctx);
-            return ret ? (ctx.cur_index += 1, detail::make_consumed_result(*ret))
+            return ret ? (trans.commit(), detail::make_consumed_result(*ret))
                        : std::nullopt;
         }
         constexpr auto parse(detail::parser_ctx_ref ctx) const noexcept

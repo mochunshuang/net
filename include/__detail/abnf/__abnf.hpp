@@ -15,6 +15,9 @@
 #include "./operators/__make_alternative.hpp"
 #include "./operators/__make_repetition.hpp"
 #include "./operators/__watch_index.hpp"
+#include "./operators/__make_optional.hpp"
+#include "./operators/__char_rule.hpp"
+
 #include "./core/__alpha.hpp"
 #include "./core/__bit.hpp"
 #include "./core/__char.hpp"
@@ -68,6 +71,8 @@ namespace mcs::abnf
     using operators::one_or_more;
     using operators::with_callback;
     using operators::watch_index;
+    using operators::make_optional;
+    using operators::CharRule;
 
     using core::ALPHA;
     using core::BIT;

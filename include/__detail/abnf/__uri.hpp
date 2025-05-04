@@ -15,6 +15,7 @@
 #include "./uri2/__path_abempty.hpp"
 #include "./uri2/__userinfo.hpp"
 #include "./uri2/__host.hpp"
+#include "./uri2/__authority.hpp"
 
 /**
  * @brief [ABNF-uri2]
