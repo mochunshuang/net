@@ -11,6 +11,7 @@ namespace mcs::abnf::uri
     {
         struct __type
         {
+            using domain = path_empty;
         };
         using result_type = __type;
         using rule = times<0, pchar>;
@@ -25,12 +26,12 @@ namespace mcs::abnf::uri
             -> std::optional<result_type>
         {
             auto ret = operator()(ctx);
-            return ret ? std::optional<result_type>{} : std::nullopt;
+            return ret ? std::optional<result_type>{__type{}} : std::nullopt;
         }
         static constexpr auto build(const result_type & /*ctx*/) noexcept
         {
-            constexpr std::string k_path_empty;
-            return k_path_empty;
+            std::string path_empty;
+            return path_empty;
         }
     };
 
