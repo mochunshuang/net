@@ -27,24 +27,53 @@ namespace mcs::abnf::uri
             std::optional<fragment_t> fragment;
         };
         using result_type = __type;
+        using rule_concept = rule_t;
+
+        static constexpr auto operator()(parser_ctx_ref ctx) noexcept -> consumed_result
+        {
+            constexpr auto k_rule =
+                sequence<scheme, CharInsensitive<':'>, hier_part,
+                         optional<sequence<CharInsensitive<'?'>, query>>,
+                         optional<sequence<CharInsensitive<'#'>, fragment>>>{};
+            auto ret = k_rule(ctx);
+            return ret ? make_consumed_result(*ret) : std::nullopt;
+        }
 
         static constexpr auto parse(parser_ctx_ref ctx) -> std::optional<result_type>
         {
-
-            return std::nullopt;
+            constexpr auto k_rule = make_sequence<
+                scheme, CharRule<CharInsensitive<':'>>, hier_part,
+                make_optional<make_sequence<CharRule<CharInsensitive<'?'>>, query>>,
+                make_optional<make_sequence<CharRule<CharInsensitive<'#'>>, fragment>>>{};
+            auto ret = k_rule.parse(ctx);
+            if (not ret)
+                return std::nullopt;
+            result_type result;
+            auto &ref = (*ret).value;
+            result.scheme = ref.get<0>();
+            result.hier_part = ref.get<2>();
+            if (ref.get<3>().index() == 1)
+            {
+                auto &sequence = std::get<1>(ref.get<3>()).value;
+                result.query = sequence.get<1>();
+            }
+            if (ref.get<4>().index() == 1)
+                result.fragment = std::get<1>(ref.get<4>()).value.get<1>();
+            return result;
         }
 
-        static constexpr auto build(const __type &ctx)
+        static constexpr auto build(const result_type &ctx) noexcept
         {
-            struct URI
-            {
-                std::string scheme;
-                std::string hier_part;
-                std::string query;
-                std::string fragment;
-            };
-
-            return std::nullopt;
+            std::string build;
+            build.append(result_type::scheme_t::domain::build(ctx.scheme))
+                .append(":")
+                .append(result_type::hier_part_t::domain::build(ctx.hier_part));
+            if (ctx.query)
+                build.append("?").append(result_type::query_t::domain::build(*ctx.query));
+            if (ctx.fragment)
+                build.append("#").append(
+                    result_type::fragment_t::domain::build(*ctx.fragment));
+            return build;
         }
     };
 }; // namespace mcs::abnf::uri

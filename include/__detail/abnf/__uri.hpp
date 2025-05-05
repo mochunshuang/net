@@ -17,6 +17,7 @@
 #include "./uri2/__host.hpp"
 #include "./uri2/__authority.hpp"
 #include "./uri2/__hier_part.hpp"
+#include "./uri2/__uri.hpp"
 
 /**
  * @brief [ABNF-uri2]

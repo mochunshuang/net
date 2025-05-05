@@ -13,7 +13,7 @@ namespace mcs::abnf::uri
     // scheme        = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
     struct scheme : SimpleRule<scheme, rules::scheme_rule>
     {
-                using SimpleRule<scheme, rules::scheme_rule>::SimpleRule;
+        using SimpleRule<scheme, rules::scheme_rule>::SimpleRule;
     };
 
 }; // namespace mcs::abnf::uri
