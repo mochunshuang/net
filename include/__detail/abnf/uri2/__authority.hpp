@@ -7,7 +7,6 @@
 #include <optional>
 #include <string>
 #include <type_traits>
-#include <utility>
 
 namespace mcs::abnf::uri
 {
@@ -26,16 +25,6 @@ namespace mcs::abnf::uri
             host_t host;
             std::optional<port_t> port;
         };
-        struct authority_t
-        {
-            using port_type = decltype(port::build(std::declval<__type::port_t>()));
-            using userinfo_type =
-                decltype(userinfo::build(std::declval<__type::userinfo_t>()));
-
-            std::optional<userinfo_type> userinfo;
-            decltype(host::build(std::declval<__type::host_t>())) host;
-            std::optional<port_type> port;
-        };
 
       public:
         using result_type = __type;
@@ -52,11 +41,11 @@ namespace mcs::abnf::uri
         static constexpr auto parse(parser_ctx_ref ctx) noexcept
             -> std::optional<result_type>
         {
-            auto rule = make_sequence{
+            constexpr auto k_rule = make_sequence{
                 make_optional{make_sequence{userinfo{}, CharRule<CharSensitive<'@'>>{}}},
                 host{},
                 make_optional{make_sequence{CharRule<CharSensitive<':'>>{}, port{}}}};
-            auto ret = rule.parse(ctx);
+            auto ret = k_rule.parse(ctx);
             if (not ret)
                 return std::nullopt;
             result_type result;
@@ -74,27 +63,17 @@ namespace mcs::abnf::uri
         }
         static constexpr auto build(const result_type &ctx) noexcept
         {
-            return authority_t{
-                .userinfo = ctx.userinfo.has_value()
-                                ? std::optional<authority_t::userinfo_type>(
-                                      userinfo::build(ctx.userinfo.value()))
-                                : std::nullopt,
-                .host = host::build(ctx.host),
-                .port = ctx.port.has_value() ? std::optional<authority_t::port_type>(
-                                                   port::build(ctx.port.value()))
-                                             : std::nullopt};
-        }
-        static constexpr auto toString(const authority_t &ctx) noexcept
-        {
             std::string authority;
-            if (not ctx.userinfo)
-                authority.append(ctx.userinfo.value()).append("@");
+            if (ctx.userinfo)
+                authority.append(result_type::userinfo_t::domain::build(*(ctx.userinfo)))
+                    .append("@");
 
-            authority.append(ctx.host);
+            authority.append(result_type::host_t::domain::build(ctx.host));
 
             // NOTE: 检验端口大小
-            if (not ctx.port)
-                authority.append(":").append(ctx.port.value());
+            if (ctx.port)
+                authority.append(":").append(
+                    result_type::port_t::domain::build(*(ctx.port)));
             return authority;
         }
     };
