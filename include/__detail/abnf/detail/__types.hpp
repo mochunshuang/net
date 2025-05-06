@@ -37,7 +37,7 @@ namespace mcs::abnf::detail
         {
             return end_index - cur_index;
         }
-        [[nodiscard]] constexpr auto empty() const noexcept
+        [[nodiscard]] constexpr auto done() const noexcept
         {
             return end_index == cur_index;
         }

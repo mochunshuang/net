@@ -147,7 +147,7 @@ int main()
             auto ret = authority_rule.parse(ctx);
             assert(authority::buildString(*ret) == std::string("user@name"));
 
-            assert(not ctx.empty());
+            assert(not ctx.done());
         }
     }
 

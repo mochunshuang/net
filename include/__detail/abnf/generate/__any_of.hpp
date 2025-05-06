@@ -21,7 +21,7 @@ namespace mcs::abnf::generate
         static constexpr auto operator()(detail::parser_ctx_ref ctx) noexcept
             -> detail::consumed_result
         {
-            return !ctx.empty() && k_bitset[ctx.root_span[ctx.cur_index]]
+            return !ctx.done() && k_bitset[ctx.root_span[ctx.cur_index]]
                        ? (ctx.cur_index += 1, detail::make_consumed_result(1))
                        : std::nullopt;
         }

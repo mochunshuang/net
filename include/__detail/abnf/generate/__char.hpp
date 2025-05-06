@@ -23,7 +23,7 @@ namespace mcs::abnf::generate
         {
             if constexpr (Insensitive)
             {
-                return !ctx.empty() &&
+                return !ctx.done() &&
                                (tool::to_upper(ctx.root_span[ctx.cur_index]) == C ||
                                 tool::to_lower(ctx.root_span[ctx.cur_index]) == C)
                            ? (ctx.cur_index++, detail::make_consumed_result(1))
@@ -31,7 +31,7 @@ namespace mcs::abnf::generate
             }
             else
             {
-                return !ctx.empty() && ctx.root_span[ctx.cur_index] == C
+                return !ctx.done() && ctx.root_span[ctx.cur_index] == C
                            ? (ctx.cur_index++, detail::make_consumed_result(1))
                            : std::nullopt;
             }

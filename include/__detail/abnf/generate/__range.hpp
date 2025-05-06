@@ -12,8 +12,8 @@ namespace mcs::abnf::generate
         constexpr static auto operator()(detail::parser_ctx &ctx) noexcept
             -> detail::consumed_result
         {
-            return !ctx.empty() && (begin <= ctx.root_span[ctx.cur_index] &&
-                                    ctx.root_span[ctx.cur_index] <= end)
+            return !ctx.done() && (begin <= ctx.root_span[ctx.cur_index] &&
+                                   ctx.root_span[ctx.cur_index] <= end)
                        ? (ctx.cur_index += 1, detail::make_consumed_result(1))
                        : std::nullopt;
         }
