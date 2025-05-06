@@ -43,8 +43,8 @@ namespace mcs::abnf::uri
         {
             constexpr auto k_rule =
                 sequence<scheme, CharInsensitive<':'>, hier_part,
-                         make_optional<sequence<CharInsensitive<'?'>, query>>,
-                         make_optional<sequence<CharInsensitive<'#'>, fragment>>>{};
+                         optional<sequence<CharInsensitive<'?'>, query>>,
+                         optional<sequence<CharInsensitive<'#'>, fragment>>>{};
             auto ret = k_rule.parse(ctx);
             if (not ret)
                 return std::nullopt;

@@ -42,9 +42,8 @@ namespace mcs::abnf::uri
         static constexpr auto parse(parser_ctx_ref ctx) noexcept
             -> std::optional<result_type>
         {
-            using rule =
-                sequence<make_optional<sequence<userinfo, CharSensitive<'@'>>>, host,
-                         make_optional<sequence<CharSensitive<':'>, port>>>;
+            using rule = sequence<optional<sequence<userinfo, CharSensitive<'@'>>>, host,
+                                  optional<sequence<CharSensitive<':'>, port>>>;
             constexpr auto k_rule = rule{};
             auto ret = k_rule.parse(ctx);
             if (not ret)
