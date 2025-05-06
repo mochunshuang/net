@@ -91,15 +91,15 @@ int main()
             auto ctx = make_parser_ctx(full_authority_1);
             auto ret = authority_rule.parse(ctx);
             assert(ret);
-            assert(authority::result_type::userinfo_t::domain::build(
+            assert(authority::result_type::userinfo_t::domain::buildString(
                        (*ret).userinfo.value()) == std::string("user%3Apass"));
-            assert(authority::result_type::host_t::domain::build((*ret).host) ==
+            assert(authority::result_type::host_t::domain::buildString((*ret).host) ==
                    std::string("[v9.fe]"));
             std::cout << "ctx.cur_index: " << ctx.cur_index << '\n';
             assert(ctx.cur_index == full_authority_1.size());
             assert((*ret).port.has_value());
-            assert(authority::result_type::port_t::domain::build((*ret).port.value()) ==
-                   std::string("8080"));
+            assert(authority::result_type::port_t::domain::buildString(
+                       (*ret).port.value()) == std::string("8080"));
             {
                 auto rule =
                     make_optional{make_sequence{CharRule<CharSensitive<':'>>{}, port{}}};
@@ -110,9 +110,10 @@ int main()
             }
             assert((*ret).userinfo.has_value());
             assert((*ret).port.has_value());
-            std::cout << authority::build(*ret) << '\n';
+            std::cout << authority::buildString(*ret) << '\n';
             //
-            assert(authority::build(*ret) == std::string("user%3Apass@[v9.fe]:8080"));
+            assert(authority::buildString(*ret) ==
+                   std::string("user%3Apass@[v9.fe]:8080"));
         }
         {
             // 仅有 userinfo 和 reg-name
@@ -120,21 +121,22 @@ int main()
                 "~john:test@example%2Ecom"_span; // 带编码点的域名
             auto ctx = make_parser_ctx(user_host_case);
             auto ret = authority_rule.parse(ctx);
-            assert(authority::build(*ret) == std::string("~john:test@example%2Ecom"));
+            assert(authority::buildString(*ret) ==
+                   std::string("~john:test@example%2Ecom"));
         }
         {
             // 仅有 IPv4 和 port; 没对 port 进行限制 65536 也是对的
             constexpr auto ipv4_port = "192.168.0.1:65535"_span;
             auto ctx = make_parser_ctx(ipv4_port);
             auto ret = authority_rule.parse(ctx);
-            assert(authority::build(*ret) == std::string("192.168.0.1:65535"));
+            assert(authority::buildString(*ret) == std::string("192.168.0.1:65535"));
         }
         {
             // 边界用例：空port（仅冒号）
             constexpr auto empty_port = "[::1]:"_span; // 允许port为空字符串
             auto ctx = make_parser_ctx(empty_port);
             auto ret = authority_rule.parse(ctx);
-            assert(authority::build(*ret) == std::string("[::1]:"));
+            assert(authority::buildString(*ret) == std::string("[::1]:"));
         }
         {
             // NOTE: 需要一个包装函数，来统一处理和判断是否真的解析完毕
@@ -143,7 +145,7 @@ int main()
             constexpr auto multi_at = "user@name@[::1]"_span;
             auto ctx = make_parser_ctx(multi_at);
             auto ret = authority_rule.parse(ctx);
-            assert(authority::build(*ret) == std::string("user@name"));
+            assert(authority::buildString(*ret) == std::string("user@name"));
 
             assert(not ctx.empty());
         }

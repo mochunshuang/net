@@ -81,29 +81,29 @@ namespace mcs::abnf::uri
                 result.value = std::get<4>(ret->value);
             return result;
         }
-        static constexpr auto build(const result_type &ctx) noexcept
+        static constexpr auto buildString(const result_type &ctx) noexcept
         {
             if (std::holds_alternative<result_type::authority_path_t>(ctx.value))
             {
                 std::string build("//");
                 result_type::authority_path_t authority_path = std::get<1>(ctx.value);
                 build
-                    .append(
-                        result_type::authority_t::domain::build(authority_path.authority))
-                    .append(result_type::path_abempty_t::domain::build(
+                    .append(result_type::authority_t::domain::buildString(
+                        authority_path.authority))
+                    .append(result_type::path_abempty_t::domain::buildString(
                         authority_path.path_abempty));
                 return build;
             }
             std::string hier_part;
             if (ctx.value.index() == 2)
-                hier_part.append(
-                    result_type::path_absolute_t::domain::build(std::get<2>(ctx.value)));
+                hier_part.append(result_type::path_absolute_t::domain::buildString(
+                    std::get<2>(ctx.value)));
             else if (ctx.value.index() == 3)
-                hier_part.append(
-                    result_type::path_rootless_t::domain::build(std::get<3>(ctx.value)));
+                hier_part.append(result_type::path_rootless_t::domain::buildString(
+                    std::get<3>(ctx.value)));
             else if (ctx.value.index() == 4)
-                hier_part.append(
-                    result_type::path_empty_t::domain::build(std::get<4>(ctx.value)));
+                hier_part.append(result_type::path_empty_t::domain::buildString(
+                    std::get<4>(ctx.value)));
             return hier_part;
         }
     };

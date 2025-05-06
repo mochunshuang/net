@@ -167,7 +167,7 @@ int main()
             std::cout << "ctx.cur_index: " << ctx.cur_index
                       << ", full_uri.size(): " << full_uri.size() << '\n';
             assert(ctx.cur_index = full_uri.size());
-            assert(URI::build(*ret) ==
+            assert(URI::buildString(*ret) ==
                    std::string("https://user:pass@[v1.a]:80/path?q=1#frag"));
         }
     }

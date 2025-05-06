@@ -62,17 +62,18 @@ namespace mcs::abnf::uri
             return result;
         }
 
-        static constexpr auto build(const result_type &ctx) noexcept
+        static constexpr auto buildString(const result_type &ctx) noexcept
         {
             std::string build;
-            build.append(result_type::scheme_t::domain::build(ctx.scheme))
+            build.append(result_type::scheme_t::domain::buildString(ctx.scheme))
                 .append(":")
-                .append(result_type::hier_part_t::domain::build(ctx.hier_part));
+                .append(result_type::hier_part_t::domain::buildString(ctx.hier_part));
             if (ctx.query)
-                build.append("?").append(result_type::query_t::domain::build(*ctx.query));
+                build.append("?").append(
+                    result_type::query_t::domain::buildString(*ctx.query));
             if (ctx.fragment)
                 build.append("#").append(
-                    result_type::fragment_t::domain::build(*ctx.fragment));
+                    result_type::fragment_t::domain::buildString(*ctx.fragment));
             return build;
         }
     };

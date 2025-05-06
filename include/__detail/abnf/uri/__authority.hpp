@@ -61,19 +61,20 @@ namespace mcs::abnf::uri
                 result.port = std::get<1>(port).value.get<1>();
             return result;
         }
-        static constexpr auto build(const result_type &ctx) noexcept
+        static constexpr auto buildString(const result_type &ctx) noexcept
         {
             std::string authority;
             if (ctx.userinfo)
-                authority.append(result_type::userinfo_t::domain::build(*(ctx.userinfo)))
+                authority
+                    .append(result_type::userinfo_t::domain::buildString(*(ctx.userinfo)))
                     .append("@");
 
-            authority.append(result_type::host_t::domain::build(ctx.host));
+            authority.append(result_type::host_t::domain::buildString(ctx.host));
 
             // NOTE: 检验端口大小
             if (ctx.port)
                 authority.append(":").append(
-                    result_type::port_t::domain::build(*(ctx.port)));
+                    result_type::port_t::domain::buildString(*(ctx.port)));
             return authority;
         }
     };

@@ -28,7 +28,7 @@ namespace mcs::abnf::uri
             auto ret = operator()(ctx);
             return ret ? std::optional<result_type>{__type{}} : std::nullopt;
         }
-        static constexpr auto build(const result_type & /*ctx*/) noexcept
+        static constexpr auto buildString(const result_type & /*ctx*/) noexcept
         {
             std::string path_empty;
             return path_empty;

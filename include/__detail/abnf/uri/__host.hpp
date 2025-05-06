@@ -45,14 +45,17 @@ namespace mcs::abnf::uri
                 return result_type{.value = result_type::reg_name_t{*ret}};
             return std::nullopt;
         }
-        static constexpr auto build(const result_type &ctx) noexcept
+        static constexpr auto buildString(const result_type &ctx) noexcept
         {
             if (ctx.value.index() == 1)
-                return result_type::IP_literal_t::domain::build(std::get<1>(ctx.value));
+                return result_type::IP_literal_t::domain::buildString(
+                    std::get<1>(ctx.value));
             if (ctx.value.index() == 2)
-                return result_type::IPv4address_t::domain::build(std::get<2>(ctx.value));
+                return result_type::IPv4address_t::domain::buildString(
+                    std::get<2>(ctx.value));
             if (ctx.value.index() == 3)
-                return result_type::reg_name_t::domain::build(std::get<3>(ctx.value));
+                return result_type::reg_name_t::domain::buildString(
+                    std::get<3>(ctx.value));
             std::string host;
             return host;
         }

@@ -85,10 +85,10 @@ int main()
             assert(std::holds_alternative<host::result_type::IP_literal_t>(obj.value));
             assert(obj.value.index() == 1);
 
-            assert(std::string_view{"[2001:db8::1]"} == host::build(obj));
-            assert(
-                std::string_view{"[2001:db8::1]"} ==
-                host::result_type::IP_literal_t::domain::build(std::get<1>(obj.value)));
+            assert(std::string_view{"[2001:db8::1]"} == host::buildString(obj));
+            assert(std::string_view{"[2001:db8::1]"} ==
+                   host::result_type::IP_literal_t::domain::buildString(
+                       std::get<1>(obj.value)));
         }
         // IPv4address
         {
@@ -102,10 +102,10 @@ int main()
             assert(std::holds_alternative<host::result_type::IPv4address_t>(obj.value));
             assert(obj.value.index() == 2);
 
-            assert(std::string_view{"192.168.0.1"} == host::build(obj));
-            assert(
-                std::string_view{"192.168.0.1"} ==
-                host::result_type::IPv4address_t::domain::build(std::get<2>(obj.value)));
+            assert(std::string_view{"192.168.0.1"} == host::buildString(obj));
+            assert(std::string_view{"192.168.0.1"} ==
+                   host::result_type::IPv4address_t::domain::buildString(
+                       std::get<2>(obj.value)));
         }
         //  reg-name
         {
@@ -120,9 +120,10 @@ int main()
             assert(std::holds_alternative<host::result_type::reg_name_t>(obj.value));
             assert(obj.value.index() == 3);
 
-            assert(std::string_view{"example.com"} == host::build(obj));
+            assert(std::string_view{"example.com"} == host::buildString(obj));
             assert(std::string_view{"example.com"} ==
-                   host::result_type::reg_name_t::domain::build(std::get<3>(obj.value)));
+                   host::result_type::reg_name_t::domain::buildString(
+                       std::get<3>(obj.value)));
         }
         // 错误
         {
@@ -138,9 +139,10 @@ int main()
 
             assert(std::holds_alternative<host::result_type::reg_name_t>(obj.value));
             assert(obj.value.index() == 3);
-            assert(std::string_view{""} == host::build(obj));
+            assert(std::string_view{""} == host::buildString(obj));
             assert(std::string_view{""} ==
-                   host::result_type::reg_name_t::domain::build(std::get<3>(obj.value)));
+                   host::result_type::reg_name_t::domain::buildString(
+                       std::get<3>(obj.value)));
         }
     }
 

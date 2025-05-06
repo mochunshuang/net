@@ -37,7 +37,7 @@ namespace mcs::abnf::generate
                              result_type{.value = ctx.root_span.subspan(begin, *ret)})
                        : std::nullopt;
         }
-        static constexpr auto build(const result_type &ctx) noexcept
+        static constexpr auto buildString(const result_type &ctx) noexcept
         {
             return std::string(ctx.value.begin(), ctx.value.end());
         }

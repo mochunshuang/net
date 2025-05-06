@@ -55,12 +55,14 @@ namespace mcs::abnf::uri
             return std::nullopt;
         }
 
-        static constexpr auto build(const result_type &ctx) noexcept
+        static constexpr auto buildString(const result_type &ctx) noexcept
         {
             if (ctx.value.index() == 1)
-                return result_type::IPv6address_t::domain::build(std::get<1>(ctx.value));
+                return result_type::IPv6address_t::domain::buildString(
+                    std::get<1>(ctx.value));
             if (ctx.value.index() == 2)
-                return result_type::IPvFuture_t::domain::build(std::get<2>(ctx.value));
+                return result_type::IPvFuture_t::domain::buildString(
+                    std::get<2>(ctx.value));
             std::string ip_literal;
             return ip_literal;
         }

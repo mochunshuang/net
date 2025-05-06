@@ -116,9 +116,9 @@ int main()
                 obj.value));
             assert(obj.value.index() == 1);
 
-            assert(std::string_view{"[2001:db8::1]"} == IP_literal::build(obj));
+            assert(std::string_view{"[2001:db8::1]"} == IP_literal::buildString(obj));
             assert(std::string_view{"[2001:db8::1]"} ==
-                   IP_literal::result_type::IPv6address_t::domain::build(
+                   IP_literal::result_type::IPv6address_t::domain::buildString(
                        std::get<1>(obj.value)));
         }
         // IPvFuture 有效用例
@@ -134,9 +134,9 @@ int main()
                 std::holds_alternative<IP_literal::result_type::IPvFuture_t>(obj.value));
             assert(obj.value.index() == 2);
 
-            assert(std::string_view{"[v1.a]"} == IP_literal::build(obj));
+            assert(std::string_view{"[v1.a]"} == IP_literal::buildString(obj));
             assert(std::string_view{"[v1.a]"} ==
-                   IP_literal::result_type::IPvFuture_t::domain::build(
+                   IP_literal::result_type::IPvFuture_t::domain::buildString(
                        std::get<2>(obj.value)));
         }
         // IPv6 无效用例

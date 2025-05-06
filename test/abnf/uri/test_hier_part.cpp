@@ -137,7 +137,7 @@ int main()
             auto &result = *ret;
             assert(std::holds_alternative<hier_part::result_type::authority_path_t>(
                 result.value));
-            assert(hier_part::build(*ret) ==
+            assert(hier_part::buildString(*ret) ==
                    std::string("//user:pass@[v1.a]:80/path/sub"));
         }
         {
@@ -148,7 +148,7 @@ int main()
             assert(ret);
             assert(std::holds_alternative<hier_part::result_type::path_empty_t>(
                 (*ret).value));
-            assert(hier_part::build(*ret) == std::string(""));
+            assert(hier_part::buildString(*ret) == std::string(""));
             {
                 auto path_empty_rule = path_empty{};
                 auto ctx = make_parser_ctx(empty_as_rootless);
