@@ -19,6 +19,7 @@ auto_add_test_by_dir("base")
 auto_add_test_by_dir("ip")
 
 auto_add_test_by_dir("abnf")
+auto_add_test_by_dir("abnf/operators")
 auto_add_test_by_dir("abnf/uri")
 
 # auto_add_test_by_dir("abnf/http")

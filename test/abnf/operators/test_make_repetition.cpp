@@ -31,7 +31,7 @@ int main()
         assert(ret);
         assert(ret.value() == 2);
         assert(ctx.cur_index == 2);
-        assert(ctx.empty());
+        assert(ctx.done());
 
         assert(call_A == 1);
     }
@@ -43,7 +43,7 @@ int main()
         assert(ret);
         assert(ret.value() == 1);
         assert(ctx.cur_index == 1);
-        assert(ctx.empty());
+        assert(ctx.done());
         assert(call_A == 0); // not called
     }
     {
@@ -53,7 +53,7 @@ int main()
         assert(ret);
         assert(ret.value() == 1);
         assert(ctx.cur_index == 1);
-        assert(ctx.empty());
+        assert(ctx.done());
     }
 
     std::cout << "main done\n";

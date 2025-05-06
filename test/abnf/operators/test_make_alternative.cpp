@@ -32,7 +32,7 @@ int main()
         assert(ret);
         assert(ret.value() == 2);
         assert(ctx.cur_index == 2);
-        assert(ctx.empty());
+        assert(ctx.done());
 
         assert(id == 1);
     }
@@ -42,7 +42,7 @@ int main()
         assert(ret);
         assert(ret.value() == 2);
         assert(ctx.cur_index == 2);
-        assert(ctx.empty());
+        assert(ctx.done());
 
         assert(id == 2);
     }
