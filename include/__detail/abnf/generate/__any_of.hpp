@@ -9,6 +9,12 @@ namespace mcs::abnf::generate
     template <detail::octet... C>
     struct any_of
     {
+        struct __type
+        {
+            using domain = any_of;
+            detail::octets_view value;
+        };
+        using result_type = __type;
         using rule_concept = detail::rule_t;
 
         static constexpr auto k_bitset = []() consteval {
@@ -24,6 +30,19 @@ namespace mcs::abnf::generate
             return !ctx.done() && k_bitset[ctx.root_span[ctx.cur_index]]
                        ? (ctx.cur_index += 1, detail::make_consumed_result(1))
                        : std::nullopt;
+        }
+        static constexpr auto parse(detail::parser_ctx_ref ctx) noexcept
+            -> std::optional<result_type>
+        {
+            auto begin{ctx.cur_index};
+            auto ret = operator()(ctx);
+            return ret ? std::make_optional(
+                             result_type{.value = ctx.root_span.subspan(begin, *ret)})
+                       : std::nullopt;
+        }
+        static constexpr auto buildString(const result_type &ctx) noexcept
+        {
+            return std::string(ctx.value.begin(), ctx.value.end());
         }
     };
     template <detail::octet... C>
