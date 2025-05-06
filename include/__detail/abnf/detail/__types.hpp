@@ -29,9 +29,9 @@ namespace mcs::abnf::detail
 
     struct parser_ctx
     {
-        octets_view root_span;   // NOLINT
-        std::size_t cur_index{}; // NOLINT
-        std::size_t end_index{}; // NOLINT
+        const octets_view root_span;   // NOLINT
+        std::size_t cur_index{};       // NOLINT
+        const std::size_t end_index{}; // NOLINT
 
         [[nodiscard]] constexpr auto remain() const noexcept
         {
