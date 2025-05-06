@@ -16,10 +16,10 @@ namespace mcs::abnf::uri
         struct __type
         {
             using domain = URI;
-            using scheme_t = scheme::result_type;
-            using hier_part_t = hier_part::result_type;
-            using query_t = query::result_type;
-            using fragment_t = fragment::result_type;
+            using scheme_t = uri::scheme::result_type;
+            using hier_part_t = uri::hier_part::result_type;
+            using query_t = uri::query::result_type;
+            using fragment_t = uri::fragment::result_type;
 
             scheme_t scheme;
             hier_part_t hier_part;
