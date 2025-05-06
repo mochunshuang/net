@@ -24,11 +24,11 @@ namespace mcs::abnf::uri
         struct __type
         {
             using domain = hier_part;
-            using authority_t = authority::result_type;
-            using path_abempty_t = path_abempty::result_type;
-            using path_absolute_t = path_absolute::result_type;
-            using path_rootless_t = path_rootless::result_type;
-            using path_empty_t = path_empty::result_type;
+            using authority_t = uri::authority::result_type;
+            using path_abempty_t = uri::path_abempty::result_type;
+            using path_absolute_t = uri::path_absolute::result_type;
+            using path_rootless_t = uri::path_rootless::result_type;
+            using path_empty_t = uri::path_empty::result_type;
 
             struct authority_path_t // NOLINT
             {

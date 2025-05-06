@@ -13,8 +13,8 @@ namespace mcs::abnf::uri
         struct __type
         {
             using domain = IP_literal;
-            using IPv6address_t = IPv6address::result_type;
-            using IPvFuture_t = IPvFuture::result_type;
+            using IPv6address_t = uri::IPv6address::result_type;
+            using IPvFuture_t = uri::IPvFuture::result_type;
             std::variant<std::monostate, IPv6address_t, IPvFuture_t> value;
         };
         using result_type = __type;

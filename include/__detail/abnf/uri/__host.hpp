@@ -14,9 +14,9 @@ namespace mcs::abnf::uri
         struct __type
         {
             using domain = host;
-            using IP_literal_t = IP_literal::result_type;
-            using IPv4address_t = IPv4address::result_type;
-            using reg_name_t = reg_name::result_type;
+            using IP_literal_t = uri::IP_literal::result_type;
+            using IPv4address_t = uri::IPv4address::result_type;
+            using reg_name_t = uri::reg_name::result_type;
 
             std::variant<std::monostate, IP_literal_t, IPv4address_t, reg_name_t> value;
         };

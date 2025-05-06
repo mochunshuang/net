@@ -14,7 +14,7 @@ namespace mcs::abnf::uri
     // IPvFuture     = "v" 1*HEXDIG "." 1*( unreserved / sub-delims / ":" )
     struct IPvFuture : SimpleRule<IPvFuture, rules::IPvFuture_rule>
     {
-                using SimpleRule<IPvFuture, rules::IPvFuture_rule>::SimpleRule;
+        using SimpleRule<IPvFuture, rules::IPvFuture_rule>::SimpleRule;
     };
 
 }; // namespace mcs::abnf::uri

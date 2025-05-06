@@ -12,7 +12,7 @@ namespace mcs::abnf::uri
     // query         = *( pchar / "/" / "?" )
     struct query : SimpleRule<query, rules::query_rule>
     {
-               using SimpleRule<query, rules::query_rule>::SimpleRule;
+        using SimpleRule<query, rules::query_rule>::SimpleRule;
     };
 
 }; // namespace mcs::abnf::uri

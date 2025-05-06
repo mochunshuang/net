@@ -17,9 +17,9 @@ namespace mcs::abnf::uri
         struct __type
         {
             using domain = authority;
-            using userinfo_t = userinfo::result_type;
-            using host_t = host::result_type;
-            using port_t = port::result_type;
+            using userinfo_t = uri::userinfo::result_type;
+            using host_t = uri::host::result_type;
+            using port_t = uri::port::result_type;
 
             std::optional<userinfo_t> userinfo;
             host_t host;
