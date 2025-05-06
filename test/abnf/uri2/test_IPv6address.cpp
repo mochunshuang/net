@@ -21,6 +21,7 @@ constexpr bool is_valid_ipv6(const std::string &address)
 
 int main()
 {
+
     [] {
         // 使用示例
         std::string test_addr = "FFFF::ABCD";
@@ -73,12 +74,12 @@ int main()
             auto ls32_rule = [](auto &ctx) constexpr {
                 return ls32{}(ctx);
             };
-            EXPECT(h16_6(ctx).value() == 23);
-            EXPECT(ctx.cur_index == 23);
+            assert(h16_6(ctx).value() == 23);
+            assert(ctx.cur_index == 23);
 
-            EXPECT(ls32_rule(ctx).has_value());
-            EXPECT(*ls32_rule(ctx) == std::span{case1}.size() - 23);
-            EXPECT(ctx.cur_index == std::span{case1}.size());
+            assert(ls32_rule(ctx).has_value());
+            assert(*ls32_rule(ctx) == std::span{case1}.size() - 23);
+            assert(ctx.cur_index == std::span{case1}.size());
         }
     }
 
