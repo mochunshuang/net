@@ -5,16 +5,6 @@
 #include <string_view>
 #include <vector>
 
-#include <typeinfo> // _Small_object_num_ptrs in
-
-// size in pointers of std::function and std::any (roughly 3 pointers larger than
-// std::string when building debug)
-_INLINE_VAR constexpr int _Small_object_num_ptrs = 6 + 16 / sizeof(void *); // NOLINT
-_EXPORT_STD using max_align_t = double;         // most aligned type
-inline constexpr size_t _Any_small_space_size = // NOLINT
-    (_Small_object_num_ptrs - 2) * sizeof(void *);
-static_assert(_Any_small_space_size == 48); // NOLINT
-
 using octet = std::uint8_t;
 using data_view = std::span<const octet>;
 using octets_view_in = const std::span<const octet> &;
@@ -32,7 +22,7 @@ static_assert(sizeof(std::vector<octet>) == 24); // NOLINT
 template <class _Ty>
 constexpr bool _Any_is_small = // NOLINT
     alignof(_Ty) <= alignof(max_align_t) && std::is_nothrow_move_constructible_v<_Ty> &&
-    sizeof(_Ty) <= _Any_small_space_size;
+    sizeof(_Ty) <= 48;
 
 // NOTE: 如果保存指针的值： 永远是  sizeof(void *) 大小
 
