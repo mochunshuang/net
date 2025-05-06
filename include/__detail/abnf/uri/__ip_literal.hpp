@@ -38,8 +38,8 @@ namespace mcs::abnf::uri
             };
             auto rule = make_sequence{
                 CharInsensitive<'['>{},
-                make_alternative{with_callback(IPv6address{}, IPv6address_callback),
-                                 IPvFuture{}},
+                alternative{with_callback(IPv6address{}, IPv6address_callback),
+                            IPvFuture{}},
                 CharInsensitive<']'>{}};
             if (auto ret = rule(ctx))
             {
