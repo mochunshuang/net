@@ -56,7 +56,7 @@ namespace mcs::abnf::uri
     */
     struct IPv6address : SimpleRule<IPv6address, rules::IPv6address_rule>
     {
-                   using SimpleRule<IPv6address, rules::IPv6address_rule>::SimpleRule;
+        using SimpleRule<IPv6address, rules::IPv6address_rule>::SimpleRule;
     };
 
 }; // namespace mcs::abnf::uri

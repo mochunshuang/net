@@ -23,8 +23,8 @@ int main()
         std::cout << "B_callback called\n";
     };
 
-    auto rule = make_sequence{
-        make_alternative{with_callback(A{}, A_callback), with_callback(B{}, B_callback)},
+    auto rule = sequence{
+        alternative{with_callback(A{}, A_callback), with_callback(B{}, B_callback)},
         generate::CharInsensitive<'c'>{}};
     {
         auto ctx = "ac"_ctx;

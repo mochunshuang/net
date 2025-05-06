@@ -102,7 +102,7 @@ int main()
                        (*ret).port.value()) == std::string("8080"));
             {
                 auto rule =
-                    make_optional{make_sequence{CharRule<CharSensitive<':'>>{}, port{}}};
+                    make_optional{sequence{CharRule<CharSensitive<':'>>{}, port{}}};
                 constexpr auto full_authority_1 = ":8080"_span;
                 auto ctx = make_parser_ctx(full_authority_1);
                 rule.parse(ctx);

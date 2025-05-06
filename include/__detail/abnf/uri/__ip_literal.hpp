@@ -25,7 +25,8 @@ namespace mcs::abnf::uri
             using rule =
                 sequence<CharInsensitive<'['>, alternative<IPv6address, IPvFuture>,
                          CharInsensitive<']'>>;
-            auto ret = rule{}(ctx);
+            constexpr auto k_rule = rule{};
+            auto ret = k_rule(ctx);
             return ret ? detail::make_consumed_result(*ret) : std::nullopt;
         }
         static constexpr auto parse(parser_ctx_ref ctx) noexcept

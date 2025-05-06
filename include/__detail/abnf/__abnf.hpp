@@ -9,11 +9,8 @@
 #include "./operators/__sequence.hpp"
 #include "./operators/__times.hpp"
 #include "./operators/__zero_or_more.hpp"
-#include "./operators/__make_sequence.hpp"
 #include "./operators/__max_times.hpp"
 #include "./operators/__with_callback.hpp"
-#include "./operators/__make_alternative.hpp"
-#include "./operators/__make_repetition.hpp"
 #include "./operators/__watch_index.hpp"
 #include "./operators/__make_optional.hpp"
 #include "./operators/__char_rule.hpp"
@@ -59,12 +56,9 @@ namespace mcs::abnf
     using detail::rule;
 
     using operators::alternative;
-    using operators::make_alternative;
     using operators::optional;
     using operators::repetition;
-    using operators::make_repetition;
     using operators::sequence;
-    using operators::make_sequence;
     using operators::times;
     using operators::max_times;
     using operators::zero_or_more;

@@ -22,9 +22,9 @@ int main()
         }
     };
 
-    auto rule = make_sequence{make_repetition<0, 1, watch_index<A, decltype(A_callback)>>{
-                                  watch_index(A{}, A_callback)},
-                              generate::CharInsensitive<'c'>{}};
+    auto rule = sequence{repetition<0, 1, watch_index<A, decltype(A_callback)>>{
+                             watch_index(A{}, A_callback)},
+                         generate::CharInsensitive<'c'>{}};
     {
         auto ctx = "ac"_ctx;
         auto ret = rule(ctx);
@@ -47,7 +47,7 @@ int main()
         assert(call_A == 0); // not called
     }
     {
-        auto rule = make_sequence{optional<A>{}, generate::CharInsensitive<'c'>{}};
+        auto rule = sequence{optional<A>{}, generate::CharInsensitive<'c'>{}};
         auto ctx = "c"_ctx;
         auto ret = rule(ctx);
         assert(ret);

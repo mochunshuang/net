@@ -34,16 +34,18 @@ namespace mcs::abnf::uri
         {
             using rule = sequence<optional<sequence<userinfo, CharSensitive<'@'>>>, host,
                                   optional<sequence<CharSensitive<':'>, port>>>;
-            auto ret = rule{}(ctx);
+            constexpr auto k_rule = rule{};
+            auto ret = k_rule(ctx);
             return ret ? detail::make_consumed_result(*ret) : std::nullopt;
         }
 
         static constexpr auto parse(parser_ctx_ref ctx) noexcept
             -> std::optional<result_type>
         {
-            constexpr auto k_rule = sequence{
-                make_optional{sequence{userinfo{}, CharRule<CharSensitive<'@'>>{}}},
-                host{}, make_optional{sequence{CharRule<CharSensitive<':'>>{}, port{}}}};
+            using rule =
+                sequence<make_optional<sequence<userinfo, CharSensitive<'@'>>>, host,
+                         make_optional<sequence<CharSensitive<':'>, port>>>;
+            constexpr auto k_rule = rule{};
             auto ret = k_rule.parse(ctx);
             if (not ret)
                 return std::nullopt;

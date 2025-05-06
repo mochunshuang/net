@@ -14,12 +14,13 @@ namespace mcs::abnf::uri
             using domain = path_empty;
         };
         using result_type = __type;
-        using rule = times<0, pchar>;
         using rule_concept = rule_t;
 
         static constexpr auto operator()(parser_ctx_ref ctx) noexcept -> consumed_result
         {
-            auto ret = rule{}(ctx);
+            using rule = times<0, pchar>;
+            constexpr auto k_rule = rule{};
+            auto ret = k_rule(ctx);
             return ret ? detail::make_consumed_result(*ret) : std::nullopt;
         }
         static constexpr auto parse(parser_ctx_ref ctx) noexcept

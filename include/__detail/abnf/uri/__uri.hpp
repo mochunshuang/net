@@ -41,10 +41,10 @@ namespace mcs::abnf::uri
 
         static constexpr auto parse(parser_ctx_ref ctx) -> std::optional<result_type>
         {
-            constexpr auto k_rule = sequence<
-                scheme, CharRule<CharInsensitive<':'>>, hier_part,
-                make_optional<sequence<CharRule<CharInsensitive<'?'>>, query>>,
-                make_optional<sequence<CharRule<CharInsensitive<'#'>>, fragment>>>{};
+            constexpr auto k_rule =
+                sequence<scheme, CharInsensitive<':'>, hier_part,
+                         make_optional<sequence<CharInsensitive<'?'>, query>>,
+                         make_optional<sequence<CharInsensitive<'#'>, fragment>>>{};
             auto ret = k_rule.parse(ctx);
             if (not ret)
                 return std::nullopt;

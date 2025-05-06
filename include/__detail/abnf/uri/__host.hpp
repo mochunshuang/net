@@ -26,7 +26,8 @@ namespace mcs::abnf::uri
         static constexpr auto operator()(parser_ctx_ref ctx) noexcept -> consumed_result
         {
             using rule = alternative<IP_literal, IPv4address, reg_name>;
-            auto ret = rule{}(ctx);
+            constexpr auto k_rule = rule{};
+            auto ret = k_rule(ctx);
             return ret ? detail::make_consumed_result(*ret) : std::nullopt;
         }
 
