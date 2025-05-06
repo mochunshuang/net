@@ -1,25 +1,19 @@
 #pragma once
 
-#include "../__core_rules.hpp"
-#include "../tool/__safe_subspan.hpp"
-#include <algorithm>
+#include "../__abnf.hpp"
 
 namespace mcs::abnf::uri
 {
-    // scheme        = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
-    // https://www.rfc-editor.org/rfc/rfc3986.html#appendix-A:~:text=scheme%20%20%20%20%20%20%20%20%3D%20ALPHA%20*(%20ALPHA%20/%20DIGIT%20/%20%22%2B%22%20/%20%22%2D%22%20/%20%22.%22%20)
-    constexpr bool scheme(span_param_in range) noexcept
+    namespace rules
     {
-        if (range.empty())
-            return false;
-
-        if (not ALPHA(range[0]))
-            return false;
-
-        const auto k_remaining = tool::safe_subspan(range, 1);
-        return std::ranges::all_of(k_remaining, [](octet_param_in v) noexcept -> bool {
-            return ALPHA(v) || DIGIT(v) || v == '+' || v == '-' || v == '.';
-        });
-    }
+        using scheme_rule =
+            sequence<ALPHA,
+                     zero_or_more<alternative<ALPHA, DIGIT, any_of<'+', '-', '.'>>>>;
+    };
+    // scheme        = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
+    struct scheme : SimpleRule<scheme, rules::scheme_rule>
+    {
+        using SimpleRule<scheme, rules::scheme_rule>::SimpleRule;
+    };
 
 }; // namespace mcs::abnf::uri

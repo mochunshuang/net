@@ -1,12 +1,17 @@
 #pragma once
 
-#include "./__pchars.hpp"
+#include "./__pchar.hpp"
 
 namespace mcs::abnf::uri
 {
-    // segment       = *pchar
-    constexpr auto segment(span_param_in sp) noexcept -> abnf_result auto
+    namespace rules
     {
-        return pchars(sp);
-    }
+        using segment_rule = zero_or_more<pchar>;
+    };
+    // segment       = *pchar
+    struct segment : SimpleRule<segment, rules::segment_rule>
+    {
+                using SimpleRule<segment, rules::segment_rule>::SimpleRule;
+    };
+
 }; // namespace mcs::abnf::uri

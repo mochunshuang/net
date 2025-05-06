@@ -1,12 +1,9 @@
 #pragma once
 
-#include "../__core_rules.hpp"
+#include "../__abnf.hpp"
 
 namespace mcs::abnf::uri
 {
     // unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
-    constexpr bool unreserved(octet_param_in c) noexcept
-    {
-        return ALPHA(c) || DIGIT(c) || (c == '-' || c == '.' || c == '_' || c == '~');
-    }
+    using unreserved = alternative<ALPHA, DIGIT, any_of<'-', '.', '_', '~'>>;
 }; // namespace mcs::abnf::uri

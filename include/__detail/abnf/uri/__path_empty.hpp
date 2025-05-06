@@ -1,27 +1,38 @@
 #pragma once
 
-#include "../__core_types.hpp"
+#include "__pchar.hpp"
+#include <optional>
 
 namespace mcs::abnf::uri
 {
-    /**
-   A rule of the form:
-
-         <n>element
-
-   is equivalent to
-
-         <n>*<n>element
-
-   That is, exactly <n> occurrences of <element>.  Thus, 2DIGIT is a
-   2-digit number, and 3ALPHA is a string of three alphabetic
-   characters.
-     */
 
     // path-empty    = 0<pchar> ; path-empty      ; zero characters
-    constexpr bool path_empty(span_param_in sp) noexcept
+    struct path_empty
     {
-        return sp.empty();
-    }
+        struct __type
+        {
+            using domain = path_empty;
+        };
+        using result_type = __type;
+        using rule = times<0, pchar>;
+        using rule_concept = rule_t;
+
+        static constexpr auto operator()(parser_ctx_ref ctx) noexcept -> consumed_result
+        {
+            auto ret = rule{}(ctx);
+            return ret ? detail::make_consumed_result(*ret) : std::nullopt;
+        }
+        static constexpr auto parse(parser_ctx_ref ctx) noexcept
+            -> std::optional<result_type>
+        {
+            auto ret = operator()(ctx);
+            return ret ? std::optional<result_type>{__type{}} : std::nullopt;
+        }
+        static constexpr auto build(const result_type & /*ctx*/) noexcept
+        {
+            std::string path_empty;
+            return path_empty;
+        }
+    };
 
 }; // namespace mcs::abnf::uri

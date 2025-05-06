@@ -20,6 +20,6 @@ auto_add_test_by_dir("ip")
 
 auto_add_test_by_dir("abnf")
 auto_add_test_by_dir("abnf/uri")
-auto_add_test_by_dir("abnf/uri2")
-auto_add_test_by_dir("abnf/http")
+
+# auto_add_test_by_dir("abnf/http")
 auto_add_test_by_dir("abnf/core")

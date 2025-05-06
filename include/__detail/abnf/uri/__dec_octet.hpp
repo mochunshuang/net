@@ -1,9 +1,10 @@
 #pragma once
 
-#include "../__core_rules.hpp"
+#include "../__abnf.hpp"
 
 namespace mcs::abnf::uri
 {
+    // ABNF 的书写顺序看似自上而下，但实际解析需遵循 最长匹配优先（Longest Match First）
     /**
      * @brief
      * dec-octet = DIGIT                 ; 0-9
@@ -12,22 +13,12 @@ namespace mcs::abnf::uri
      *           / "2" %x30-34 DIGIT     ; 200-249
      *           / "25" %x30-35          ; 250-255
      */
-    constexpr auto dec_octet(span_param_in sp) noexcept -> abnf_result auto
-    {
-        const auto k_size = sp.size();
+    using dec_octet = alternative< // 优先尝试最长规则 //NOTE: 优先处理特殊
+        sequence<CharSensitive<'2'>, CharSensitive<'5'>, Range<0x30, 0x35>>, // NOLINT
+        sequence<CharSensitive<'2'>, Range<0x30, 0x34>, DIGIT>,              // NOLINT
+        sequence<CharSensitive<'1'>, times<2, DIGIT>>,                       // NOLINT
+        sequence<Range<0x31, 0x39>, DIGIT>,                                  // NOLINT
+        DIGIT                                                                // NOLINT
+        >;
 
-        if (k_size == 1 && DIGIT(sp[0]))
-            return true;
-        if (k_size == 2 && sp[0] >= '1' && sp[0] <= '9' && DIGIT(sp[1]))
-            return true;
-
-        if (k_size == 3)
-        {
-            if ((sp[0] == '1' && DIGIT(sp[1]) && DIGIT(sp[2])) ||
-                (sp[0] == '2' && sp[1] >= '0' && sp[1] <= '4' && DIGIT(sp[2])) ||
-                (sp[0] == '2' && sp[1] == '5' && sp[2] >= '0' && sp[2] <= '5'))
-                return true;
-        }
-        return false;
-    }
 }; // namespace mcs::abnf::uri

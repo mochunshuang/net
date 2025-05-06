@@ -1,73 +1,81 @@
 #pragma once
 
+#include "../detail/__types.hpp"
 #include "./__userinfo.hpp"
 #include "./__host.hpp"
 #include "./__port.hpp"
+#include <optional>
+#include <string>
+#include <type_traits>
 
 namespace mcs::abnf::uri
 {
     // authority     = [ userinfo "@" ] host [ ":" port ]
-    constexpr bool authority(span_param_in sp) noexcept
+    struct authority
     {
-        const auto k_size = sp.size();
-        if (k_size == 0)
-            return false;
-
-        size_t idx_0 = k_size;
-        for (size_t i = 0; i < k_size; ++i)
+      private:
+        struct __type
         {
-            if (sp[i] == '@')
-            {
-                idx_0 = i;
-                break;
-            }
-        }
-        // first check: userinfo if find '@'
-        if (idx_0 < k_size)
-        {
-            const auto k_u = sp.first(idx_0);
-            if (not userinfo(k_u))
-                return false;
+            using domain = authority;
+            using userinfo_t = userinfo::result_type;
+            using host_t = host::result_type;
+            using port_t = port::result_type;
 
-            // k_remain is host [ ":" port ]
-            const auto k_remain = sp.subspan(idx_0 + 1);
-            if (host(k_remain))
-                return true;
-            // match host ":" port
-            size_t idx_1 = k_size;
-            for (size_t left = idx_0 + 1, right = k_size; right-- > left;)
-            {
-                if (sp[right] == ':')
-                {
-                    idx_1 = right;
-                    break;
-                }
-            }
-            if (idx_1 == k_size)
-                return false;
-            const auto k_h = sp.subspan(idx_0 + 1, idx_1 - idx_0 - 1);
-            const auto k_p = sp.subspan(idx_1 + 1);
-            return host(k_h) && port(k_p);
+            std::optional<userinfo_t> userinfo;
+            host_t host;
+            std::optional<port_t> port;
+        };
+
+      public:
+        using result_type = __type;
+        using rule_concept = rule_t;
+
+        static constexpr auto operator()(parser_ctx_ref ctx) noexcept -> consumed_result
+        {
+            using rule = sequence<optional<sequence<userinfo, CharSensitive<'@'>>>, host,
+                                  optional<sequence<CharSensitive<':'>, port>>>;
+            auto ret = rule{}(ctx);
+            return ret ? detail::make_consumed_result(*ret) : std::nullopt;
         }
 
-        // not find '@' then sp is host [ ":" port ]
-        if (host(sp))
-            return true;
-        // match host ":" port
-        size_t idx_1 = k_size;
-        for (size_t left = 0, right = k_size; right-- > left;)
+        static constexpr auto parse(parser_ctx_ref ctx) noexcept
+            -> std::optional<result_type>
         {
-            if (sp[right] == ':')
+            constexpr auto k_rule = make_sequence{
+                make_optional{make_sequence{userinfo{}, CharRule<CharSensitive<'@'>>{}}},
+                host{},
+                make_optional{make_sequence{CharRule<CharSensitive<':'>>{}, port{}}}};
+            auto ret = k_rule.parse(ctx);
+            if (not ret)
+                return std::nullopt;
+            result_type result;
+            if (auto &userinfo = ret->value.get<0>(); userinfo.index() != 0)
             {
-                idx_1 = right;
-                break;
+                auto &ret = std::get<1>(userinfo);
+                static_assert(std::is_same_v<std::decay_t<decltype(ret.value.get<0>())>,
+                                             result_type::userinfo_t>);
+                result.userinfo = ret.value.get<0>();
             }
+            result.host = ret->value.get<1>();
+            if (auto &port = ret->value.get<2>(); port.index() != 0)
+                result.port = std::get<1>(port).value.get<1>();
+            return result;
         }
-        if (idx_1 == k_size)
-            return false;
-        const auto k_h = sp.first(idx_1);
-        const auto k_p = sp.subspan(idx_1 + 1);
-        return host(k_h) && port(k_p);
-    }
+        static constexpr auto build(const result_type &ctx) noexcept
+        {
+            std::string authority;
+            if (ctx.userinfo)
+                authority.append(result_type::userinfo_t::domain::build(*(ctx.userinfo)))
+                    .append("@");
+
+            authority.append(result_type::host_t::domain::build(ctx.host));
+
+            // NOTE: 检验端口大小
+            if (ctx.port)
+                authority.append(":").append(
+                    result_type::port_t::domain::build(*(ctx.port)));
+            return authority;
+        }
+    };
 
 }; // namespace mcs::abnf::uri

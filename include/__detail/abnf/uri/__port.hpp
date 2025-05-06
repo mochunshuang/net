@@ -1,15 +1,17 @@
 #pragma once
 
-#include "../__core_rules.hpp"
-#include <algorithm>
+#include "../__abnf.hpp"
 
 namespace mcs::abnf::uri
 {
-    // port          = *DIGIT
-    constexpr bool port(span_param_in sp) noexcept
+    namespace rules
     {
-        if (sp.size() == 0)
-            return true;
-        return std::ranges::all_of(sp, [](const auto &v) { return DIGIT(v); });
-    }
+        using port_rule = zero_or_more<DIGIT>;
+    };
+    // port          = *DIGIT
+    struct port : SimpleRule<port, rules::port_rule>
+    {
+        using SimpleRule<port, rules::port_rule>::SimpleRule;
+    };
+
 }; // namespace mcs::abnf::uri

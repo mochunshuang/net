@@ -4,44 +4,15 @@
 
 namespace mcs::abnf::uri
 {
-    // query         = *( pchar / "/" / "?" )
-    constexpr auto query(span_param_in sp) noexcept -> abnf_result auto
+    namespace rules
     {
-        using builder = result_builder<result<1>>;
-        const auto k_size = sp.size();
-        size_t index = 0;
-        while (index < k_size)
-        {
-            // pchar
-            const auto &c = sp[index];
-            if (c == '%')
-            {
-                if (index + 2 < k_size) // check: if match "%41"
-                {
-                    if (pchar(c, sp[index + 1], sp[index + 2]))
-                    {
-                        index += 3;
-                        continue;
-                    }
-                }
-            }
-            else
-            {
-                static_assert(not pchar('%'));
-                if (pchar(c))
-                {
-                    index++;
-                    continue;
-                }
-            }
+        using query_rule =
+            zero_or_more<alternative<pchar, CharSensitive<'/'>, CharSensitive<'?'>>>;
+    };
+    // query         = *( pchar / "/" / "?" )
+    struct query : SimpleRule<query, rules::query_rule>
+    {
+               using SimpleRule<query, rules::query_rule>::SimpleRule;
+    };
 
-            if (c == '/' || c == '?')
-            {
-                ++index;
-                continue;
-            }
-            return builder::fail(index);
-        }
-        return builder::success(span{.start = 0, .count = k_size});
-    }
 }; // namespace mcs::abnf::uri

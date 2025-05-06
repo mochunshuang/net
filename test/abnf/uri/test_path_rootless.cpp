@@ -1,126 +1,75 @@
 
-
-#include "../test_head.hpp"
-
+#include "../test_abnf.hpp"
+#include "./test_uri.hpp"
+#include <cassert>
 #include <array>
 
-#include <cassert>
-#include <iostream>
-
 // NOLINTBEGIN
+using namespace mcs::abnf;
+using namespace mcs::abnf::uri;
+
+#include <iostream>
 
 int main()
 {
-    using namespace mcs::abnf::uri; // NOLINT
+
+    // 有效测试用例
     {
-        // NOTE: 不支持
-        //  constexpr bool k_table[256] = {
-        //      ['!'] = true, ['$'] = true, ['&'] = true, ['\''] = true, // NOLINT
-        //      ['('] = true, [')'] = true, ['*'] = true, ['+'] = true,
-        //      [','] = true, [';'] = true, ['='] = true};
+        constexpr auto path_rootless_rule = [](auto span) constexpr {
+            parser_ctx ctx = make_parser_ctx(span);
+            auto suc = mcs::abnf::uri::path_rootless{}(ctx);
+            assert(ctx.empty());
+            return suc;
+        };
+        constexpr std::array<uint8_t, 1> input{'a'};
+        static_assert(path_rootless_rule(input));
         {
-            constexpr std::array<bool, 256> sub_delims = []() consteval {
-                std::array<bool, 256> arr = {};
-                arr['!'] = true;
-                arr['$'] = true;
-                arr['&'] = true;
-                arr['\''] = true;
-                arr['('] = true;
-                arr[')'] = true;
-                arr['*'] = true;
-                arr['+'] = true;
-                arr[','] = true;
-                arr[';'] = true;
-                arr['='] = true;
-                return arr;
-            }();
-            static_assert(sub_delims[')']);
+            constexpr std::array<uint8_t, 3> input{'a', '/', 'b'};
+            static_assert(path_rootless_rule(input));
         }
         {
-            // Array designators are a C99 extensionclang(-Wc99-designator)
-            //  constexpr bool sub_delims[256] = {[0x41] = true};
-            //  static_assert(sub_delims[')']);
-        }
-        {
-
-            // 不允许
-            //  constexpr bool sub_delims[256] = []() consteval {
-            //      bool arr[256]{};
-            //      for (const auto &i :
-            //           {'!', '$', '&', '\'', '(', ')', '*', '*', '+', ',', ';', '='})
-            //      {
-            //          arr[i] = true;
-            //      }
-            //      return arr;
-            //  }();
-            //  static_assert(sub_delims[')']);
-        }
-        {
-
-            constexpr std::array<bool, 256> sub_delims = []() consteval {
-                std::array<bool, 256> arr{};
-                for (const auto &i :
-                     {'!', '$', '&', '\'', '(', ')', '*', '*', '+', ',', ';', '='})
-                {
-                    arr[i] = true;
-                }
-                return arr;
-            }();
-            static_assert(sub_delims[')']);
-        }
-    }
-    TEST("test_path_rootless") = [] {
-        // 有效用例
-        {
-            std::array<uint8_t, 1> input{'a'};
-            auto result = path_rootless(input);
-            EXPECT(result.has_value());
-        }
-
-        {
-            std::array<uint8_t, 3> input{'a', '/', 'b'};
-            auto result = path_rootless(input);
-            EXPECT(result.has_value());
-        }
-        {
-            std::array<uint8_t, 4> input{'a', '/', '/', 'b'};
-            auto result = path_rootless(input);
-            assert(result.has_value());
-        }
-        {
-            std::array<uint8_t, 2> input{'a', '/'};
-            auto result = path_rootless(input);
-            EXPECT(result.has_value());
-        }
-
-        // 无效用例
-        {
-            std::array<uint8_t, 0> input{};
-            auto result = path_rootless(input);
-            assert(!result.has_value() && result.error().index() == 0);
-        }
-        {
-            std::array<uint8_t, 2> input{'/', 'a'};
-            auto result = path_rootless(input);
-            assert(!result.has_value() && result.error().index() == 0);
-        }
-        {
-            // 假设空格是非法的pchar
-            std::array<uint8_t, 5> input{'a', '/', 'b', ' ', 'c'};
-            auto result = path_rootless(input);
-            assert(!result.has_value() && result.error().index() == 3);
-            // 错误在空格位置
-            assert(not result);
-            std::cout << "err_idnex: " << result.error().index() << '\n';
+            constexpr std::array<uint8_t, 4> input{'a', '/', '/', 'b'};
+            static_assert(path_rootless_rule(input));
         }
         {
             // : 是可以的
-            std::array<uint8_t, 3> input{':', 'a', 'b'};
-            auto result = path_rootless(input);
-            assert(result);
+            constexpr std::array<uint8_t, 3> input{':', 'a', 'b'};
+            static_assert(path_rootless_rule(input));
         }
-    };
+    }
+
+    // 无效测试用例
+    {
+        constexpr auto path_rootless_rule = [](auto span) constexpr {
+            parser_ctx ctx = make_parser_ctx(span);
+            auto suc = mcs::abnf::uri::path_rootless{}(ctx);
+            assert(ctx.cur_index == 0);
+            return suc;
+        };
+        {
+            constexpr std::array<uint8_t, 0> input{};
+            static_assert(!path_rootless_rule(input));
+        }
+        {
+            constexpr std::array<uint8_t, 2> input{'/', 'a'};
+            static_assert(!path_rootless_rule(input));
+        }
+        {
+            constexpr auto path_rootless_rule = [](auto span) constexpr {
+                parser_ctx ctx = make_parser_ctx(span);
+                auto suc = mcs::abnf::uri::path_rootless{}(ctx);
+                assert(ctx.cur_index != span.size());
+                return suc;
+            };
+            // 假设空格是非法的pchar
+            constexpr std::array<uint8_t, 5> input{'a', '/', 'b', ' ', 'c'};
+            static_assert(path_rootless_rule(input));
+            static_assert(path_rootless_rule(input).value() == 3);
+        }
+    }
+
     std::cout << "main done\n";
     return 0;
 }
+
 // NOLINTEND

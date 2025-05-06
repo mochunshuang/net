@@ -6,46 +6,15 @@
 
 namespace mcs::abnf::uri
 {
-    //  reg-name      = *( unreserved / pct-encoded / sub-delims )
-    constexpr auto reg_name(span_param_in sp) noexcept -> abnf_result auto
+    namespace rules
     {
-        using builder = result_builder<result<1>>;
-        const auto k_size = sp.size();
-        if (k_size == 0)
-            return builder::success(span{.start = 0, .count = k_size});
+        using reg_name_rule =
+            zero_or_more<alternative<unreserved, pct_encoded, sub_delims>>;
+    };
+    //  reg-name      = *( unreserved / pct-encoded / sub-delims )
+    struct reg_name : SimpleRule<reg_name, rules::reg_name_rule>
+    {
+        using SimpleRule<reg_name, rules::reg_name_rule>::SimpleRule;
+    };
 
-        size_t index = 0;
-        while (index < k_size)
-        {
-            const auto &c = sp[index];
-            if (unreserved(c)) // 1、unreserved
-            {
-                ++index;
-                continue;
-            }
-
-            static_assert(not sub_delims('%'));
-            if (c == '%') // 2、pct-encoded   = "%" HEXDIG HEXDIG
-            {
-                if (index + 2 < k_size)
-                {
-                    if (pct_encoded(c, sp[index + 1], sp[index + 2]))
-                    {
-                        index += 3;
-                        continue;
-                    }
-                }
-            }
-            else // 3、sub-delims
-            {
-                if (sub_delims(c))
-                {
-                    ++index;
-                    continue;
-                }
-            }
-            return builder::fail(index);
-        }
-        return builder::success(span{.start = 0, .count = k_size});
-    }
 }; // namespace mcs::abnf::uri

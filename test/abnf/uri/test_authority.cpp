@@ -1,95 +1,155 @@
 
-
-#include "../test_head.hpp"
-
+#include "../test_abnf.hpp"
+#include "./test_uri.hpp"
 #include <cassert>
 
 // NOLINTBEGIN
+using namespace mcs::abnf;
+using namespace mcs::abnf::uri;
+
+#include <iostream>
 
 int main()
 {
-
-    using namespace mcs::abnf;
-    using namespace mcs::abnf::uri; // NOLINT
-
-    //================= authority 有效用例 =================
-    // 完整结构：userinfo + IPv6 + port
-    constexpr auto full_authority_1 =
-        "user%3Apass@[v9.fe]:8080"_span; // 混合编码和IPvFuture
+    // 有效测试用例
     {
-        // authority     = [ userinfo "@" ] host [ ":" port ]
-        static_assert(userinfo("user%3Apass"_span));
-        //  host          = IP-literal / IPv4address / reg-name
+        constexpr auto authority_rule = [](const auto &array) constexpr {
+            auto span = std::span{array};
+            parser_ctx ctx = make_parser_ctx(span);
+            assert(ctx.cur_index == 0);
+            auto suc = authority{}(ctx);
+            assert(ctx.cur_index == span.size());
+            return suc;
+        };
+        // 完整结构：userinfo + IPv6 + port
+        constexpr auto full_authority_1 =
+            "user%3Apass@[v9.fe]:8080"_span; // 混合编码和IPvFuture
+        static_assert(authority_rule(full_authority_1));
+
+        // 仅有 userinfo 和 reg-name
+        constexpr auto user_host_case = "~john:test@example%2Ecom"_span; // 带编码点的域名
+        static_assert(authority_rule(user_host_case));
+
+        // 仅有 IPv4 和 port; 没对 port 进行限制 65536 也是对的
+        constexpr auto ipv4_port = "192.168.0.1:65535"_span; // 最大端口号
+        static_assert(authority_rule(ipv4_port));
+        constexpr auto ipv4_port2 = "192.168.0.1:65536"_span;
+        static_assert(authority_rule(ipv4_port2));
+
+        // 纯 reg-name 带特殊字符
+        constexpr auto reg_name_special =
+            "server_!$&.sub-domain"_span; // 包含sub-delims的注册名
+        static_assert(authority_rule(reg_name_special));
+
+        // 边界用例：空port（仅冒号）
+        constexpr auto empty_port = "[::1]:"_span; // 允许port为空字符串
+        static_assert(authority_rule(empty_port));
+    }
+
+    // 无效测试用例
+    {
+        constexpr auto authority_rule = [](const auto &array) constexpr {
+            auto span = std::span{array};
+            parser_ctx ctx = make_parser_ctx(span);
+            assert(ctx.cur_index == 0);
+            auto suc = authority{}(ctx);
+            assert(ctx.cur_index != span.size() || ctx.cur_index == 0);
+            return suc;
+        };
+        // 结构错误：多重@符号
+        constexpr auto multi_at = "user@name@[::1]"_span;
+        static_assert(authority_rule(multi_at).value() == 9);
+
+        // IPv6未加方括号
+        constexpr auto unbraced_ipv6 = "2001:db8::1"_span;
+        static_assert(authority_rule(unbraced_ipv6));
+
+        // 非法port字符
+        constexpr auto non_digit_port = "localhost:80a"_span; // 字母结尾
+        static_assert(authority_rule(non_digit_port));
+
+        // userinfo包含非法字符（空格）
+        constexpr auto space_in_user = "user name@host"_span;
+        static_assert(authority_rule(space_in_user));
+
+        // reg-name包含保留字符（未编码的#）
+        constexpr auto invalid_reg_name = "bad#host.com"_span;
+        static_assert(authority_rule(invalid_reg_name));
+
+        // 混合错误：错误IPv4格式+非法userinfo
+        constexpr auto multi_error = "user@[::1:8080"_span; // IPv6缺少闭合括号
+        static_assert(authority_rule(multi_error));
+    }
+
+    // build 测试
+    {
+        constexpr auto authority_rule = authority{};
+        // 完整结构：userinfo + IPv6 + port
         {
-            EXPECT(host("[v9.fe]"_span));
-            // IP-literal    = "[" ( IPv6address / IPvFuture  ) "]"
-            EXPECT(IP_literal("[v9.fe]"_span));
+            constexpr auto full_authority_1 =
+                "user%3Apass@[v9.fe]:8080"_span; // 混合编码和IPvFuture
+            auto ctx = make_parser_ctx(full_authority_1);
+            auto ret = authority_rule.parse(ctx);
+            assert(ret);
+            assert(authority::result_type::userinfo_t::domain::build(
+                       (*ret).userinfo.value()) == std::string("user%3Apass"));
+            assert(authority::result_type::host_t::domain::build((*ret).host) ==
+                   std::string("[v9.fe]"));
+            std::cout << "ctx.cur_index: " << ctx.cur_index << '\n';
+            assert(ctx.cur_index == full_authority_1.size());
+            assert((*ret).port.has_value());
+            assert(authority::result_type::port_t::domain::build((*ret).port.value()) ==
+                   std::string("8080"));
             {
-                static_assert(IPvFuture("v9.fe"_span));
-                static_assert("[v9.fe]"_span.size() == 7);
-                constexpr auto sp = "[v9.fe]"_span.subspan(1, 7 - 2);
-                EXPECT(std::string(sp.begin(), sp.end()) == "v9.fe");
+                auto rule =
+                    make_optional{make_sequence{CharRule<CharSensitive<':'>>{}, port{}}};
+                constexpr auto full_authority_1 = ":8080"_span;
+                auto ctx = make_parser_ctx(full_authority_1);
+                rule.parse(ctx);
+                assert(ctx.cur_index == full_authority_1.size());
             }
+            assert((*ret).userinfo.has_value());
+            assert((*ret).port.has_value());
+            std::cout << authority::build(*ret) << '\n';
+            //
+            assert(authority::build(*ret) == std::string("user%3Apass@[v9.fe]:8080"));
         }
-        // port
-        static_assert(port("8080"_span));
+        {
+            // 仅有 userinfo 和 reg-name
+            constexpr auto user_host_case =
+                "~john:test@example%2Ecom"_span; // 带编码点的域名
+            auto ctx = make_parser_ctx(user_host_case);
+            auto ret = authority_rule.parse(ctx);
+            assert(authority::build(*ret) == std::string("~john:test@example%2Ecom"));
+        }
+        {
+            // 仅有 IPv4 和 port; 没对 port 进行限制 65536 也是对的
+            constexpr auto ipv4_port = "192.168.0.1:65535"_span;
+            auto ctx = make_parser_ctx(ipv4_port);
+            auto ret = authority_rule.parse(ctx);
+            assert(authority::build(*ret) == std::string("192.168.0.1:65535"));
+        }
+        {
+            // 边界用例：空port（仅冒号）
+            constexpr auto empty_port = "[::1]:"_span; // 允许port为空字符串
+            auto ctx = make_parser_ctx(empty_port);
+            auto ret = authority_rule.parse(ctx);
+            assert(authority::build(*ret) == std::string("[::1]:"));
+        }
+        {
+            // NOTE: 需要一个包装函数，来统一处理和判断是否真的解析完毕
+            //  无效测试用例
+            //  结构错误：多重@符号
+            constexpr auto multi_at = "user@name@[::1]"_span;
+            auto ctx = make_parser_ctx(multi_at);
+            auto ret = authority_rule.parse(ctx);
+            assert(authority::build(*ret) == std::string("user@name"));
+
+            assert(not ctx.empty());
+        }
     }
-    EXPECT(authority(full_authority_1));
 
-    // 仅有 userinfo 和 reg-name
-    constexpr auto user_host_case = "~john:test@example%2Ecom"_span; // 带编码点的域名
-    static_assert(authority(user_host_case));
-
-    // 仅有 IPv4 和 port
-    constexpr auto ipv4_port = "192.168.0.1:65535"_span; // 最大端口号
-    {
-        static_assert(host("192.168.0.1"_span));
-        static_assert(port("65535"_span));
-    }
-    static_assert(authority(ipv4_port));
-
-    // 纯 reg-name 带特殊字符
-    constexpr auto reg_name_special =
-        "server_!$&.sub-domain"_span; // 包含sub-delims的注册名
-    {
-        static_assert(host("server_!$&.sub-domain"_span));
-    }
-    static_assert(authority(reg_name_special));
-
-    // 边界用例：空port（仅冒号）
-    constexpr auto empty_port = "[::1]:"_span; // 允许port为空字符串
-    static_assert(authority(empty_port));
-
-    //================= authority 无效用例 =================
-    // 结构错误：多重@符号
-    constexpr auto multi_at = "user@name@[::1]"_span;
-    static_assert(!authority(multi_at));
-
-    // IPv6未加方括号
-    constexpr auto unbraced_ipv6 = "2001:db8::1"_span;
-    static_assert(!authority(unbraced_ipv6));
-
-    // 非法port字符
-    constexpr auto non_digit_port = "localhost:80a"_span; // 字母结尾
-    static_assert(!authority(non_digit_port));
-
-    // userinfo包含非法字符（空格）
-    constexpr auto space_in_user = "user name@host"_span;
-    static_assert(!authority(space_in_user));
-
-    // reg-name包含保留字符（未编码的#）
-    constexpr auto invalid_reg_name = "bad#host.com"_span;
-    static_assert(!authority(invalid_reg_name));
-
-    // 端口溢出
-    // NOTE: 只做类型校验，不做值限制
-    constexpr auto port_overflow = "example.com:65536"_span; // 超过65535
-    static_assert(authority(port_overflow));
-
-    // 混合错误：错误IPv4格式+非法userinfo
-    constexpr auto multi_error = "user@[::1:8080"_span; // IPv6缺少闭合括号
-    static_assert(!authority(multi_error));
-
+    std::cout << "main done\n";
     return 0;
 }
 
