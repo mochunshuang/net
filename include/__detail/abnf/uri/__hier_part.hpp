@@ -55,11 +55,10 @@ namespace mcs::abnf::uri
         static constexpr auto parse(parser_ctx_ref ctx) noexcept
             -> std::optional<result_type>
         {
-            constexpr auto k_rule =
-                alternative{make_sequence{CharRule<CharInsensitive<'/'>>{},
-                                          CharRule<CharInsensitive<'/'>>{}, authority{},
-                                          path_abempty{}},
-                            path_absolute{}, path_rootless{}, path_empty{}};
+            constexpr auto k_rule = alternative{
+                sequence{CharRule<CharInsensitive<'/'>>{},
+                         CharRule<CharInsensitive<'/'>>{}, authority{}, path_abempty{}},
+                path_absolute{}, path_rootless{}, path_empty{}};
             auto ret = k_rule.parse(ctx);
             if (not ret)
                 return std::nullopt;

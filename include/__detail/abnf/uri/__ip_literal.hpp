@@ -36,11 +36,11 @@ namespace mcs::abnf::uri
             auto IPv6address_callback = [&](const parser_ctx & /*ctx*/) noexcept {
                 id = 1;
             };
-            auto rule = make_sequence{
-                CharInsensitive<'['>{},
-                alternative{with_callback(IPv6address{}, IPv6address_callback),
-                            IPvFuture{}},
-                CharInsensitive<']'>{}};
+            auto rule =
+                sequence{CharInsensitive<'['>{},
+                         alternative{with_callback(IPv6address{}, IPv6address_callback),
+                                     IPvFuture{}},
+                         CharInsensitive<']'>{}};
             if (auto ret = rule(ctx))
             {
                 return id == 1

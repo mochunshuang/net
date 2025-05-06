@@ -31,7 +31,7 @@ namespace mcs::abnf::uri
         }
 
         /**
-         * parse 应该增加回调。 make_sequence + rule //是从左到右 parse 的
+         * parse 应该增加回调。 sequence + rule //是从左到右 parse 的
          * parse 成功 ctx 也就转移成功。将运行时答案保存即可。 重写设计make_sequence 即可
          */
         static constexpr auto parse(parser_ctx_ref ctx) noexcept
