@@ -22,8 +22,8 @@ int main()
         static_assert(ctl("\0x20"_ctx));
         static_assert(not ctl("'\0x20'"_ctx));
         {
-            static_assert("\0x20"_ctx.size() == 4);
-            static_assert("'\0x20'"_ctx.size() == 6);
+            static_assert("\0x20"_ctx.remain() == 4);
+            static_assert("'\0x20'"_ctx.remain() == 6);
 
             static constexpr OCTET test_ctl = '\0x20';
             constexpr std::span<const OCTET> s(&test_ctl, 1);

@@ -33,7 +33,7 @@ namespace mcs::abnf::detail
         std::size_t cur_index{}; // NOLINT
         std::size_t end_index{}; // NOLINT
 
-        [[nodiscard]] constexpr auto size() const noexcept
+        [[nodiscard]] constexpr auto remain() const noexcept
         {
             return end_index - cur_index;
         }

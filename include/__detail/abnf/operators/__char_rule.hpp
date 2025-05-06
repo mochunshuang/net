@@ -22,11 +22,9 @@ namespace mcs::abnf::operators
         constexpr auto operator()(detail::parser_ctx_ref ctx) const noexcept
             -> detail::consumed_result
         {
-            transaction trans{ctx};
             auto &rule = this->template get<0>();
             auto ret = rule(ctx);
-            return ret ? (trans.commit(), detail::make_consumed_result(*ret))
-                       : std::nullopt;
+            return ret ? detail::make_consumed_result(*ret) : std::nullopt;
         }
         constexpr auto parse(detail::parser_ctx_ref ctx) const noexcept
             -> std::optional<result_type>
