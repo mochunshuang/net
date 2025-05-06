@@ -25,7 +25,8 @@ namespace mcs::abnf::generate
         static constexpr auto operator()(detail::parser_ctx_ref ctx) noexcept
             -> detail::consumed_result
         {
-            auto ret = Rule{}(ctx);
+            constexpr auto k_rule = Rule{};
+            auto ret = k_rule(ctx);
             return ret ? detail::make_consumed_result(*ret) : std::nullopt;
         }
         static constexpr auto parse(detail::parser_ctx_ref ctx) noexcept

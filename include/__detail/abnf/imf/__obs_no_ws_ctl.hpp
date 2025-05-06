@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../__core_types.hpp"
+#include "../__abnf.hpp"
 
 namespace mcs::abnf::imf
 {
@@ -12,10 +12,7 @@ namespace mcs::abnf::imf
                         %d127              ;  white space characters
     *
     */
-    constexpr abnf_result auto obs_NO_WS_CTL(octet_param_in c) noexcept
-    {
-        // NOLINTNEXTLINE
-        return (c >= 1 && c <= 8) || c == 11 || c == 12 || (c >= 14 && c <= 31) ||
-               c == 127; // NOLINT
-    }
-} // namespace mcs::abnf::imf
+    using obs_NO_WS_CTL = // NOLINTNEXTLINE
+        alternative<Range<1, 8>, Range<11, 12>, Range<14, 31>, CharSensitive<127>>;
+
+}; // namespace mcs::abnf::imf

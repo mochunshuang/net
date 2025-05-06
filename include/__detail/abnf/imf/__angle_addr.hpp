@@ -1,5 +1,6 @@
-#ifndef AC34DC43_70E2_426E_8304_C44458D3521A
-#define AC34DC43_70E2_426E_8304_C44458D3521A
+#pragma once
 
-
-#endif /* AC34DC43_70E2_426E_8304_C44458D3521A */
+namespace mcs::abnf::imf
+{
+    // angle-addr = [CFWS] "<" addr-spec ">" [CFWS] / obs-angle-addr
+};
