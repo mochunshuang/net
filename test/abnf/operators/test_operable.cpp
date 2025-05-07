@@ -19,7 +19,7 @@ int main()
     static_assert(rule("A"_ctx).has_value());
 
     {
-        using Rule = generate::CharSensitive<'A'>;
+        using Rule = generate::Char<'A'>;
         constexpr auto rule = [](detail::parser_ctx ctx) constexpr {
             return Rule{}(ctx);
         };

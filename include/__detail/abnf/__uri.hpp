@@ -18,6 +18,7 @@
 #include "./uri/__authority.hpp"
 #include "./uri/__hier_part.hpp"
 #include "./uri/__uri.hpp"
+#include "./uri/__relative_part.hpp"
 
 /**
  * @brief [ABNF-uri]

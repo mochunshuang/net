@@ -13,6 +13,6 @@ namespace mcs::abnf::imf
     *
     */
     using obs_NO_WS_CTL = // NOLINTNEXTLINE
-        alternative<Range<1, 8>, Range<11, 12>, Range<14, 31>, CharSensitive<127>>;
+        alternative<Range<1, 8>, Range<11, 12>, Range<14, 31>, Char<127>>;
 
 }; // namespace mcs::abnf::imf

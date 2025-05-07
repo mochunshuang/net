@@ -6,6 +6,6 @@
 namespace mcs::abnf::imf
 {
     // group           =   display-name ":" [group-list] ";" [CFWS]
-    using group = sequence<display_name, CharSensitive<':'>, optional<group_list>,
-                           CharSensitive<';'>, optional<CFWS>>;
+    using group = sequence<display_name, Char<':'>, optional<group_list>, Char<';'>,
+                           optional<CFWS>>;
 }; // namespace mcs::abnf::imf

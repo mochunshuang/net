@@ -112,7 +112,7 @@ struct CharInsensitive
     }
 };
 template <octet C>
-struct CharSensitive
+struct Char
 {
     using rule_concept = rule_t;
 
@@ -215,9 +215,9 @@ struct make_alternative : product_type<Rule...>
 template <typename... T>
 make_alternative(T &&...r) -> make_alternative<std::decay_t<T>...>; // NOLINT
 
-struct A_rule : SimpleRule<A_rule, CharSensitive<'A'>>
+struct A_rule : SimpleRule<A_rule, Char<'A'>>
 {
-    using SimpleRule<A_rule, CharSensitive<'A'>>::SimpleRule;
+    using SimpleRule<A_rule, Char<'A'>>::SimpleRule;
 };
 struct B_rule : SimpleRule<B_rule, CharInsensitive<'B'>>
 {
@@ -523,16 +523,15 @@ int main()
             auto ret3 = rule.parse(ctx3);
             assert(!ret3);
         }
-        // CharRule<CharSensitive<'A'>> 安全混用
+        // CharRule<Char<'A'>> 安全混用
         {
             // 测试用例3：复杂嵌套（序列包含重复和选择）
             using ComplexRule = make_sequence<
-                make_repetition<1, 2, CharRule<CharSensitive<'A'>>>,    // 1-2次A
+                make_repetition<1, 2, CharRule<Char<'A'>>>,             // 1-2次A
                 make_alternative<B_rule, make_sequence<A_rule, B_rule>> // B 或 AB
                 >;
             ComplexRule rule = ComplexRule{
-                make_repetition<1, 2, CharRule<CharSensitive<'A'>>>{
-                    CharRule<CharSensitive<'A'>>{}},
+                make_repetition<1, 2, CharRule<Char<'A'>>>{CharRule<Char<'A'>>{}},
                 make_alternative{B_rule{}, make_sequence{A_rule{}, B_rule{}}}};
             using Rule = decltype(rule);
 

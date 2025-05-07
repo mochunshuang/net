@@ -6,8 +6,7 @@ namespace mcs::abnf::uri
 {
     namespace rules
     {
-        using fragment_rule =
-            zero_or_more<alternative<pchar, CharSensitive<'/'>, CharSensitive<'?'>>>;
+        using fragment_rule = zero_or_more<alternative<pchar, Char<'/'>, Char<'?'>>>;
     };
     // fragment      = *( pchar / "/" / "?" )
     struct fragment : SimpleRule<fragment, rules::fragment_rule>

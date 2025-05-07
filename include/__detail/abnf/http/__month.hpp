@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../__core_types.hpp"
+#include "../__abnf.hpp"
 
 namespace mcs::abnf
 {
@@ -19,21 +19,9 @@ namespace mcs::abnf
         / %x4E.6F.76 ; Nov
         / %x44.65.63 ; Dec
     */
-    constexpr abnf_result auto month(octet_param_in a, octet_param_in b,
-                                     octet_param_in c) noexcept
-    {
-        return (a == 'J' && b == 'a' && c == 'n') || (a == 'F' && b == 'e' && c == 'b') ||
-               (a == 'M' && b == 'a' && c == 'r') || (a == 'A' && b == 'p' && c == 'r') ||
-               (a == 'M' && b == 'a' && c == 'y') || (a == 'J' && b == 'u' && c == 'n') ||
-               (a == 'J' && b == 'u' && c == 'l') || (a == 'A' && b == 'u' && c == 'g') ||
-               (a == 'S' && b == 'e' && c == 'p') || (a == 'O' && b == 'c' && c == 't') ||
-               (a == 'N' && b == 'o' && c == 'v') || (a == 'D' && b == 'e' && c == 'c');
-    }
-    constexpr abnf_result auto month(span_param_in sp) noexcept
-    {
-        const auto k_size = sp.size();
-        if (k_size != 3)
-            return false;
-        return month(sp[0], sp[1], sp[2]);
-    }
+    using month = alternative<
+        StringSensitive<"Jan">, StringSensitive<"Feb">, StringSensitive<"Mar">,
+        StringSensitive<"Apr">, StringSensitive<"May">, StringSensitive<"Jun">,
+        StringSensitive<"Jul">, StringSensitive<"Aug">, StringSensitive<"Sep">,
+        StringSensitive<"Oct">, StringSensitive<"Nov">, StringSensitive<"Dec">>;
 } // namespace mcs::abnf

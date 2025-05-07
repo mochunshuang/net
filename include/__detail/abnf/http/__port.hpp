@@ -5,8 +5,5 @@
 namespace mcs::abnf::http
 {
     // port = <port, see [URI], Section 3.2.3>
-    constexpr abnf_result auto port(span_param_in sp) noexcept
-    {
-        return uri::port(sp);
-    }
+    using port = uri::port;
 }; // namespace mcs::abnf::http

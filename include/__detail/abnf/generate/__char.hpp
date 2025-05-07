@@ -7,7 +7,7 @@
 
 namespace mcs::abnf::generate
 {
-    template <detail::octet C, bool Insensitive>
+    template <detail::octet C, bool Insensitive = false>
     struct Char
     {
         struct __type
@@ -53,8 +53,5 @@ namespace mcs::abnf::generate
 
     template <detail::octet C>
     using CharInsensitive = Char<C, true>;
-
-    template <detail::octet C>
-    using CharSensitive = Char<C, false>;
 
 }; // namespace mcs::abnf::generate

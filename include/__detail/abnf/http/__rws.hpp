@@ -1,15 +1,9 @@
 #pragma once
 
-#include "./__ows.hpp"
+#include "../__abnf.hpp"
 
 namespace mcs::abnf::http
 {
     // RWS = 1*( SP / HTAB )
-    constexpr abnf_result auto RWS(span_param_in sp) noexcept
-    {
-        const auto k_size = sp.size();
-        if (k_size == 0)
-            return simple_result::fail(0);
-        return OWS(sp);
-    }
+    using RWS = one_or_more<alternative<SP, HTAB>>;
 }; // namespace mcs::abnf::http

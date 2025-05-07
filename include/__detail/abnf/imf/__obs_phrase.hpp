@@ -6,6 +6,5 @@
 namespace mcs::abnf::imf
 {
     // obs-phrase      =   word *(word / "." / CFWS)
-    using obs_phrase =
-        sequence<word, zero_or_more<alternative<word, CharSensitive<'.'>, CFWS>>>;
+    using obs_phrase = sequence<word, zero_or_more<alternative<word, Char<'.'>, CFWS>>>;
 }; // namespace mcs::abnf::imf

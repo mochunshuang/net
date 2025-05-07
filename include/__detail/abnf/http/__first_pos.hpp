@@ -1,20 +1,9 @@
 #pragma once
 
-#include "../__core_rules.hpp"
+#include "../__abnf.hpp"
 
 namespace mcs::abnf::http
 {
     // first-pos = 1*DIGIT
-    constexpr abnf_result auto first_pos(span_param_in sp) noexcept
-    {
-        const auto k_size = sp.size();
-        if (k_size == 0)
-            return simple_result::fail(0);
-        for (std::size_t i{0}; i < k_size; ++i)
-        {
-            if (not DIGIT(sp[i]))
-                return simple_result::fail(i);
-        }
-        return simple_result::success();
-    }
+    using first_pos = one_or_more<DIGIT>;
 }; // namespace mcs::abnf::http

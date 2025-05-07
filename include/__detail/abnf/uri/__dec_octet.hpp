@@ -14,11 +14,11 @@ namespace mcs::abnf::uri
      *           / "25" %x30-35          ; 250-255
      */
     using dec_octet = alternative< // 优先尝试最长规则 //NOTE: 优先处理特殊
-        sequence<CharSensitive<'2'>, CharSensitive<'5'>, Range<0x30, 0x35>>, // NOLINT
-        sequence<CharSensitive<'2'>, Range<0x30, 0x34>, DIGIT>,              // NOLINT
-        sequence<CharSensitive<'1'>, times<2, DIGIT>>,                       // NOLINT
-        sequence<Range<0x31, 0x39>, DIGIT>,                                  // NOLINT
-        DIGIT                                                                // NOLINT
+        sequence<Char<'2'>, Char<'5'>, Range<0x30, 0x35>>, // NOLINT
+        sequence<Char<'2'>, Range<0x30, 0x34>, DIGIT>,     // NOLINT
+        sequence<Char<'1'>, times<2, DIGIT>>,              // NOLINT
+        sequence<Range<0x31, 0x39>, DIGIT>,                // NOLINT
+        DIGIT                                              // NOLINT
         >;
 
 }; // namespace mcs::abnf::uri

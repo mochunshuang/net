@@ -5,8 +5,5 @@
 namespace mcs::abnf::http
 {
     // relative-part = <relative-part, see [URI], Section 4.2>
-    constexpr abnf_result auto relative_part(span_param_in sp) noexcept
-    {
-        return uri::relative_part(sp);
-    }
+    using relative_part = uri::relative_part;
 }; // namespace mcs::abnf::http

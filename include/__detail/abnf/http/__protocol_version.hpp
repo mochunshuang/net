@@ -5,9 +5,6 @@
 namespace mcs::abnf::http
 {
     // protocol-version = token
-    constexpr abnf_result auto protocol_version(span_param_in sp) noexcept
-    {
-        return token(sp);
-    }
+    using protocol_version = token;
 
 }; // namespace mcs::abnf::http

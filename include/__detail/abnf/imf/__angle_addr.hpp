@@ -7,7 +7,7 @@
 namespace mcs::abnf::imf
 {
     // angle-addr = [CFWS] "<" addr-spec ">" [CFWS] / obs-angle-addr
-    using angle_addr = alternative<sequence<optional<CFWS>, CharSensitive<'<'>, addr_spec,
-                                            CharSensitive<'>'>, optional<CFWS>>,
-                                   obs_angle_addr>;
+    using angle_addr = alternative<
+        sequence<optional<CFWS>, Char<'<'>, addr_spec, Char<'>'>, optional<CFWS>>,
+        obs_angle_addr>;
 }; // namespace mcs::abnf::imf

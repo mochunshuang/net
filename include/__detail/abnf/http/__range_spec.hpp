@@ -7,9 +7,6 @@
 namespace mcs::abnf::http
 {
     // range-spec = int-range / suffix-range / other-range
-    constexpr abnf_result auto range_spec(span_param_in sp) noexcept
-    {
-        return int_range(sp) || suffix_range(sp) || other_range(sp);
-    }
+    using range_spec = alternative<int_range, suffix_range, other_range>;
 
 }; // namespace mcs::abnf::http

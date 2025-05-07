@@ -8,7 +8,7 @@ namespace mcs::abnf::uri
     namespace rules
     {
         using path_rootless_rule =
-            sequence<segment_nz, zero_or_more<sequence<CharSensitive<'/'>, segment>>>;
+            sequence<segment_nz, zero_or_more<sequence<Char<'/'>, segment>>>;
     };
     // path-rootless = segment-nz *( "/" segment )
     struct path_rootless : SimpleRule<path_rootless, rules::path_rootless_rule>

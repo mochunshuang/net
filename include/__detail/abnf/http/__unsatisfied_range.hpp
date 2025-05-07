@@ -5,6 +5,5 @@
 namespace mcs::abnf::http
 {
     // unsatisfied-range = "*/" complete-length
-    using unsatisfied_range =
-        sequence<CharSensitive<'*'>, CharSensitive<'/'>, complete_length>;
+    using unsatisfied_range = sequence<Char<'*'>, Char<'/'>, complete_length>;
 }; // namespace mcs::abnf::http

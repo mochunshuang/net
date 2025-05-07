@@ -5,9 +5,5 @@
 namespace mcs::abnf::http
 {
     // range-unit = token
-    constexpr abnf_result auto range_unit(span_param_in sp) noexcept
-    {
-        return token(sp);
-    }
-
+    using range_unit = token;
 }; // namespace mcs::abnf::http

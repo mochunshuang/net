@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../__core_types.hpp"
+#include "../__abnf.hpp"
 
 namespace mcs::abnf::http
 {
@@ -9,17 +9,6 @@ namespace mcs::abnf::http
     / %x2D-7E ; '-'-'~'
     )
     */
-    constexpr abnf_result auto other_range(span_param_in sp) noexcept
-    {
-        const auto k_size = sp.size();
-        if (k_size == 0)
-            return simple_result::fail(0);
-        for (std::size_t i{0}; i < k_size; ++i)
-        {
-            if (const auto &c = sp[i]; (c >= '!' && c <= '+') || (c >= '-' && c <= '~'))
-                continue;
-            return simple_result::fail(i);
-        }
-        return simple_result::success();
-    }
+    using other_range =
+        one_or_more<alternative<Range<0x21, 0x2B>, Range<0x2D, 0x7E>>>; // NOLINT
 }; // namespace mcs::abnf::http

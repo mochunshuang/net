@@ -5,8 +5,5 @@
 namespace mcs::abnf::http
 {
     // BWS = OWS
-    constexpr abnf_result auto BWS(span_param_in sp) noexcept
-    {
-        return OWS(sp);
-    }
+    using BWS = OWS;
 }; // namespace mcs::abnf::http

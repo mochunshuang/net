@@ -8,9 +8,8 @@ namespace mcs::abnf::uri
     namespace rules
     {
         using path_absolute_rule = sequence<
-            CharSensitive<'/'>,
-            optional<sequence<segment_nz,
-                              zero_or_more<sequence<CharSensitive<'/'>, segment>>>>>;
+            Char<'/'>,
+            optional<sequence<segment_nz, zero_or_more<sequence<Char<'/'>, segment>>>>>;
     };
     // path-absolute = "/" [ segment-nz *( "/" segment ) ]
     struct path_absolute : SimpleRule<path_absolute, rules::path_absolute_rule>

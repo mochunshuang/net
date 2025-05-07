@@ -6,7 +6,7 @@
 namespace mcs::abnf::imf
 {
     // domain-literal  =   [CFWS] "[" *([FWS] dtext) [FWS] "]" [CFWS]
-    using domain_literal = sequence<optional<CFWS>, CharSensitive<'['>,
-                                    zero_or_more<sequence<optional<FWS>, dtext>>,
-                                    optional<FWS>, CharSensitive<']'>, optional<CFWS>>;
+    using domain_literal =
+        sequence<optional<CFWS>, Char<'['>, zero_or_more<sequence<optional<FWS>, dtext>>,
+                 optional<FWS>, Char<']'>, optional<CFWS>>;
 }; // namespace mcs::abnf::imf

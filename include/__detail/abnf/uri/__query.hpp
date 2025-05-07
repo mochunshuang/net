@@ -6,8 +6,7 @@ namespace mcs::abnf::uri
 {
     namespace rules
     {
-        using query_rule =
-            zero_or_more<alternative<pchar, CharSensitive<'/'>, CharSensitive<'?'>>>;
+        using query_rule = zero_or_more<alternative<pchar, Char<'/'>, Char<'?'>>>;
     };
     // query         = *( pchar / "/" / "?" )
     struct query : SimpleRule<query, rules::query_rule>

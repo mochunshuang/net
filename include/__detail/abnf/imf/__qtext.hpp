@@ -12,6 +12,6 @@ namespace mcs::abnf::imf
      *
      */
     using qtext = // NOLINTNEXTLINE
-        alternative<CharSensitive<33>, Range<35, 91>, Range<93, 126>, obs_qtext>;
+        alternative<Char<33>, Range<35, 91>, Range<93, 126>, obs_qtext>;
 
 }; // namespace mcs::abnf::imf

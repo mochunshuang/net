@@ -47,7 +47,7 @@ namespace mcs::abnf::generate
     };
     template <detail::octet... C>
         requires(sizeof...(C) <= 3)
-    struct any_of<C...> : operators::alternative<CharSensitive<C>...>
+    struct any_of<C...> : operators::alternative<Char<C>...>
     {
     };
 

@@ -5,5 +5,5 @@
 namespace mcs::abnf::imf
 {
     //  obs-route       =   obs-domain-list ":"
-    using obs_route = sequence<obs_domain_list, CharSensitive<':'>>;
+    using obs_route = sequence<obs_domain_list, Char<':'>>;
 }; // namespace mcs::abnf::imf

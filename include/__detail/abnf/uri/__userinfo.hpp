@@ -8,8 +8,8 @@ namespace mcs::abnf::uri
 {
     namespace rules
     {
-        using userinfo_rule = zero_or_more<
-            alternative<unreserved, pct_encoded, sub_delims, CharSensitive<':'>>>;
+        using userinfo_rule =
+            zero_or_more<alternative<unreserved, pct_encoded, sub_delims, Char<':'>>>;
     };
     // userinfo      = *( unreserved / pct-encoded / sub-delims / ":" )
     struct userinfo : SimpleRule<userinfo, rules::userinfo_rule>

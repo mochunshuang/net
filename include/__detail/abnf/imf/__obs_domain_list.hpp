@@ -10,8 +10,7 @@ namespace mcs::abnf::imf
      *
      */
     using obs_domain_list =
-        sequence<zero_or_more<alternative<CFWS, CharSensitive<','>>>, CharSensitive<'@'>,
-                 domain,
-                 zero_or_more<sequence<CharSensitive<','>, optional<CFWS>,
-                                       optional<sequence<CharSensitive<'@'>, domain>>>>>;
+        sequence<zero_or_more<alternative<CFWS, Char<','>>>, Char<'@'>, domain,
+                 zero_or_more<sequence<Char<','>, optional<CFWS>,
+                                       optional<sequence<Char<'@'>, domain>>>>>;
 }; // namespace mcs::abnf::imf

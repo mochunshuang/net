@@ -72,9 +72,8 @@ namespace mcs::abnf::imf
     constexpr auto comment::operator()(parser_ctx_ref ctx) noexcept -> consumed_result
     {
         // comment         =   "(" *([FWS] ccontent) [FWS] ")"
-        using rule =
-            sequence<CharSensitive<'('>, zero_or_more<sequence<optional<FWS>, ccontent>>,
-                     CharSensitive<')'>>;
+        using rule = sequence<Char<'('>, zero_or_more<sequence<optional<FWS>, ccontent>>,
+                              Char<')'>>;
         constexpr auto k_rule = rule{};
         auto ret = k_rule(ctx);
         return ret ? make_consumed_result(*ret) : std::nullopt;

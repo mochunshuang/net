@@ -5,5 +5,5 @@
 namespace mcs::abnf::http
 {
     // type = token
-
+    using type = token;
 }; // namespace mcs::abnf::http

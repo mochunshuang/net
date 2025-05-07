@@ -7,6 +7,6 @@
 namespace mcs::abnf::imf
 {
     // obs-angle-addr  =   [CFWS] "<" obs-route addr-spec ">" [CFWS]
-    using obs_angle_addr = sequence<optional<CFWS>, CharSensitive<'<'>, obs_route,
-                                    addr_spec, CharSensitive<'>'>, optional<CFWS>>;
+    using obs_angle_addr = sequence<optional<CFWS>, Char<'<'>, obs_route, addr_spec,
+                                    Char<'>'>, optional<CFWS>>;
 }; // namespace mcs::abnf::imf

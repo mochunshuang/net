@@ -5,8 +5,5 @@
 namespace mcs::abnf::http
 {
     // segment = <segment, see [URI], Section 3.3>
-    constexpr abnf_result auto segment(span_param_in sp) noexcept
-    {
-        return uri::segment(sp);
-    }
+    using segment = uri::segment;
 }; // namespace mcs::abnf::http

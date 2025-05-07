@@ -9,9 +9,8 @@ namespace mcs::abnf::uri
     {
         namespace __detail
         {
-            using double_colon = sequence<CharSensitive<':'>, CharSensitive<':'>>;
-            using h16_and_colon =
-                sequence<h16, CharSensitive<':'>, assert_not_is_char<':'>>;
+            using double_colon = sequence<Char<':'>, Char<':'>>;
+            using h16_and_colon = sequence<h16, Char<':'>, assert_not_is_char<':'>>;
 
             using IPv6_0 = sequence<times<6, h16_and_colon>, ls32>; // NOLINT
             using IPv6_1 =

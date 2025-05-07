@@ -51,7 +51,7 @@ int main()
         constexpr auto sub0 = sub.first(23);
         static_assert(sub0[22] == ':');
         constexpr auto h16_6 = [](auto ctx) constexpr {
-            return times<6, sequence<h16, CharSensitive<':'>>>{}(ctx);
+            return times<6, sequence<h16, Char<':'>>>{}(ctx);
         };
         constexpr auto ls32_rule = [](auto ctx) constexpr {
             return ls32{}(ctx);
@@ -69,7 +69,7 @@ int main()
             // Rule 1: 6(h16 ":") ls32 (完整格式)
             auto ctx = detail::make_parser_ctx(std::span{case1});
             auto h16_6 = [](auto &ctx) constexpr {
-                return times<6, sequence<h16, CharSensitive<':'>>>{}(ctx);
+                return times<6, sequence<h16, Char<':'>>>{}(ctx);
             };
             auto ls32_rule = [](auto &ctx) constexpr {
                 return ls32{}(ctx);

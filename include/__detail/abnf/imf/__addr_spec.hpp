@@ -6,5 +6,5 @@
 namespace mcs::abnf::imf
 {
     // addr-spec       =   local-part "@" domain
-    using addr_spec = sequence<local_part, CharSensitive<'@'>, domain>;
+    using addr_spec = sequence<local_part, Char<'@'>, domain>;
 }; // namespace mcs::abnf::imf

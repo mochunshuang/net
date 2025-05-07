@@ -5,9 +5,6 @@
 namespace mcs::abnf::http
 {
     // protocol-name = token
-    constexpr abnf_result auto protocol_name(span_param_in sp) noexcept
-    {
-        return token(sp);
-    }
+    using protocol_name = token;
 
 }; // namespace mcs::abnf::http

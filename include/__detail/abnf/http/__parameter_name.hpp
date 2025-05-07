@@ -5,9 +5,6 @@
 namespace mcs::abnf::http
 {
     // parameter-name = token
-    constexpr abnf_result auto parameter_name(span_param_in sp) noexcept
-    {
-        return token(sp);
-    }
+    using parameter_name = token;
 
 }; // namespace mcs::abnf::http

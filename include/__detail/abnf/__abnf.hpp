@@ -32,6 +32,7 @@
 #include "./generate/__any_of.hpp"
 #include "./generate/__check_char.hpp"
 #include "./generate/__simple_rule.hpp"
+#include "./generate/__string.hpp"
 
 namespace mcs::abnf
 {
@@ -86,10 +87,12 @@ namespace mcs::abnf
     using core::dquote_value;
 
     using generate::CharInsensitive;
-    using generate::CharSensitive;
+    using generate::Char;
     using generate::Range;
     using generate::any_of;
     using generate::assert_not_is_char;
     using generate::SimpleRule;
+    using generate::String;
+    using generate::StringSensitive;
 
 }; // namespace mcs::abnf

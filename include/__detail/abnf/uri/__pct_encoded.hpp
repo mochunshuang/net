@@ -5,5 +5,5 @@
 namespace mcs::abnf::uri
 {
     //  pct-encoded   = "%" HEXDIG HEXDIG
-    using pct_encoded = sequence<CharSensitive<'%'>, HEXDIG, HEXDIG>;
+    using pct_encoded = sequence<Char<'%'>, HEXDIG, HEXDIG>;
 }; // namespace mcs::abnf::uri
