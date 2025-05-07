@@ -33,7 +33,13 @@ namespace mcs::abnf::operators
             transaction trans{ctx};
             std::size_t old_index = ctx.cur_index;
             auto apply_all = [&]<typename... R>(R &&...r) noexcept {
-                return static_cast<bool>((std::forward<R>(r)(ctx) || ...))
+                auto apply_one = [&]<typename T>(T &&t) {
+                    if (auto ret = std::forward<T>(t)(ctx))
+                        return true;
+                    ctx.cur_index = old_index;
+                    return false;
+                };
+                return static_cast<bool>((apply_one(std::forward<R>(r)) || ...))
                            ? (trans.commit(),
                               detail::make_consumed_result(ctx.cur_index - old_index))
                            : std::nullopt;
