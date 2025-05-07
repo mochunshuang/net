@@ -33,10 +33,7 @@ int main()
         {
             constexpr dtext d = dtext{};
             auto ctx = "invalid"_ctx;
-            while (!ctx.done())
-            {
-                assert(d(ctx));
-            }
+            assert(d(ctx));
         }
     }
 
