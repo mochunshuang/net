@@ -5,7 +5,6 @@
 
 namespace mcs::abnf::http
 {
-    // OWS = *( SP / HTAB )
     // weight = OWS ";" OWS "q=" qvalue
     using weight = sequence<OWS, Char<';'>, OWS, CharInsensitive<'q'>, Char<'='>, qvalue>;
 }; // namespace mcs::abnf::http

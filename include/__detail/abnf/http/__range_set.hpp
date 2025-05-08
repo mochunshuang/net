@@ -5,9 +5,6 @@
 
 namespace mcs::abnf::http
 {
-    // suffix-range = "-" suffix-length
-    // int-range = first-pos "-" [ last-pos ]
-    // range-spec = int-range / suffix-range / other-range
     // range-set = range-spec *( OWS "," OWS range-spec )
     using range_set =
         sequence<range_spec, zero_or_more<sequence<OWS, Char<','>, OWS, range_spec>>>;

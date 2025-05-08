@@ -5,5 +5,5 @@
 namespace mcs::abnf::http
 {
     // codings = content-coding / "identity" / "*"
-    using codings = alternative<content_coding, String<"identity">, Char<'*'>>;
+    using codings = alternative<String<"identity">, Char<'*'>, content_coding>;
 }; // namespace mcs::abnf::http

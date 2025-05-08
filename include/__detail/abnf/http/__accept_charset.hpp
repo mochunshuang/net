@@ -11,7 +11,7 @@ namespace mcs::abnf::http
                                                             token / "*" ) [ weight ] ) ) ]
      *
      */
-    using Accept_Language = optional<
+    using Accept_Charset = optional<
         sequence<alternative<token, Char<'*'>>, optional<weight>,
                  zero_or_more<sequence<OWS, Char<','>, OWS, alternative<token, Char<'*'>>,
                                        optional<weight>>>>>;

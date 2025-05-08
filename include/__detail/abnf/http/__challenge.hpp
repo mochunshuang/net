@@ -1,9 +1,9 @@
 #pragma once
 
-#include "__auth_param.hpp"
-#include "__auth_scheme.hpp"
-#include "__ows.hpp"
-#include "__token68.hpp"
+#include "./__auth_param.hpp"
+#include "./__auth_scheme.hpp"
+#include "./__ows.hpp"
+#include "./__token68.hpp"
 
 namespace mcs::abnf::http
 {
