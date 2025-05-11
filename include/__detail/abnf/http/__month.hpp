@@ -2,7 +2,7 @@
 
 #include "../__abnf.hpp"
 
-namespace mcs::abnf
+namespace mcs::abnf::http
 {
 
     /*
@@ -24,4 +24,4 @@ namespace mcs::abnf
         StringSensitive<"Apr">, StringSensitive<"May">, StringSensitive<"Jun">,
         StringSensitive<"Jul">, StringSensitive<"Aug">, StringSensitive<"Sep">,
         StringSensitive<"Oct">, StringSensitive<"Nov">, StringSensitive<"Dec">>;
-} // namespace mcs::abnf
+} // namespace mcs::abnf::http

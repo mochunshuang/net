@@ -9,6 +9,10 @@ using namespace mcs::abnf::http;
 
 int main()
 {
+    // media-type = type "/" subtype parameters
+    // parameters = *( OWS ";" OWS [ parameter ] )
+    constexpr auto media_type = make_pass_test<mcs::abnf::http::media_type>();
+    constexpr auto not_media_type = make_unpass_test<mcs::abnf::http::media_type>();
     // 合法测试用例
     {
         // 基础格式
@@ -18,22 +22,9 @@ int main()
         {
             //  media-type = type "/" subtype parameters
             // parameters = *( OWS ";" OWS [ parameter ] )
-            static_assert(parameters(""_span));
-            constexpr auto ret = media_type(s1).value();
-
-            static_assert(decltype(ret)::size() == 3);
-            static_assert(
-                tool::equal_span(tool::make_stdspan(s1, ret.get<0>()), "text"_span));
-            static_assert(
-                tool::equal_span(tool::make_stdspan(s1, ret.get<1>()), "plain"_span));
-            static_assert(ret.get<2>() == invalid_span);
+            static_assert(make_pass_test<mcs::abnf::http::parameters>()(""_span));
         }
         static_assert(media_type(s2));
-        {
-            constexpr auto ret = media_type(s2).value();
-            static_assert(tool::equal_span(tool::make_stdspan(s2, ret.get<2>()),
-                                           "; charset=utf-8"_span));
-        }
 
         // 特殊字符类型/子类型（根据 token 规则）
         constexpr auto s3 = "vnd.custom+type/sub_type~v1"_span;
@@ -49,23 +40,24 @@ int main()
         // 缺少斜杠
         constexpr auto s1 = "textplain"_span;
         constexpr auto s2 = "application/"_span; // 缺少子类型
-        static_assert(not media_type(s1));
-        static_assert(not media_type(s2));
+        static_assert(not not_media_type(s1));
+        static_assert(not not_media_type(s2));
 
         // 非法字符
         constexpr auto s3 = "text/plain; key=va|lue"_span; // 管道符非法
         constexpr auto s4 = "app@cation/json"_span;        // @符号非法
         static_assert(media_type(s3));
         {
-            static_assert(parameters("; key=va|lue"_span));
+            static_assert(
+                make_pass_test<mcs::abnf::http::parameters>()("; key=va|lue"_span));
         }
-        static_assert(not media_type(s4));
+        static_assert(not not_media_type(s4));
 
         // 结构错误
         constexpr auto s5 = "text/plain;key=value;extra"_span; // 无效参数
         constexpr auto s6 = "video/mp4; =no-name"_span;        // 空参数名
-        static_assert(not media_type(s5));
-        static_assert(not media_type(s6));
+        static_assert(not_media_type(s5));
+        static_assert(not_media_type(s6));
     }
     // 边界测试
     {

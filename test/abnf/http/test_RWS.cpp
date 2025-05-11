@@ -10,10 +10,12 @@ using namespace mcs::abnf::http;
 
 int main()
 {
-    static_assert(not RWS(""_span));
-    static_assert(RWS(" "_span));
-    static_assert(RWS("                 "_span));
-    static_assert(RWS("                                                       "_span));
+    constexpr auto RWS_rule = make_pass_test<RWS>();
+    static_assert(not RWS_rule(""_span));
+    static_assert(RWS_rule(" "_span));
+    static_assert(RWS_rule("                 "_span));
+    static_assert(
+        RWS_rule("                                                       "_span));
     std::cout << "main done\n";
     return 0;
 }

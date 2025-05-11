@@ -23,5 +23,5 @@ auto_add_test_by_dir("abnf/operators")
 auto_add_test_by_dir("abnf/uri")
 auto_add_test_by_dir("abnf/imf")
 
-# auto_add_test_by_dir("abnf/http")
+auto_add_test_by_dir("abnf/http")
 auto_add_test_by_dir("abnf/core")

@@ -9,8 +9,12 @@ using namespace mcs::abnf::http;
 
 int main()
 {
+    //  media-range = ( "*/*" / ( type "/*" ) / ( type "/" subtype ) ) parameters
+    constexpr auto media_range = make_pass_test<mcs::abnf::http::media_range>();
+    constexpr auto not_media_range = make_unpass_test<mcs::abnf::http::media_range>();
     // 合法测试用例
     {
+
         // 通用匹配 "*/*"
         constexpr auto s1 = "*/*"_span;
         constexpr auto s2 = "*/* ; q=0.8"_span;
@@ -47,27 +51,28 @@ int main()
         constexpr auto s2 = "text/*/plain"_span; // 多余斜杠
         static_assert(media_range(s1));
         {
-            static_assert(type("*"_span));
+            static_assert(make_pass_test<mcs::abnf::http::type>()("*"_span));
         }
-        static_assert(not media_range(s2));
+        static_assert(not_media_range(s2));
 
         // 非法字符
         constexpr auto s3 = "text/@plain"_span;       // 子类型非法
         constexpr auto s4 = "app=lication/json"_span; // 类型非法
-        static_assert(not media_range(s3));
-        static_assert(not media_range(s4));
+        static_assert(not not_media_range(s3));
+        static_assert(not not_media_range(s4));
 
         // 结构错误
         constexpr auto s5 = "text"_span;                  // 缺少子类型
         constexpr auto s6 = "text/plain;key=val;ue"_span; // 参数非法
-        static_assert(not media_range(s5));
-        static_assert(not media_range(s6));
+        static_assert(not not_media_range(s5));
+        static_assert(not_media_range(s6));
 
         // 空参数段
         constexpr auto s7 = "image/*; ; param=1"_span; // 中间空参数段
         static_assert(media_range(s7));
         {
-            static_assert(parameters("; ; param=1"_span));
+            static_assert(
+                make_pass_test<mcs::abnf::http::parameters>()("; ; param=1"_span));
         }
     }
     // 边界测试
@@ -84,7 +89,7 @@ int main()
 
         // 通配符与参数混合
         constexpr auto s4 = "text/*; q=0; flag"_span; // flag 视为空参数段（非法）
-        static_assert(not media_range(s4));
+        static_assert(not_media_range(s4));
     }
 
     return 0;

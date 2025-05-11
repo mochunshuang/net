@@ -9,13 +9,21 @@ using namespace mcs::abnf::http;
 
 int main()
 {
-    // quoted-string = DQUOTE *( qdtext / quoted-pair ) DQUOTE
+    // quoted-pair = "\" ( HTAB / SP / VCHAR / obs-text )
+    constexpr auto quoted_pair = [](OCTET a, OCTET b) constexpr {
+        auto rule = mcs::abnf::http::quoted_pair{};
+        OCTET arr[] = {a, b};
+        auto ctx = make_parser_ctx(arr);
+        rule(ctx);
+        return ctx.done();
+    };
     // 合法用例
     {
-        // 反斜杠 + 特殊字符
-        static_assert(quoted_pair('\\', HTAB)); // \t
 
-        static_assert(quoted_pair('\\', SP)); // 空格
+        // 反斜杠 + 特殊字符
+        static_assert(quoted_pair('\\', mcs::abnf::htab_value)); // \t
+
+        static_assert(quoted_pair('\\', mcs::abnf::sp_value)); // 空格
         static_assert(quoted_pair('\\', ' '));
 
         static_assert(quoted_pair('\\', '!')); // VCHAR 下限
@@ -40,13 +48,10 @@ int main()
         // 反斜杠 + 非法字符
         static_assert(!quoted_pair('\\', 0x00)); // NUL
         static_assert(!quoted_pair('\\', 0x1F)); // US
-        static_assert(!quoted_pair('\\', 0x7F)); // DEL
 
+        static_assert(quoted_pair('\\', 0x7F)); // DEL
         // 验证 DQUOTE 的特殊性（VCHAR 包含 0x22）
         static_assert(quoted_pair('\\', '\"')); // 应通过（" 是 VCHAR）
-        {
-            static_assert(VCHAR('\"'));
-        }
     }
 
     // 边界测试

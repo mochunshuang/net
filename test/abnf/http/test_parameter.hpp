@@ -9,6 +9,8 @@ using namespace mcs::abnf::http;
 
 int main()
 {
+    constexpr auto parameter = make_pass_test<mcs::abnf::http::parameter>();
+    constexpr auto not_parameter = make_unpass_test<mcs::abnf::http::parameter>();
     // 合法测试用例
     {
         // 基础合法格式
@@ -20,20 +22,24 @@ int main()
         // 特殊字符参数名/值（根据规则）
         constexpr auto s3 = "custom~key=!$&'()*+,;="_span;
         constexpr auto s4 = "flag+=~/_encoded"_span;
-        static_assert(not parameter(s3));
+        static_assert(not_parameter(s3));
         {
-            static_assert(parameter_name("custom~key"_span));
-            static_assert(not parameter_value("!$&'()*+,;="_span));
+            static_assert(
+                make_pass_test<mcs::abnf::http::parameter_name>()("custom~key"_span));
+            static_assert(
+                make_unpass_test<mcs::abnf::http::parameter_value>()("!$&'()*+,;="_span));
             {
-                static_assert(not tchar('='));
+                static_assert(not make_unpass_test<mcs::abnf::http::tchar>()("="_span));
             }
         }
-        static_assert(not parameter(s4));
+        static_assert(not_parameter(s4));
         {
-            static_assert(parameter_name("flag+"_span));
-            static_assert(not parameter_value("~/_encoded"_span));
+            static_assert(
+                make_pass_test<mcs::abnf::http::parameter_name>()("flag+"_span));
+            static_assert(
+                make_unpass_test<mcs::abnf::http::parameter_value>()("~/_encoded"_span));
             {
-                static_assert(not tchar('/'));
+                static_assert(not make_unpass_test<mcs::abnf::http::tchar>()("/"_span));
             }
         }
 

@@ -10,6 +10,7 @@ using namespace mcs::abnf::http;
 
 int main()
 {
+    constexpr auto OWS = make_pass_test<mcs::abnf::http::OWS>();
     static_assert(OWS(""_span));
     static_assert(OWS(" "_span));
     static_assert(OWS("                 "_span));

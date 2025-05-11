@@ -25,6 +25,7 @@
 #include "./http/__parameters.hpp"
 #include "./http/__media_type.hpp"
 #include "./http/__media_range.hpp"
+#include "./http/__month.hpp"
 
 /**
  * @brief [ABNF-HTTP]

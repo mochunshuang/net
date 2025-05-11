@@ -9,8 +9,11 @@ using namespace mcs::abnf::http;
 
 int main()
 {
+    constexpr auto parameters = make_pass_test<mcs::abnf::http::parameters>();
+    constexpr auto not_parameters = make_unpass_test<mcs::abnf::http::parameters>();
     // 合法测试用例
     {
+
         // 空输入
         constexpr auto s0 = ""_span;
         static_assert(parameters(s0));
@@ -20,7 +23,7 @@ int main()
         constexpr auto s2 = "key=value;"_span;    // 不以 分号开头
         constexpr auto s3 = ";;key=value;;"_span; // 多个空参数段
         static_assert(parameters(s1));
-        static_assert(not parameters(s2));
+        static_assert(not_parameters(s2));
         {
             // parameters = *( OWS ";" OWS [ parameter ] )
             // parameter = parameter-name "=" parameter-value
@@ -47,21 +50,22 @@ int main()
         // 非法分隔符（非分号）
         constexpr auto s1 = "key=value,flag=true"_span;   // 逗号分隔
         constexpr auto s2 = "key=value key2=value2"_span; // 空格分隔
-        static_assert(not parameters(s1));
-        static_assert(not parameters(s2));
+        static_assert(not_parameters(s1));
+        static_assert(not_parameters(s2));
 
         // 非法参数格式
         constexpr auto s3 = ";key =value;"_span; // 参数名含空格
         constexpr auto s4 = "name=val;bad@key=val"_span;
-        static_assert(not parameters(s3));
-        static_assert(not parameters(s4));
+        static_assert(not_parameters(s3));
+        static_assert(not_parameters(s4));
 
         // 分号后非法字符
         constexpr auto s5 = "; key=val; invalid#param=1"_span;
         static_assert(parameters(s5));
         {
-            static_assert(parameter("key=val"_span));
-            static_assert(parameter("invalid#param=1"_span));
+            static_assert(make_pass_test<mcs::abnf::http::parameter>()("key=val"_span));
+            static_assert(
+                make_pass_test<mcs::abnf::http::parameter>()("invalid#param=1"_span));
         }
     }
     // 边界测试
@@ -72,7 +76,7 @@ int main()
 
         // 参数值为空（允许）
         constexpr auto s2 = ";key=;"_span;
-        static_assert(not parameters(s2)); // 不允许空值
+        static_assert(not_parameters(s2)); // 不允许空值
 
         // 极大参数数量
         // constexpr auto s3 = "a=1;" + std::string(1000, 'b') + "=2;"_span;
