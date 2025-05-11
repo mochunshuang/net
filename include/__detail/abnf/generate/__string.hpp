@@ -3,22 +3,12 @@
 #include "../detail/__types.hpp"
 #include "../tool/__to_upper.hpp"
 #include "../tool/__to_lower.hpp"
-#include <algorithm>
+#include "./__fixedstring.hpp"
 #include <string>
 #include <array>
 
 namespace mcs::abnf::generate
 {
-    template <size_t N>
-    struct FixedString
-    {
-        static constexpr size_t size = N;                    // NOLINT
-        char value[N]{};                                     // NOLINT
-        constexpr FixedString(const char (&str)[N]) noexcept // NOLINT
-        {
-            std::copy_n(str, N, value);
-        }
-    };
 
     template <FixedString Str, bool Insensitive = true>
     struct String

@@ -9,6 +9,13 @@ using namespace mcs::abnf::http;
 
 int main()
 {
+    constexpr auto tchar = [](OCTET v) constexpr {
+        auto rule = mcs::abnf::http::tchar{};
+        OCTET arr[1] = {v};
+        auto ctx = make_parser_ctx(arr);
+        rule(ctx);
+        return ctx.done();
+    };
     // 明确测试每个合法符号
     static_assert(tchar('!'));
     static_assert(tchar('#'));

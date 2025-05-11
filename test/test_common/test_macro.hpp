@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <cassert>
 #include <expected>
 #include <source_location>
 #include <span>
@@ -215,4 +216,48 @@ consteval decltype(auto) operator""_ctx()
 {
     using mcs::abnf::detail::make_parser_ctx;
     return make_parser_ctx(std::span{S.octets, S.size()});
+}
+
+template <typename Rule>
+constexpr auto make_pass_test() noexcept
+{
+    return [](const auto &array) constexpr {
+        using mcs::abnf::detail::make_parser_ctx;
+        using mcs::abnf::detail::parser_ctx;
+        auto span = std::span{array};
+        parser_ctx ctx = make_parser_ctx(span);
+        assert(ctx.cur_index == 0);
+        auto suc = Rule{}(ctx);
+        assert(ctx.cur_index == span.size());
+        assert(ctx.done());
+        return suc;
+    };
+}
+
+template <typename Rule>
+constexpr auto make_unpass_test() noexcept
+{
+    return [](const auto &array) constexpr {
+        using mcs::abnf::detail::make_parser_ctx;
+        using mcs::abnf::detail::parser_ctx;
+        auto span = std::span{array};
+        parser_ctx ctx = make_parser_ctx(span);
+        assert(ctx.cur_index == 0);
+        auto suc = Rule{}(ctx);
+        assert(ctx.cur_index != span.size() || ctx.cur_index == 0);
+        assert(not ctx.done());
+        return suc;
+    };
+}
+
+template <typename Rule>
+constexpr auto make_rule_test(const auto &array) noexcept
+{
+    using mcs::abnf::detail::make_parser_ctx;
+    using mcs::abnf::detail::parser_ctx;
+    auto span = std::span{array};
+    parser_ctx ctx = make_parser_ctx(span);
+    assert(ctx.cur_index == 0);
+    auto suc = Rule{}(ctx);
+    return std::make_pair(suc, ctx);
 }

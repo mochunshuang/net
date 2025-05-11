@@ -91,6 +91,7 @@ namespace mcs::abnf
     using generate::Range;
     using generate::any_of;
     using generate::assert_not_is_char;
+    using generate::assert_not_string;
     using generate::SimpleRule;
     using generate::String;
     using generate::StringSensitive;
