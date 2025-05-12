@@ -12,7 +12,7 @@ namespace mcs::abnf::tfil
                     / 5*8ALPHA            ; or registered language subtag
      *
      */
-    using language =
-        sequence<repetition<2, 3, ALPHA>, optional<sequence<Char<'-'>, extlang>>,
-                 times<4, ALPHA>, repetition<5, 8, ALPHA>>; // NOLINT
+    using language = sequence<
+        sequence<repetition<2, 3, ALPHA>, optional<sequence<Char<'-'>, extlang>>>,
+        times<4, ALPHA>, repetition<5, 8, ALPHA>>; // NOLINT
 }; // namespace mcs::abnf::tfil

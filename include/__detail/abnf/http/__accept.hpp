@@ -11,7 +11,7 @@ namespace mcs::abnf::http
                                                              weight ] ) ) ]
      *
      */
-    using Accept_Language = optional<sequence<
+    using Accept = optional<sequence<
         media_range, optional<weight>,
         zero_or_more<sequence<OWS, Char<','>, OWS, media_range, optional<weight>>>>>;
 }; // namespace mcs::abnf::http

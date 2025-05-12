@@ -5,5 +5,5 @@
 namespace mcs::abnf::http
 {
     // connection-option = token
-    using content_option = token;
+    using connection_option = token;
 }; // namespace mcs::abnf::http

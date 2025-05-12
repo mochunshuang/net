@@ -18,10 +18,11 @@ namespace mcs::abnf::tfil
                  ["-" privateuse]
      *
      */
-    using langtag = sequence<language, optional<sequence<Char<'-'>, script>>,
-                             optional<sequence<Char<'-'>, region>>,
-                             zero_or_more<sequence<Char<'-'>, variant>>,
-                             zero_or_more<sequence<Char<'-'>, extension>>,
-                             optional<sequence<Char<'-'>, privateuse>>>;
+    using langtag = // NOTE: 重构或限制
+        sequence<language, alternative<optional<sequence<Char<'-'>, script>>,
+                                       optional<sequence<Char<'-'>, region>>,
+                                       zero_or_more<sequence<Char<'-'>, variant>>,
+                                       zero_or_more<sequence<Char<'-'>, extension>>,
+                                       optional<sequence<Char<'-'>, privateuse>>>>;
 
 }; // namespace mcs::abnf::tfil
