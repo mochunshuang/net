@@ -4,6 +4,6 @@
 
 namespace mcs::protocol::http::rules
 {
-    // method = token
-    using method = token;
+    // chunk-ext-name = token
+    using chunk_ext_name = token;
 }; // namespace mcs::protocol::http::rules

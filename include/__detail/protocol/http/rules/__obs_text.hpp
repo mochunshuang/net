@@ -5,5 +5,5 @@
 namespace mcs::protocol::http::rules
 {
     // obs-text = <obs-text, see [HTTP], Section 5.6.4>
-    using obs_text = ::mcs::abnf::http::obs_text;
+    using obs_text = abnf::http::obs_text;
 }; // namespace mcs::protocol::http::rules

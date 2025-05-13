@@ -4,6 +4,6 @@
 
 namespace mcs::protocol::http::rules
 {
-    // message-body = *OCTET
-    using message_body = abnf::zero_or_more<abnf::OCTET>;
+    // asterisk-form = "*"
+    using asterisk_form = abnf::Char<'*'>;
 }; // namespace mcs::protocol::http::rules

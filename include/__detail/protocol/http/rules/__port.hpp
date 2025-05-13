@@ -5,5 +5,5 @@
 namespace mcs::protocol::http::rules
 {
     // port = <port, see [URI], Section 3.2.3>
-    using port = ::mcs::abnf::http::port;
+    using port = abnf::http::port;
 }; // namespace mcs::protocol::http::rules

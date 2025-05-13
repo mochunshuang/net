@@ -4,6 +4,6 @@
 
 namespace mcs::protocol::http::rules
 {
-    // message-body = *OCTET
-    using message_body = abnf::zero_or_more<abnf::OCTET>;
+    // status-code = 3DIGIT
+    using status_code = abnf::times<3, abnf::DIGIT>;
 }; // namespace mcs::protocol::http::rules

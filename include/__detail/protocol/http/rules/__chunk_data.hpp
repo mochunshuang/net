@@ -4,6 +4,6 @@
 
 namespace mcs::protocol::http::rules
 {
-    // message-body = *OCTET
-    using message_body = abnf::zero_or_more<abnf::OCTET>;
+    // chunk-data = 1*OCTET
+    using chunk_data = abnf::one_or_more<abnf::OCTET>;
 }; // namespace mcs::protocol::http::rules

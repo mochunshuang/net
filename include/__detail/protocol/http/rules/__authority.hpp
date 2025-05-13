@@ -5,5 +5,5 @@
 namespace mcs::protocol::http::rules
 {
     // authority = <authority, see [URI], Section 3.2>
-    using authority = ::mcs::abnf::http::authority;
+    using authority = abnf::http::authority;
 }; // namespace mcs::protocol::http::rules

@@ -5,5 +5,5 @@
 namespace mcs::protocol::http::rules
 {
     // field-value = <field-value, see [HTTP], Section 5.5>
-    using field_value = ::mcs::abnf::http::field_value;
+    using field_value = abnf::http::field_value;
 }; // namespace mcs::protocol::http::rules

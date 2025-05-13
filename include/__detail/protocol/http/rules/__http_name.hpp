@@ -4,6 +4,6 @@
 
 namespace mcs::protocol::http::rules
 {
-    // message-body = *OCTET
-    using message_body = abnf::zero_or_more<abnf::OCTET>;
+    // HTTP-name = %x48.54.54.50 ; HTTP
+    using HTTP_name = abnf::StringSensitive<"HTTP">;
 }; // namespace mcs::protocol::http::rules

@@ -5,5 +5,5 @@
 namespace mcs::protocol::http::rules
 {
     // query = <query, see [URI], Section 3.4>
-    using query = ::mcs::abnf::http::query;
+    using query = abnf::http::query;
 }; // namespace mcs::protocol::http::rules
