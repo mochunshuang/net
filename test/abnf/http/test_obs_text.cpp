@@ -9,9 +9,9 @@ using namespace mcs::abnf::http;
 
 int main()
 {
-    constexpr auto obs_text = [](OCTET a) {
+    constexpr auto obs_text = [](octet a) {
         auto rule = mcs::abnf::http::obs_text{};
-        OCTET arr[] = {a};
+        octet arr[] = {a};
         auto ctx = make_parser_ctx(arr);
         rule(ctx);
         return ctx.done();

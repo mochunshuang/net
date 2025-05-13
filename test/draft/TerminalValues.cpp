@@ -8,11 +8,11 @@
 #include <tuple>
 #include <type_traits>
 
-using OCTET = uint8_t;
-using octet_param_in = const OCTET &;
-using span_param_in = const std::span<const OCTET> &;
-static constexpr auto k_max_octet_value = std::numeric_limits<OCTET>::max();
-static constexpr auto k_min_octet_value = std::numeric_limits<OCTET>::min();
+using octet = uint8_t;
+using octet_param_in = const octet &;
+using span_param_in = const std::span<const octet> &;
+static constexpr auto k_max_octet_value = std::numeric_limits<octet>::max();
+static constexpr auto k_min_octet_value = std::numeric_limits<octet>::min();
 
 struct rule_t
 {
@@ -36,11 +36,11 @@ struct parse_result
 struct parse_state
 {
   private:
-    std::span<const OCTET> input_;
+    std::span<const octet> input_;
     std::size_t index_{0};
 
   public:
-    explicit parse_state(std::span<const OCTET> in, std::size_t idx = 0) noexcept
+    explicit parse_state(std::span<const octet> in, std::size_t idx = 0) noexcept
         : input_{in}, index_{idx}
     {
     }
@@ -62,8 +62,8 @@ struct parser_ctx
 
 namespace terminal_values
 {
-    static_assert(sizeof(char) == sizeof(OCTET));
-    static_assert(std::is_same_v<OCTET, unsigned char>);
+    static_assert(sizeof(char) == sizeof(octet));
+    static_assert(std::is_same_v<octet, unsigned char>);
     static_assert(not std::is_same_v<char, unsigned char>);
 
     struct tolower_t
@@ -88,7 +88,7 @@ namespace terminal_values
         }
         auto operator()(octet_param_in c) const
         {
-            return tolower(c) == tolower(static_cast<OCTET>(c_));
+            return tolower(c) == tolower(static_cast<octet>(c_));
         }
 
       private:
@@ -105,7 +105,7 @@ namespace terminal_values
         }
         auto operator()(octet_param_in c) const
         {
-            return c == static_cast<OCTET>(c_);
+            return c == static_cast<octet>(c_);
         }
 
       private:
@@ -154,7 +154,7 @@ concatenation_rule(R &&...r) -> concatenation_rule<std::remove_cvref_t<R>...>;
 int main()
 {
     {
-        constexpr std::span<const OCTET> k_input;
+        constexpr std::span<const octet> k_input;
         static_assert(k_input.size() == 0);
     }
     {

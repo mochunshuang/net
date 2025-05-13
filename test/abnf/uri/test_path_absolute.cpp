@@ -23,23 +23,23 @@ int main()
             return suc;
         };
         // 仅斜杠测试
-        static constexpr OCTET slash_only[] = {'/'};
+        static constexpr octet slash_only[] = {'/'};
         static_assert(path_absolute_rule(slash_only));
 
         // 斜杠+segment-nz测试
-        static constexpr OCTET with_segment[] = {'/', 'a', 'b', 'c'};
+        static constexpr octet with_segment[] = {'/', 'a', 'b', 'c'};
         static_assert(path_absolute_rule(with_segment));
 
         // 多段路径测试
-        static constexpr OCTET multi_segment[] = {'/', 'a', '/', 'b', '/', 'c'};
+        static constexpr octet multi_segment[] = {'/', 'a', '/', 'b', '/', 'c'};
         static_assert(path_absolute_rule(multi_segment));
 
         // 包含百分比编码测试
-        static constexpr OCTET with_encoding[] = {'/', '%', '4', '1', '/', 'b'};
+        static constexpr octet with_encoding[] = {'/', '%', '4', '1', '/', 'b'};
         static_assert(path_absolute_rule(with_encoding));
 
         // 长路径测试
-        static constexpr OCTET long_path[] = {'/', 'a', 'b', '/', 'c', 'd',
+        static constexpr octet long_path[] = {'/', 'a', 'b', '/', 'c', 'd',
                                               'e', '/', '%', '4', '1', '/',
                                               '!', '@', '/', '1', '2', '3'};
         static_assert(path_absolute_rule(long_path));
@@ -59,11 +59,11 @@ int main()
         static_assert(!path_absolute_rule(""_span));
 
         // 无效起始字符测试
-        static constexpr OCTET invalid_start[] = {'a', '/', 'b'};
+        static constexpr octet invalid_start[] = {'a', '/', 'b'};
         static_assert(!path_absolute_rule(invalid_start));
 
         // 空segment-nz测试
-        static constexpr OCTET empty_segment[] = {'/', '/', 'a'};
+        static constexpr octet empty_segment[] = {'/', '/', 'a'};
         static_assert(path_absolute_rule(empty_segment));
         static_assert(path_absolute_rule(empty_segment).value() == 1);
     }

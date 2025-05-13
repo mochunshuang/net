@@ -9,9 +9,9 @@ using namespace mcs::abnf::http;
 
 int main()
 {
-    constexpr auto tchar = [](OCTET v) constexpr {
+    constexpr auto tchar = [](octet v) constexpr {
         auto rule = mcs::abnf::http::tchar{};
-        OCTET arr[1] = {v};
+        octet arr[1] = {v};
         auto ctx = make_parser_ctx(arr);
         rule(ctx);
         return ctx.done();

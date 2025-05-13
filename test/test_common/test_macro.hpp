@@ -158,14 +158,14 @@ constexpr auto REQUIRE_FALSE(const bool &b, const char *msg = "")
     REQUIRE_TRUE(not b, msg);
 }
 
-using OCTET = std::uint8_t;
+using octet = std::uint8_t;
 template <size_t N>
 consteval auto make_array(const char (&str)[N]) noexcept // NOLINT
 {
-    std::array<OCTET, N - 1> arr{};
+    std::array<octet, N - 1> arr{};
     for (size_t i = 0; i < N - 1; ++i)
     {
-        arr[i] = static_cast<OCTET>(str[i]);
+        arr[i] = static_cast<octet>(str[i]);
     }
     return arr;
 }
@@ -173,13 +173,13 @@ consteval auto make_array(const char (&str)[N]) noexcept // NOLINT
 template <std::size_t N>
 struct make_span
 {
-    using OCTET = std::uint8_t;
-    OCTET octets[N - 1]{};                           // NOLINT
+    using octet = std::uint8_t;
+    octet octets[N - 1]{};                           // NOLINT
     constexpr make_span(char const (&s)[N]) noexcept // NOLINT
     {
         for (size_t i = 0; i < N - 1; ++i)
         {
-            octets[i] = static_cast<OCTET>(s[i]);
+            octets[i] = static_cast<octet>(s[i]);
         }
     };
 
@@ -197,11 +197,11 @@ consteval decltype(auto) operator""_span()
 
 struct make_oct
 {
-    using OCTET = std::uint8_t;
-    OCTET oct[1]{};                                 // NOLINT
+    using octet = std::uint8_t;
+    octet oct[1]{};                                 // NOLINT
     constexpr make_oct(char const (&s)[2]) noexcept // NOLINT
     {
-        oct[0] = static_cast<OCTET>(s[0]);
+        oct[0] = static_cast<octet>(s[0]);
     };
 };
 

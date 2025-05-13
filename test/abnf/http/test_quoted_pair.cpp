@@ -10,9 +10,9 @@ using namespace mcs::abnf::http;
 int main()
 {
     // quoted-pair = "\" ( HTAB / SP / VCHAR / obs-text )
-    constexpr auto quoted_pair = [](OCTET a, OCTET b) constexpr {
+    constexpr auto quoted_pair = [](octet a, octet b) constexpr {
         auto rule = mcs::abnf::http::quoted_pair{};
-        OCTET arr[] = {a, b};
+        octet arr[] = {a, b};
         auto ctx = make_parser_ctx(arr);
         rule(ctx);
         return ctx.done();

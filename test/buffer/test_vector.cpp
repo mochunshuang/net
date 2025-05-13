@@ -5,8 +5,8 @@
 #include <iostream>
 #include <cassert>
 
-using OCTET = std::uint8_t;
-using span_param_in = const std::span<const OCTET> &;
+using octet = std::uint8_t;
+using span_param_in = const std::span<const octet> &;
 
 // NOLINTBEGIN
 
@@ -20,7 +20,7 @@ class NetworkPacket
     }
 
     // 数据访问接口
-    std::span<const OCTET> get_span() const
+    std::span<const octet> get_span() const
     {
         return data_;
     }
@@ -30,23 +30,23 @@ class NetworkPacket
     }
 
   private:
-    std::vector<OCTET> data_;
+    std::vector<octet> data_;
 };
 
 // 生成测试数据
-std::vector<OCTET> generate_test_data(size_t size)
+std::vector<octet> generate_test_data(size_t size)
 {
-    std::vector<OCTET> data(size);
+    std::vector<octet> data(size);
     for (size_t i = 0; i < size; ++i)
     {
-        data[i] = static_cast<OCTET>(i % 256);
+        data[i] = static_cast<octet>(i % 256);
     }
     return data;
 }
 
 void test_basic_functionality()
 {
-    std::vector<OCTET> src_data = {0x01, 0x02, 0x03};
+    std::vector<octet> src_data = {0x01, 0x02, 0x03};
     NetworkPacket packet(src_data);
 
     // 验证数据一致性

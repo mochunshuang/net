@@ -5,13 +5,13 @@
 #include <array>
 #include <cstdint>
 
-using OCTET = uint8_t;
-using span_param_in = const std::span<const OCTET> &;
+using octet = uint8_t;
+using span_param_in = const std::span<const octet> &;
 
 using consumed_result = std::optional<std::size_t>;
 
 // 原子规则：CHAR
-constexpr auto CHAR(OCTET c)
+constexpr auto CHAR(octet c)
 {
     return [=](span_param_in sp) -> consumed_result {
         return (!sp.empty() && sp[0] == c) ? std::make_optional(1) : std::nullopt;
@@ -107,7 +107,7 @@ constexpr auto OPTIONAL(Rule rule)
 }
 
 // 字符范围匹配（闭区间）
-constexpr auto RANGE(OCTET low, OCTET high)
+constexpr auto RANGE(octet low, octet high)
 {
     return [=](span_param_in sp) -> consumed_result {
         if (!sp.empty() && sp[0] >= low && sp[0] <= high)
@@ -147,17 +147,17 @@ constexpr auto BIT = ALTERNATIVE(CHAR('0'), CHAR('1')); // "0" / "1"
 constexpr auto VCHAR = RANGE(0x21, 0x7E);     // %x21-7E
 constexpr auto CHAR_rule = RANGE(0x01, 0x7F); // %x01-7F (exclude NUL)
 
-// OCTET 直接匹配任意字节（总是成功消耗1字节）
+// octet 直接匹配任意字节（总是成功消耗1字节）
 constexpr auto OCTET_rule = [](span_param_in sp) -> consumed_result {
     return sp.empty() ? std::nullopt : std::make_optional(1);
 };
 
-constexpr auto CHAR_CI(OCTET c)
+constexpr auto CHAR_CI(octet c)
 {
-    constexpr auto to_lower = [](OCTET ch) constexpr {
+    constexpr auto to_lower = [](octet ch) constexpr {
         return (ch >= 'A' && ch <= 'Z') ? ch + 32 : ch;
     };
-    constexpr auto to_upper = [](OCTET ch) constexpr {
+    constexpr auto to_upper = [](octet ch) constexpr {
         return (ch >= 'a' && ch <= 'z') ? ch - 32 : ch;
     };
     return ALTERNATIVE(CHAR(to_lower(c)), CHAR(to_upper(c)));
@@ -208,38 +208,38 @@ int main()
 {
     {
         // 测试 CHAR
-        static_assert(CHAR('a')(std::array<OCTET, 1>{'a'}).value() == 1);
-        static_assert(!CHAR('a')(std::array<OCTET, 1>{'b'}));
+        static_assert(CHAR('a')(std::array<octet, 1>{'a'}).value() == 1);
+        static_assert(!CHAR('a')(std::array<octet, 1>{'b'}));
 
         // 测试 SEQUENCE
         constexpr auto seq = SEQUENCE(CHAR('a'), CHAR('b'));
-        static_assert(seq(std::array<OCTET, 2>{'a', 'b'}).value() == 2);
-        static_assert(!seq(std::array<OCTET, 2>{'a', 'c'}));
+        static_assert(seq(std::array<octet, 2>{'a', 'b'}).value() == 2);
+        static_assert(!seq(std::array<octet, 2>{'a', 'c'}));
 
         // 测试 ALTERNATIVE
         constexpr auto alt = ALTERNATIVE(CHAR('a'), CHAR('b'));
-        static_assert(alt(std::array<OCTET, 1>{'a'}).value() == 1);
-        static_assert(alt(std::array<OCTET, 1>{'b'}).value() == 1);
+        static_assert(alt(std::array<octet, 1>{'a'}).value() == 1);
+        static_assert(alt(std::array<octet, 1>{'b'}).value() == 1);
 
         // 测试 REPETITION
         constexpr auto rep = REPETITION<2, 3>(CHAR('a'));
-        static_assert(rep(std::array<OCTET, 2>{'a', 'a'}).value() == 2);
-        static_assert(!rep(std::array<OCTET, 1>{'a'}));
+        static_assert(rep(std::array<octet, 2>{'a', 'a'}).value() == 2);
+        static_assert(!rep(std::array<octet, 1>{'a'}));
     }
 
     // 测试1：多字节规则
     {
         // 匹配连续两个相同字符（消耗2字节）
-        constexpr auto DOUBLE_CHAR = [](OCTET c) {
+        constexpr auto DOUBLE_CHAR = [](octet c) {
             return SEQUENCE(CHAR(c), CHAR(c));
         };
 
         // 成功匹配
-        static_assert(DOUBLE_CHAR('x')(std::array<OCTET, 2>{'x', 'x'}).value() == 2);
+        static_assert(DOUBLE_CHAR('x')(std::array<octet, 2>{'x', 'x'}).value() == 2);
         // 失败情况（第二个字符不匹配）
-        static_assert(!DOUBLE_CHAR('x')(std::array<OCTET, 2>{'x', 'y'}));
+        static_assert(!DOUBLE_CHAR('x')(std::array<octet, 2>{'x', 'y'}));
         // 失败情况（输入不足）
-        static_assert(!DOUBLE_CHAR('x')(std::array<OCTET, 1>{'x'}));
+        static_assert(!DOUBLE_CHAR('x')(std::array<octet, 1>{'x'}));
     }
 
     // 测试2：嵌套组合 + 多字节规则
@@ -253,16 +253,16 @@ int main()
             );
 
         // 成功案例1：AACC（总消耗4）
-        static_assert(complex_rule(std::array<OCTET, 4>{'A', 'A', 'C', 'C'}).value() ==
+        static_assert(complex_rule(std::array<octet, 4>{'A', 'A', 'C', 'C'}).value() ==
                       4);
         // 成功案例2：BBCCC（总消耗5）
         static_assert(
-            complex_rule(std::array<OCTET, 5>{'B', 'B', 'C', 'C', 'C'}).value() == 5);
+            complex_rule(std::array<octet, 5>{'B', 'B', 'C', 'C', 'C'}).value() == 5);
         // 失败案例：BBC（ONE_OR_MORE需要至少1个C，这里成功但总长度需要验证）
-        static_assert(complex_rule(std::array<OCTET, 3>{'B', 'B', 'C'}).value() ==
+        static_assert(complex_rule(std::array<octet, 3>{'B', 'B', 'C'}).value() ==
                       3); // 应成功
         // 失败案例：AX（第一个ALTERNATIVE分支失败）
-        static_assert(!complex_rule(std::array<OCTET, 2>{'A', 'X'}));
+        static_assert(!complex_rule(std::array<octet, 2>{'A', 'X'}));
     }
 
     // 测试3：动态消耗规则
@@ -284,11 +284,11 @@ int main()
 
         // 成功案例：'3abc!'（消耗5）
         static_assert(
-            suffix_rule(std::array<OCTET, 5>{'3', 'a', 'b', 'c', '!'}).value() == 5);
+            suffix_rule(std::array<octet, 5>{'3', 'a', 'b', 'c', '!'}).value() == 5);
         // 失败案例1：数字超出范围
-        static_assert(!suffix_rule(std::array<OCTET, 3>{'0', 'a', '!'}));
+        static_assert(!suffix_rule(std::array<octet, 3>{'0', 'a', '!'}));
         // 失败案例2：后续字符不足
-        static_assert(!suffix_rule(std::array<OCTET, 4>{'3', 'a', 'b', '!'}));
+        static_assert(!suffix_rule(std::array<octet, 4>{'3', 'a', 'b', '!'}));
     }
 
     // 测试4：多层重复嵌套
@@ -303,15 +303,15 @@ int main()
 
         // 成功案例1：ababeeee（消耗8）
         static_assert(
-            monster_rule(std::array<OCTET, 8>{'a', 'b', 'a', 'b', 'e', 'e', 'e', 'e'})
+            monster_rule(std::array<octet, 8>{'a', 'b', 'a', 'b', 'e', 'e', 'e', 'e'})
                 .value() == 7); // 前4字节(abab) + 后3字节(eee) -> 只取前3个e
 
         // 成功案例2：cdee（消耗4）
-        static_assert(monster_rule(std::array<OCTET, 4>{'c', 'd', 'e', 'e'}).value() ==
+        static_assert(monster_rule(std::array<octet, 4>{'c', 'd', 'e', 'e'}).value() ==
                       4);
 
         // 失败案例1：只有1个e
-        static_assert(!monster_rule(std::array<OCTET, 3>{'a', 'b', 'e'}));
+        static_assert(!monster_rule(std::array<octet, 3>{'a', 'b', 'e'}));
     }
 
     // 测试5：边界值压力测试
@@ -320,10 +320,10 @@ int main()
         constexpr auto infinite_a = ZERO_OR_MORE(CHAR('a'));
 
         // 空输入成功（消耗0）
-        static_assert(infinite_a(std::array<OCTET, 0>{}).value() == 0);
+        static_assert(infinite_a(std::array<octet, 0>{}).value() == 0);
         // 极限长度测试（1MB数据，此处用大数组模拟）
-        std::array<OCTET, 1024 * 1024> giant_array = [] constexpr {
-            std::array<OCTET, 1024 * 1024> arr{};
+        std::array<octet, 1024 * 1024> giant_array = [] constexpr {
+            std::array<octet, 1024 * 1024> arr{};
             arr.fill('a');
             return arr;
         }();
@@ -332,38 +332,38 @@ int main()
 
     {
         // 测试 CTL
-        static_assert(CTL(std::array<OCTET, 1>{0x00}).has_value());
-        static_assert(CTL(std::array<OCTET, 1>{0x1F}).has_value());
-        static_assert(CTL(std::array<OCTET, 1>{0x7F}).has_value());
-        static_assert(!CTL(std::array<OCTET, 1>{0x80}));
+        static_assert(CTL(std::array<octet, 1>{0x00}).has_value());
+        static_assert(CTL(std::array<octet, 1>{0x1F}).has_value());
+        static_assert(CTL(std::array<octet, 1>{0x7F}).has_value());
+        static_assert(!CTL(std::array<octet, 1>{0x80}));
 
         // 测试 CRLF
-        static_assert(CRLF(std::array<OCTET, 2>{0x0D, 0x0A}).value() == 2);
-        static_assert(!CRLF(std::array<OCTET, 2>{0x0D, 0x0B}));
+        static_assert(CRLF(std::array<octet, 2>{0x0D, 0x0A}).value() == 2);
+        static_assert(!CRLF(std::array<octet, 2>{0x0D, 0x0B}));
 
         // 测试 LWSP
         {
             // 合法案例: 多个 WSP 和 CRLF WSP 组合
-            constexpr auto sp1 = std::array<OCTET, 5>{0x20, 0x09, 0x0D, 0x0A, 0x20};
+            constexpr auto sp1 = std::array<octet, 5>{0x20, 0x09, 0x0D, 0x0A, 0x20};
             static_assert(LWSP(sp1).value() == 5);
 
             // 空输入
-            static_assert(LWSP(std::array<OCTET, 0>{}).value() == 0);
+            static_assert(LWSP(std::array<octet, 0>{}).value() == 0);
         }
 
         // 测试 HEXDIG
-        static_assert(HEXDIG(std::array<OCTET, 1>{'A'}).has_value());
-        static_assert(HEXDIG(std::array<OCTET, 1>{'f'}).has_value());
-        static_assert(!HEXDIG(std::array<OCTET, 1>{'G'}));
+        static_assert(HEXDIG(std::array<octet, 1>{'A'}).has_value());
+        static_assert(HEXDIG(std::array<octet, 1>{'f'}).has_value());
+        static_assert(!HEXDIG(std::array<octet, 1>{'G'}));
 
         // 测试 OCTET_rule
-        static_assert(OCTET_rule(std::array<OCTET, 1>{0xFF}).value() == 1);
-        static_assert(!OCTET_rule(std::array<OCTET, 0>{}));
+        static_assert(OCTET_rule(std::array<octet, 1>{0xFF}).value() == 1);
+        static_assert(!OCTET_rule(std::array<octet, 0>{}));
 
         // 测试 BIT
-        static_assert(BIT(std::array<OCTET, 1>{'0'}).has_value());
-        static_assert(BIT(std::array<OCTET, 1>{'1'}).has_value());
-        static_assert(!BIT(std::array<OCTET, 1>{'2'}));
+        static_assert(BIT(std::array<octet, 1>{'0'}).has_value());
+        static_assert(BIT(std::array<octet, 1>{'1'}).has_value());
+        static_assert(!BIT(std::array<octet, 1>{'2'}));
     }
     {
         // 实现 HTTP 版本规则 "HTTP/" DIGIT "." DIGIT
@@ -371,13 +371,13 @@ int main()
             SEQUENCE(SEQUENCE(CHAR('H'), CHAR('T'), CHAR('T'), CHAR('P'), CHAR('/')),
                      DIGIT, CHAR('.'), DIGIT);
         static_assert(
-            http_version(std::array<OCTET, 8>{'H', 'T', 'T', 'P', '/', '1', '.', '1'})
+            http_version(std::array<octet, 8>{'H', 'T', 'T', 'P', '/', '1', '.', '1'})
                 .has_value());
     }
     {
         // 测试 CHAR_CI
-        static_assert(CHAR_CI('K')(std::array<OCTET, 1>{'k'}).has_value());
-        static_assert(CHAR_CI('5')(std::array<OCTET, 1>{'5'}).has_value());
+        static_assert(CHAR_CI('K')(std::array<octet, 1>{'k'}).has_value());
+        static_assert(CHAR_CI('5')(std::array<octet, 1>{'5'}).has_value());
     }
     {
         //--------------- RFC 5234 增强实现 ---------------
@@ -385,26 +385,26 @@ int main()
         constexpr auto HEXDIG =
             ALTERNATIVE(DIGIT, SEPARATED_BY(CHAR_CI('A'), CHAR('-')) // 演示复杂组合
             );
-        static_assert(HEXDIG(std::array<OCTET, 1>{'A'}).has_value());
-        static_assert(HEXDIG(std::array<OCTET, 3>{'a', '-', 'A'}).has_value());
-        static_assert(!HEXDIG(std::array<OCTET, 1>{'G'}));
+        static_assert(HEXDIG(std::array<octet, 1>{'A'}).has_value());
+        static_assert(HEXDIG(std::array<octet, 3>{'a', '-', 'A'}).has_value());
+        static_assert(!HEXDIG(std::array<octet, 1>{'G'}));
 
         constexpr auto LWSP = ZERO_OR_MORE(
             ALTERNATIVE(WSP, SEQUENCE(CRLF, LOOKAHEAD(WSP)) // 确保CRLF后必须有WSP
                         ));
         // 合法案例: 多个 WSP 和 CRLF WSP 组合
-        constexpr auto sp1 = std::array<OCTET, 5>{0x20, 0x09, 0x0D, 0x0A, 0x20};
+        constexpr auto sp1 = std::array<octet, 5>{0x20, 0x09, 0x0D, 0x0A, 0x20};
         static_assert(LWSP(sp1).value() == 5);
 
         // 空输入
-        static_assert(LWSP(std::array<OCTET, 0>{}).value() == 0);
+        static_assert(LWSP(std::array<octet, 0>{}).value() == 0);
     }
     {
         // 测试 LOOKAHEAD
         constexpr auto quoted = SEQUENCE(DQUOTE,
                                          LOOKAHEAD(NOT(DQUOTE)), // 确保引号内非空
                                          ONE_OR_MORE(DIGIT), DQUOTE);
-        static_assert(quoted(std::array<OCTET, 5>{'"', '1', '2', '3', '"'}).has_value());
+        static_assert(quoted(std::array<octet, 5>{'"', '1', '2', '3', '"'}).has_value());
     }
 
     std::cout << "All tests passed!\n";

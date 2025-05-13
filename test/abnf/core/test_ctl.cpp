@@ -25,8 +25,8 @@ int main()
             static_assert("\0x20"_ctx.remain() == 4);
             static_assert("'\0x20'"_ctx.remain() == 6);
 
-            static constexpr OCTET test_ctl = '\0x20';
-            constexpr std::span<const OCTET> s(&test_ctl, 1);
+            static constexpr octet test_ctl = '\0x20';
+            constexpr std::span<const octet> s(&test_ctl, 1);
             static_assert(not ctl(detail::make_parser_ctx(s)));
         }
         static_assert(not ctl("A"_ctx));

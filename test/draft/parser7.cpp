@@ -4,8 +4,8 @@
 #include <array>
 #include <iostream>
 
-using OCTET = uint8_t;
-using span_param_in = const std::span<const OCTET> &;
+using octet = uint8_t;
+using span_param_in = const std::span<const octet> &;
 using consumed_result = std::optional<size_t>;
 
 //==================== 前向声明规则类型 ====================
@@ -13,13 +13,13 @@ struct CommentRule;
 struct CContentRule;
 
 //==================== 基础规则类型 ====================
-template <OCTET C>
+template <octet C>
 struct CharRule
 {
     constexpr consumed_result operator()(span_param_in sp) const noexcept;
 };
 
-template <OCTET Low, OCTET High>
+template <octet Low, octet High>
 struct RangeRule
 {
     constexpr consumed_result operator()(span_param_in sp) const noexcept;
@@ -51,14 +51,14 @@ struct CContentRule
 
 //==================== 成员函数实现 ====================
 // CharRule实现
-template <OCTET C>
+template <octet C>
 constexpr consumed_result CharRule<C>::operator()(span_param_in sp) const noexcept
 {
     return (!sp.empty() && sp[0] == C) ? std::make_optional(1) : std::nullopt;
 }
 
 // RangeRule实现
-template <OCTET Low, OCTET High>
+template <octet Low, octet High>
 constexpr consumed_result RangeRule<Low, High>::operator()(
     span_param_in sp) const noexcept
 {
@@ -146,11 +146,11 @@ constexpr consumed_result CommentRule::operator()(span_param_in sp) const noexce
 int main()
 {
     // 编译期测试空注释: ()
-    // static_assert(CommentRule{}(std::array<OCTET, 2>{'(', ')'}).value() == 2);
-    // std::cout << CommentRule{}(std::array<OCTET, 2>{'(', ')'}).value() << '\n';
+    // static_assert(CommentRule{}(std::array<octet, 2>{'(', ')'}).value() == 2);
+    // std::cout << CommentRule{}(std::array<octet, 2>{'(', ')'}).value() << '\n';
 
     // // 运行时测试嵌套注释: (a(b)c)
-    // std::array<OCTET, 6> input{'(', 'a', '(', 'b', ')', ')'};
+    // std::array<octet, 6> input{'(', 'a', '(', 'b', ')', ')'};
     // auto res = CommentRule{}(input);
     // // static_assert(res.value() == 6);
     // std::cout << "Consumed bytes: " << *res << "\n"; // 输出6

@@ -24,10 +24,10 @@ int main()
         // ctext情况
         static_assert(ccontent_rule("!"_span));
         // quoted-pair情况
-        constexpr std::array<OCTET, 2> qp_case{'\\', 'A'};
+        constexpr std::array<octet, 2> qp_case{'\\', 'A'};
         static_assert(ccontent_rule(qp_case));
         // comment情况
-        constexpr std::array<OCTET, 2> com_case{'(', ')'}; // 空注释
+        constexpr std::array<octet, 2> com_case{'(', ')'}; // 空注释
         static_assert(ccontent_rule(com_case));
 
         constexpr auto com_case2 = "(abndacsd+*a)"_span;

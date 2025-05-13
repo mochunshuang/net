@@ -2,8 +2,8 @@
 #include <array>
 #include <cstdint>
 // NOLINTBEGIN
-using OCTET = uint8_t;
-using span_param_in = std::span<const OCTET>;
+using octet = uint8_t;
+using span_param_in = std::span<const octet>;
 
 struct parse_result
 {

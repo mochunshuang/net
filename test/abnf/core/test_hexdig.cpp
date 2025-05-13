@@ -23,8 +23,8 @@ int main()
 
         static_assert(not hexdig("G"_ctx));
 
-        static constexpr std::array<OCTET, 1> test_char = {0xFF};
-        constexpr std::span<const OCTET> s(test_char);
+        static constexpr std::array<octet, 1> test_char = {0xFF};
+        constexpr std::span<const octet> s(test_char);
         static_assert(not hexdig(detail::make_parser_ctx(s))); // NOLINT
     };
     std::cout << "main done\n";

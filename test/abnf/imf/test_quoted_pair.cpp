@@ -24,19 +24,19 @@ int main()
             return suc;
         };
         // 标准情况
-        constexpr std::array<OCTET, 2> valid1{'\\', 'A'}; // VCHAR
+        constexpr std::array<octet, 2> valid1{'\\', 'A'}; // VCHAR
         static_assert(quoted_pair_rule(valid1));
 
-        constexpr std::array<OCTET, 2> valid2{'\\', ' '}; // WSP
+        constexpr std::array<octet, 2> valid2{'\\', ' '}; // WSP
         static_assert(quoted_pair_rule(valid2));
 
         // obs-qp 情况
-        constexpr std::array<OCTET, 2> valid3{'\\', 0x00}; // 0字符
+        constexpr std::array<octet, 2> valid3{'\\', 0x00}; // 0字符
         static_assert(quoted_pair_rule(valid3));
-        constexpr std::array<OCTET, 2> valid4{'\\', 0x7F}; // 127
+        constexpr std::array<octet, 2> valid4{'\\', 0x7F}; // 127
         static_assert(quoted_pair_rule(valid4));
 
-        constexpr std::array<OCTET, 2> invalid2{'\\', '\n'}; // LF在obs-qp
+        constexpr std::array<octet, 2> invalid2{'\\', '\n'}; // LF在obs-qp
         static_assert(quoted_pair_rule(invalid2));
     }
 
@@ -51,7 +51,7 @@ int main()
             assert(not ctx.done());
             return suc;
         };
-        constexpr std::array<OCTET, 1> invalid1{'\\'}; // 只有反斜杠
+        constexpr std::array<octet, 1> invalid1{'\\'}; // 只有反斜杠
         static_assert(!quoted_pair_rule(invalid1));
     }
 

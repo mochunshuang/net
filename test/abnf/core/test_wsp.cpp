@@ -23,17 +23,17 @@ int main()
 
         static_assert(not wsp("G"_ctx));
 
-        static constexpr std::array<OCTET, 1> test_char = {0xFF};
-        constexpr std::span<const OCTET> s(test_char);
+        static constexpr std::array<octet, 1> test_char = {0xFF};
+        constexpr std::span<const octet> s(test_char);
         static_assert(not wsp(detail::make_parser_ctx(s))); // NOLINT
         {
-            static constexpr std::array<OCTET, 1> test_char = {0x20}; // sp
-            constexpr std::span<const OCTET> s(test_char);
+            static constexpr std::array<octet, 1> test_char = {0x20}; // sp
+            constexpr std::span<const octet> s(test_char);
             static_assert(wsp(detail::make_parser_ctx(s))); // NOLINT
         }
         {
-            static constexpr std::array<OCTET, 1> test_char = {0x09}; // htb
-            constexpr std::span<const OCTET> s(test_char);
+            static constexpr std::array<octet, 1> test_char = {0x09}; // htb
+            constexpr std::span<const octet> s(test_char);
             static_assert(wsp(detail::make_parser_ctx(s))); // NOLINT
         }
     };

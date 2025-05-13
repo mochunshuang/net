@@ -6,7 +6,7 @@
 
 #include "../test_common/test_macro.hpp"
 
-using OCTET = std::uint8_t;
+using octet = std::uint8_t;
 
 // 解析结果类型
 struct ParseResult
@@ -26,9 +26,9 @@ struct ParseResult
 
 template <typename T>
 concept parser = (std::copy_constructible<T> || std::move_constructible<T>) &&
-                 std::destructible<T> && (requires(T p, const std::span<const OCTET> &s) {
+                 std::destructible<T> && (requires(T p, const std::span<const octet> &s) {
                      { p.check(s) } noexcept -> std::same_as<ParseResult>;
-                 } || requires(T p, const OCTET &s) {
+                 } || requires(T p, const octet &s) {
                      { p.check(s) } noexcept -> std::same_as<ParseResult>;
                  });
 
@@ -92,7 +92,7 @@ Concatenation(Rs &&...rs) // NOLINT
 
 struct CheckA
 {
-    [[nodiscard]] ParseResult check(std::span<const OCTET> s) const noexcept
+    [[nodiscard]] ParseResult check(std::span<const octet> s) const noexcept
     {
         return {.success = !s.empty() && s[0] == 'a', .consumed = 1};
     }
@@ -100,7 +100,7 @@ struct CheckA
 
 struct CheckB
 {
-    [[nodiscard]] ParseResult check(std::span<const OCTET> s) const noexcept
+    [[nodiscard]] ParseResult check(std::span<const octet> s) const noexcept
     {
         return {.success = !s.empty() && s[0] == 'b', .consumed = 1};
     }
@@ -110,9 +110,9 @@ int main()
 {
     TEST("AllRulesSucceed") = [] {
         Concatenation<CheckA, CheckB, CheckA> parser;
-        std::array<OCTET, 3> input = {'a', 'b', 'a'};
+        std::array<octet, 3> input = {'a', 'b', 'a'};
 
-        std::span<const OCTET> span(input);
+        std::span<const octet> span(input);
 
         auto result =
             parser.check(span.subspan(0, 1), span.subspan(1, 1), span.subspan(2, 1));
@@ -126,7 +126,7 @@ int main()
 
     TEST("MiddleRuleFails") = [] {
         Concatenation<CheckA, CheckB, CheckA> parser;
-        std::array<OCTET, 3> input = {'a', 'a', 'a'}; // 第二个字符不是 'b'
-        std::span<const OCTET> span(input);
+        std::array<octet, 3> input = {'a', 'a', 'a'}; // 第二个字符不是 'b'
+        std::span<const octet> span(input);
     };
 }

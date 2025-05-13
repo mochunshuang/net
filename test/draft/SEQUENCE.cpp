@@ -3,8 +3,8 @@
 #include <array>
 #include <cstdint>
 // NOLINTBEGIN
-using OCTET = uint8_t;
-using span_param_in = std::span<const OCTET>;
+using octet = uint8_t;
+using span_param_in = std::span<const octet>;
 
 struct parse_result
 {
@@ -66,8 +66,8 @@ constexpr auto rule_c = [](span_param_in sp) -> parse_result {
 constexpr auto seq_abc = SEQUENCE(rule_a, rule_b, rule_c);
 
 // 测试用例
-static_assert(seq_abc(std::array<OCTET, 3>{'A', 'B', 'C'}).success);
-static_assert(!seq_abc(std::array<OCTET, 3>{'A', 'X', 'C'}).success);
+static_assert(seq_abc(std::array<octet, 3>{'A', 'B', 'C'}).success);
+static_assert(!seq_abc(std::array<octet, 3>{'A', 'X', 'C'}).success);
 
 #include <iostream>
 

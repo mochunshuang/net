@@ -6,8 +6,8 @@
 #include <array>
 #include <iostream>
 
-using OCTET = uint8_t;
-using span_param_in = const std::span<const OCTET> &;
+using octet = uint8_t;
+using span_param_in = const std::span<const octet> &;
 using consumed_result = std::optional<size_t>;
 
 //==================== 前向声明规则类型 ====================
@@ -15,7 +15,7 @@ struct CommentRule;
 struct CContentRule;
 
 //==================== 基础规则类型 ====================
-template <OCTET C>
+template <octet C>
 struct CharRule
 {
     constexpr consumed_result operator()(span_param_in sp) const noexcept
@@ -24,7 +24,7 @@ struct CharRule
     }
 };
 
-template <OCTET Low, OCTET High>
+template <octet Low, octet High>
 struct RangeRule
 {
     constexpr consumed_result operator()(span_param_in sp) const noexcept
@@ -137,11 +137,11 @@ constexpr consumed_result CommentRule::operator()(span_param_in sp) const noexce
 int main()
 {
     // 测试空注释: ()
-    constexpr auto empty_res = CommentRule{}(std::array<OCTET, 2>{'(', ')'});
+    constexpr auto empty_res = CommentRule{}(std::array<octet, 2>{'(', ')'});
     static_assert(empty_res.has_value() && empty_res.value() == 2); // 现在可以通过
 
     // 测试嵌套注释: (a(b)c)
-    constexpr std::array<OCTET, 6> input{'(', 'a', '(', 'b', ')', ')'};
+    constexpr std::array<octet, 6> input{'(', 'a', '(', 'b', ')', ')'};
     constexpr auto nested_res = CommentRule{}(input);
     // static_assert(nested_res.has_value() && nested_res.value() == 6);
 

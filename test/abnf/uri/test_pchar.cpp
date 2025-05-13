@@ -34,20 +34,20 @@ int main()
         static_assert(not pchar_rule(""_ctx));
 
         // 纯unreserved字符测试
-        static constexpr OCTET unreserved_chars[] = {'a', 'Z', '0', '-', '.', '_', '~'};
+        static constexpr octet unreserved_chars[] = {'a', 'Z', '0', '-', '.', '_', '~'};
         static_assert(pchar_rule_all(unreserved_chars));
 
         // 纯sub-delims字符测试
-        static constexpr OCTET subdelims_chars[] = {'!', '$', '&', '\'', '(', ')',
+        static constexpr octet subdelims_chars[] = {'!', '$', '&', '\'', '(', ')',
                                                     '*', '+', ',', ';',  '='};
         static_assert(pchar_rule_all(subdelims_chars));
 
         // 混合字符测试
-        static constexpr OCTET mixed_chars[] = {'a', '!', '1', '$', '.', '(', '~'};
+        static constexpr octet mixed_chars[] = {'a', '!', '1', '$', '.', '(', '~'};
         static_assert(pchar_rule_all(mixed_chars));
 
         // 百分比编码测试
-        static constexpr OCTET pct_encoded[] = {'%', '4', '1', '%', 'A', 'F', 'a'};
+        static constexpr octet pct_encoded[] = {'%', '4', '1', '%', 'A', 'F', 'a'};
         {
             auto ctx = make_parser_ctx(pct_encoded);
             assert(pchar{}(ctx));
@@ -61,7 +61,7 @@ int main()
         }
 
         // 边界情况测试
-        static constexpr OCTET boundary1[] = {':', '@'}; // 特殊允许字符
+        static constexpr octet boundary1[] = {':', '@'}; // 特殊允许字符
         static_assert(pchar_rule_all(boundary1));
     }
     {
@@ -72,25 +72,25 @@ int main()
             return suc;
         };
         // 无效字符测试
-        static constexpr OCTET invalid_chars1[] = {' '};
-        static constexpr OCTET invalid_chars2[] = {'"'};
-        static constexpr OCTET invalid_chars3[] = {'<'};
+        static constexpr octet invalid_chars1[] = {' '};
+        static constexpr octet invalid_chars2[] = {'"'};
+        static constexpr octet invalid_chars3[] = {'<'};
         static_assert(!pchar_rule(make_parser_ctx(invalid_chars1)));
         static_assert(!pchar_rule(make_parser_ctx(invalid_chars2)));
         static_assert(!pchar_rule(make_parser_ctx(invalid_chars3)));
 
         // 不完整的百分比编码测试
-        static constexpr OCTET incomplete_pct1[] = {'%'};
-        static constexpr OCTET incomplete_pct2[] = {'%', 'A'};
+        static constexpr octet incomplete_pct1[] = {'%'};
+        static constexpr octet incomplete_pct2[] = {'%', 'A'};
         static_assert(!pchar_rule(make_parser_ctx(incomplete_pct1)));
         static_assert(!pchar_rule(make_parser_ctx(incomplete_pct2)));
 
         // 无效百分比编码测试
-        static constexpr OCTET invalid_pct[] = {'%', 'G', '0', 'a'};
+        static constexpr octet invalid_pct[] = {'%', 'G', '0', 'a'};
         static_assert(!pchar_rule(make_parser_ctx(invalid_pct)));
 
         // 混合有效和无效字符测试
-        static constexpr OCTET mixed_invalid[] = {'a', '!', ' ', '1'};
+        static constexpr octet mixed_invalid[] = {'a', '!', ' ', '1'};
         {
             auto ctx = make_parser_ctx(mixed_invalid);
             assert(pchar{}(ctx));
@@ -103,7 +103,7 @@ int main()
         }
 
         // 边界情况测试
-        static constexpr OCTET boundary2[] = {'#', '?'}; // gen-delims应该无效
+        static constexpr octet boundary2[] = {'#', '?'}; // gen-delims应该无效
         static_assert(!pchar_rule(make_parser_ctx(boundary2)));
     }
 

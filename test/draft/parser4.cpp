@@ -2,8 +2,8 @@
 #include <array>
 #include <cstdint>
 
-using OCTET = uint8_t;
-using span_param_in = const std::span<const OCTET> &;
+using octet = uint8_t;
+using span_param_in = const std::span<const octet> &;
 
 struct parse_result
 {
@@ -14,7 +14,7 @@ struct parse_result
 // NOLINTBEGIN
 
 // 原子规则：CHAR
-constexpr auto CHAR(OCTET c)
+constexpr auto CHAR(octet c)
 {
     return [=](span_param_in sp) -> parse_result {
         return {!sp.empty() && sp[0] == c, 1};
@@ -117,69 +117,69 @@ int main()
 {
     {
         // 测试 CHAR 成功
-        static_assert(CHAR('a')(std::array<OCTET, 1>{'a'}).success);
-        static_assert(CHAR('a')(std::array<OCTET, 2>{'a', 'b'}).consumed == 1);
+        static_assert(CHAR('a')(std::array<octet, 1>{'a'}).success);
+        static_assert(CHAR('a')(std::array<octet, 2>{'a', 'b'}).consumed == 1);
 
         // 测试 CHAR 失败
-        static_assert(!CHAR('a')(std::array<OCTET, 1>{'b'}).success);
-        static_assert(!CHAR('a')(std::array<OCTET, 0>{}).success); // 空输入
+        static_assert(!CHAR('a')(std::array<octet, 1>{'b'}).success);
+        static_assert(!CHAR('a')(std::array<octet, 0>{}).success); // 空输入
     }
     {
         // 成功序列
         constexpr auto seq_ab = SEQUENCE(CHAR('a'), CHAR('b'));
-        static_assert(seq_ab(std::array<OCTET, 2>{'a', 'b'}).success);
-        static_assert(seq_ab(std::array<OCTET, 3>{'a', 'b', 'c'}).consumed == 2);
+        static_assert(seq_ab(std::array<octet, 2>{'a', 'b'}).success);
+        static_assert(seq_ab(std::array<octet, 3>{'a', 'b', 'c'}).consumed == 2);
         // 不是 BUG
-        static_assert(seq_ab(std::array<OCTET, 3>{'a', 'b', 'c'}).success);
+        static_assert(seq_ab(std::array<octet, 3>{'a', 'b', 'c'}).success);
 
         // 失败情况（第一个字符不匹配）
-        static_assert(!seq_ab(std::array<OCTET, 2>{'x', 'b'}).success);
+        static_assert(!seq_ab(std::array<octet, 2>{'x', 'b'}).success);
 
         // 失败情况（第二个字符不匹配）
-        static_assert(!seq_ab(std::array<OCTET, 2>{'a', 'x'}).success);
+        static_assert(!seq_ab(std::array<octet, 2>{'a', 'x'}).success);
     }
     {
         // 成功选择第一个分支
         constexpr auto alt_ab = ALTERNATIVE(CHAR('a'), CHAR('b'));
-        static_assert(alt_ab(std::array<OCTET, 1>{'a'}).success);
-        static_assert(alt_ab(std::array<OCTET, 1>{'b'}).success);
+        static_assert(alt_ab(std::array<octet, 1>{'a'}).success);
+        static_assert(alt_ab(std::array<octet, 1>{'b'}).success);
 
         // 失败情况
-        static_assert(!alt_ab(std::array<OCTET, 1>{'c'}).success);
+        static_assert(!alt_ab(std::array<octet, 1>{'c'}).success);
     }
     {
         // 重复 2-3 次 'a'
         constexpr auto rep_2_3_a = REPETITION<2, 3>(CHAR('a'));
 
         // 成功：恰好 2 次
-        static_assert(rep_2_3_a(std::array<OCTET, 2>{'a', 'a'}).success);
-        static_assert(rep_2_3_a(std::array<OCTET, 2>{'a', 'a'}).consumed == 2);
+        static_assert(rep_2_3_a(std::array<octet, 2>{'a', 'a'}).success);
+        static_assert(rep_2_3_a(std::array<octet, 2>{'a', 'a'}).consumed == 2);
 
         // 成功：3 次
-        static_assert(rep_2_3_a(std::array<OCTET, 3>{'a', 'a', 'a'}).success);
+        static_assert(rep_2_3_a(std::array<octet, 3>{'a', 'a', 'a'}).success);
 
         // 失败：只有 1 次
-        static_assert(!rep_2_3_a(std::array<OCTET, 1>{'a'}).success);
+        static_assert(!rep_2_3_a(std::array<octet, 1>{'a'}).success);
 
         // 超过最大次数，只取前 3 次, 而且是成功的
-        static_assert(rep_2_3_a(std::array<OCTET, 4>{'a', 'a', 'a', 'a'}).consumed == 3);
-        static_assert(rep_2_3_a(std::array<OCTET, 4>{'a', 'a', 'a', 'a'}).success);
+        static_assert(rep_2_3_a(std::array<octet, 4>{'a', 'a', 'a', 'a'}).consumed == 3);
+        static_assert(rep_2_3_a(std::array<octet, 4>{'a', 'a', 'a', 'a'}).success);
     }
     // 测试零次或多次（*）
     {
         constexpr auto rule = ZERO_OR_MORE(CHAR('a'));
-        static_assert(rule(std::array<OCTET, 0>{}).success);         // 0次
-        static_assert(rule(std::array<OCTET, 2>{'a', 'a'}).success); // 2次
-        static_assert(rule(std::array<OCTET, 3>{'a', 'a', 'b'}).consumed ==
+        static_assert(rule(std::array<octet, 0>{}).success);         // 0次
+        static_assert(rule(std::array<octet, 2>{'a', 'a'}).success); // 2次
+        static_assert(rule(std::array<octet, 3>{'a', 'a', 'b'}).consumed ==
                       2); // 遇到非a停止
     }
 
     // 测试一次或多次（+）
     {
         constexpr auto rule = ONE_OR_MORE(CHAR('a'));
-        static_assert(!rule(std::array<OCTET, 0>{}).success);   // 0次失败
-        static_assert(rule(std::array<OCTET, 1>{'a'}).success); // 1次
-        static_assert(rule(std::array<OCTET, 3>{'a', 'a', 'a'}).consumed == 3);
+        static_assert(!rule(std::array<octet, 0>{}).success);   // 0次失败
+        static_assert(rule(std::array<octet, 1>{'a'}).success); // 1次
+        static_assert(rule(std::array<octet, 3>{'a', 'a', 'a'}).consumed == 3);
     }
 
     // 测试混合组合：a* [b] c+
@@ -189,16 +189,16 @@ int main()
                      SEQUENCE(OPTIONAL(CHAR('b')), ONE_OR_MORE(CHAR('c'))));
 
         // 合法情况
-        static_assert(complex_rule(std::array<OCTET, 1>{'c'}).success); // a0次 b无 c1次
+        static_assert(complex_rule(std::array<octet, 1>{'c'}).success); // a0次 b无 c1次
         static_assert(
-            complex_rule(std::array<OCTET, 3>{'a', 'b', 'c'}).success); // a1次 b有 c1次
+            complex_rule(std::array<octet, 3>{'a', 'b', 'c'}).success); // a1次 b有 c1次
         static_assert(
-            complex_rule(std::array<OCTET, 3>{'a', 'c', 'c'}).success); // a1次 b无 c2次
-        static_assert(complex_rule(std::array<OCTET, 2>{'b', 'c'}).success); // 没有 a
+            complex_rule(std::array<octet, 3>{'a', 'c', 'c'}).success); // a1次 b无 c2次
+        static_assert(complex_rule(std::array<octet, 2>{'b', 'c'}).success); // 没有 a
 
         // 非法情况
         static_assert(
-            !complex_rule(std::array<OCTET, 3>{'a', 'b', 'x'}).success); // c无效
+            !complex_rule(std::array<octet, 3>{'a', 'b', 'x'}).success); // c无效
     }
 
     // 测试 REPETITION 边界
@@ -207,13 +207,13 @@ int main()
         constexpr auto rep_rule = REPETITION<2, 3>(ALTERNATIVE(CHAR('a'), CHAR('b')));
 
         // 合法情况
-        static_assert(rep_rule(std::array<OCTET, 2>{'a', 'b'}).success);            // 2次
-        static_assert(rep_rule(std::array<OCTET, 3>{'a', 'a', 'b'}).consumed == 3); // 3次
+        static_assert(rep_rule(std::array<octet, 2>{'a', 'b'}).success);            // 2次
+        static_assert(rep_rule(std::array<octet, 3>{'a', 'a', 'b'}).consumed == 3); // 3次
 
         // 边界情况
-        static_assert(rep_rule(std::array<OCTET, 4>{'a', 'a', 'a', 'x'}).consumed ==
+        static_assert(rep_rule(std::array<octet, 4>{'a', 'a', 'a', 'x'}).consumed ==
                       3); // 超过Max
-        static_assert(rep_rule(std::array<OCTET, 2>{'a', 'x'}).success ==
+        static_assert(rep_rule(std::array<octet, 2>{'a', 'x'}).success ==
                       false); // 中途失败
     }
 

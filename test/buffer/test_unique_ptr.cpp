@@ -6,8 +6,8 @@
 #include <cassert>
 #include <vector>
 
-using OCTET = std::uint8_t;
-using span_param_in = const std::span<const OCTET> &;
+using octet = std::uint8_t;
+using span_param_in = const std::span<const octet> &;
 
 // NOLINTBEGIN
 class NetworkPacketRaw
@@ -15,7 +15,7 @@ class NetworkPacketRaw
   public:
     // 从 span 构造，拷贝数据到 unique_ptr 数组
     explicit NetworkPacketRaw(span_param_in data_span)
-        : size_(data_span.size()), data_(std::make_unique<OCTET[]>(size_))
+        : size_(data_span.size()), data_(std::make_unique<octet[]>(size_))
     {
         std::copy(data_span.begin(), data_span.end(), data_.get());
     }
@@ -32,7 +32,7 @@ class NetworkPacketRaw
     NetworkPacketRaw &operator=(const NetworkPacketRaw &) = delete;
 
     // 数据访问接口
-    std::span<const OCTET> get_span() const
+    std::span<const octet> get_span() const
     {
         return std::span(data_.get(), size_);
     }
@@ -49,13 +49,13 @@ class NetworkPacketRaw
 
   private:
     size_t size_ = 0;
-    std::unique_ptr<OCTET[]> data_;
+    std::unique_ptr<octet[]> data_;
 };
 
 void test_unique_ptr_basic()
 {
 
-    std::vector<OCTET> src_data = {0x01, 0x02, 0x03};
+    std::vector<octet> src_data = {0x01, 0x02, 0x03};
     NetworkPacketRaw packet(src_data);
 
     // 验证数据一致性
@@ -65,7 +65,7 @@ void test_unique_ptr_basic()
 }
 void test_unique_ptr_move_semantics()
 {
-    std::vector<OCTET> src_data = {0x04, 0x05, 0x06};
+    std::vector<octet> src_data = {0x04, 0x05, 0x06};
     NetworkPacketRaw packet1(src_data);
 
     // 移动构造新对象
@@ -96,7 +96,7 @@ void test_unique_ptr_memory_safety()
 {
     // 使用 Valgrind 或 AddressSanitizer 验证
     {
-        std::vector<OCTET> large_data(10'000'000, 0xFF);
+        std::vector<octet> large_data(10'000'000, 0xFF);
         NetworkPacketRaw packet(large_data);
         auto moved_packet = std::move(packet);
     } // 此处应自动释放内存

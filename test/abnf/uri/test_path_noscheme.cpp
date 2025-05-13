@@ -23,19 +23,19 @@ int main()
             return suc;
         };
         // 单个segment-nz-nc测试
-        static constexpr OCTET single_segment[] = {'a', 'b', '@', 'c'};
+        static constexpr octet single_segment[] = {'a', 'b', '@', 'c'};
         static_assert(path_noscheme_rule(single_segment));
 
         // 多段路径测试
-        static constexpr OCTET multi_segment[] = {'a', '@', 'b', '/', 'c', '/', 'd'};
+        static constexpr octet multi_segment[] = {'a', '@', 'b', '/', 'c', '/', 'd'};
         static_assert(path_noscheme_rule(multi_segment));
 
         // 包含百分比编码测试
-        static constexpr OCTET with_encoding[] = {'a', '%', '4', '1', '/', 'b'};
+        static constexpr octet with_encoding[] = {'a', '%', '4', '1', '/', 'b'};
         static_assert(path_noscheme_rule(with_encoding));
 
         // 长路径测试
-        static constexpr OCTET long_path[] = {'a', '!', '@', '1', '/', 'b', 'c',
+        static constexpr octet long_path[] = {'a', '!', '@', '1', '/', 'b', 'c',
                                               'd', '/', '%', '4', '1', '/', '(',
                                               ')', '/', '2', '3', '4'};
         static_assert(path_noscheme_rule(long_path));
@@ -53,7 +53,7 @@ int main()
         };
 
         // 无效冒号字符测试
-        static constexpr OCTET with_colon[] = {'a', ':', 'b'};
+        static constexpr octet with_colon[] = {'a', ':', 'b'};
         static_assert(path_noscheme_rule(with_colon));
         static_assert(path_noscheme_rule(with_colon).value() == 1);
 
@@ -61,7 +61,7 @@ int main()
         static_assert(!path_noscheme_rule(""_span));
 
         // 无效起始字符测试
-        static constexpr OCTET invalid_start[] = {'/', 'a', 'b'};
+        static constexpr octet invalid_start[] = {'/', 'a', 'b'};
         static_assert(!path_noscheme_rule(invalid_start));
     }
 

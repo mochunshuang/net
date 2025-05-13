@@ -11,9 +11,9 @@ int main()
 {
     using namespace mcs::ABNF; // NOLINT
 
-    TEST("OCTET") = [] {
-        static_assert(std::numeric_limits<OCTET>::min() == 0x00);
-        static_assert(std::numeric_limits<OCTET>::max() == 0xFF); // NOLINT
+    TEST("octet") = [] {
+        static_assert(std::numeric_limits<octet>::min() == 0x00);
+        static_assert(std::numeric_limits<octet>::max() == 0xFF); // NOLINT
     };
     TEST("ALPHA") = [] {
         static_assert(ALPHA('A')); // 大写字母
@@ -103,19 +103,19 @@ int main()
 
     TEST("CRLF 3 ") = [] {
         // NOLINTBEGIN
-        constexpr OCTET valid[] = {CR, LF};
+        constexpr octet valid[] = {CR, LF};
         static_assert(CRLF(valid));
 
-        constexpr OCTET invalid1[] = {CR};
+        constexpr octet invalid1[] = {CR};
         static_assert(not CRLF(invalid1));
 
-        constexpr OCTET invalid2[] = {LF, CR};
+        constexpr octet invalid2[] = {LF, CR};
         static_assert(not CRLF(invalid2));
 
-        constexpr OCTET invalid3[] = {0x00, LF};
+        constexpr octet invalid3[] = {0x00, LF};
         static_assert(not CRLF(invalid3));
 
-        constexpr OCTET invalid4[] = {CR, LF, LF};
+        constexpr octet invalid4[] = {CR, LF, LF};
         static_assert(not CRLF(invalid4));
         // NOLINTEND
     };
@@ -177,30 +177,30 @@ int main()
     TEST("LWSP") = [] {
         // NOLINTBEGIN
         // 有效案例
-        static_assert(LWSP(std::span<const OCTET>{})); // 空
+        static_assert(LWSP(std::span<const octet>{})); // 空
 
-        constexpr OCTET wsp1[] = {SP};
+        constexpr octet wsp1[] = {SP};
         static_assert(LWSP(wsp1));
 
-        constexpr OCTET wsp2[] = {HTAB, SP, HTAB};
+        constexpr octet wsp2[] = {HTAB, SP, HTAB};
         static_assert(LWSP(wsp2));
 
-        constexpr OCTET crlf_wsp[] = {CR, LF, SP};
+        constexpr octet crlf_wsp[] = {CR, LF, SP};
         static_assert(LWSP(crlf_wsp));
 
-        constexpr OCTET complex[] = {CR, LF, SP, HTAB, CR, LF, HTAB};
+        constexpr octet complex[] = {CR, LF, SP, HTAB, CR, LF, HTAB};
         static_assert(LWSP(complex));
 
         // 无效案例
-        constexpr const OCTET crlf[] = {CR, LF};
+        constexpr const octet crlf[] = {CR, LF};
         static_assert(not LWSP(crlf));
 
-        constexpr OCTET bad_ending[] = {CR, LF, 'A'};
+        constexpr octet bad_ending[] = {CR, LF, 'A'};
         static_assert(not LWSP(bad_ending));
 
-        constexpr OCTET mixed[] = {SP, 'a'};
+        constexpr octet mixed[] = {SP, 'a'};
         static_assert(not LWSP(mixed));
-        constexpr OCTET mixed2[] = {'a', SP};
+        constexpr octet mixed2[] = {'a', SP};
         static_assert(not LWSP(mixed2));
         // NOLINTEND
     };

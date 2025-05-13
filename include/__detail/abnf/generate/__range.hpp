@@ -6,6 +6,7 @@
 namespace mcs::abnf::generate
 {
     template <detail::octet begin, detail::octet end>
+        requires(begin <= end)
     struct Range
     {
         struct __type

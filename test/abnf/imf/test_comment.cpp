@@ -22,13 +22,13 @@ int main()
             return suc;
         };
         // 简单注释
-        constexpr std::array<OCTET, 2> valid1{'(', ')'};
+        constexpr std::array<octet, 2> valid1{'(', ')'};
         static_assert(comment_rule(valid1));
         // 带内容的注释
-        constexpr std::array<OCTET, 3> valid2{'(', 'A', ')'};
+        constexpr std::array<octet, 3> valid2{'(', 'A', ')'};
         static_assert(comment_rule(valid2));
         // 嵌套注释
-        constexpr std::array<OCTET, 6> valid3{'(', '(', ')', '(', ')', ')'};
+        constexpr std::array<octet, 6> valid3{'(', '(', ')', '(', ')', ')'};
         static_assert(comment_rule(valid3));
         // comment情况
 
@@ -56,7 +56,7 @@ int main()
         static_assert(!ctest_rule(")"_span)); // 41 应无效
 
         // 无效（未闭合）
-        constexpr std::array<OCTET, 3> invalid1{'(', 'A', ' '};
+        constexpr std::array<octet, 3> invalid1{'(', 'A', ' '};
         static_assert(!ctest_rule(invalid1));
 
         static_assert(!ctest_rule("((())"_span));

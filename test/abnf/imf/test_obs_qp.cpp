@@ -22,13 +22,13 @@ int main()
             assert(ctx.done());
             return suc;
         };
-        constexpr std::array<OCTET, 2> valid0{'\\', '\x00'};
+        constexpr std::array<octet, 2> valid0{'\\', '\x00'};
         static_assert(obs_qp_rule(valid0));
-        constexpr std::array<OCTET, 2> valid1{'\\', '\x01'}; // 在obs_NO_WS_CTL
+        constexpr std::array<octet, 2> valid1{'\\', '\x01'}; // 在obs_NO_WS_CTL
         static_assert(obs_qp_rule(valid1));
-        constexpr std::array<OCTET, 2> valid2{'\\', '\n'}; // LF
+        constexpr std::array<octet, 2> valid2{'\\', '\n'}; // LF
         static_assert(obs_qp_rule(valid2));
-        constexpr std::array<OCTET, 2> valid3{'\\', '\r'}; // CR
+        constexpr std::array<octet, 2> valid3{'\\', '\r'}; // CR
         static_assert(obs_qp_rule(valid3));
     }
 
@@ -43,7 +43,7 @@ int main()
             assert(not ctx.done());
             return suc;
         };
-        constexpr std::array<OCTET, 2> invalid1{'\\', ' '}; // 空格属于WSP但不在此规则
+        constexpr std::array<octet, 2> invalid1{'\\', ' '}; // 空格属于WSP但不在此规则
         static_assert(not obs_qp_rule(invalid1));
     }
 

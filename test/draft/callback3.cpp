@@ -10,11 +10,11 @@
 
 // NOLINTBEGIN
 
-using OCTET = uint8_t;
-using span_param_in = const std::span<const OCTET> &;
+using octet = uint8_t;
+using span_param_in = const std::span<const octet> &;
 using consumed_result = std::optional<size_t>;
 
-template <OCTET C>
+template <octet C>
 struct CharRule
 {
     constexpr consumed_result operator()(span_param_in sp) const noexcept
@@ -152,7 +152,7 @@ struct with_callback
 
 constexpr auto test()
 {
-    constexpr std::array<OCTET, 2> arr = {'x', 'x'};
+    constexpr std::array<octet, 2> arr = {'x', 'x'};
     using R = CharRule<'x'>;
     int value = 0;
     auto test_callback = [&value] {
@@ -168,7 +168,7 @@ constexpr auto test()
 }
 constexpr auto test2()
 {
-    constexpr std::array<OCTET, 2> arr = {'x', 'x'};
+    constexpr std::array<octet, 2> arr = {'x', 'x'};
     using R = CharRule<'x'>;
     int value = 0;
     auto test_callback = [&value] {
@@ -192,7 +192,7 @@ constexpr auto foo(auto &&...args) noexcept
 // NOTE: 越复杂越不容易优化
 constexpr auto test3()
 {
-    constexpr std::array<OCTET, 2> arr = {'x', 'x'};
+    constexpr std::array<octet, 2> arr = {'x', 'x'};
     using R = CharRule<'x'>;
     int value = 0;
     auto test_callback = [&value] {
@@ -208,7 +208,7 @@ constexpr auto test3()
 }
 constexpr auto test4()
 {
-    constexpr std::array<OCTET, 2> arr = {'x', 'x'};
+    constexpr std::array<octet, 2> arr = {'x', 'x'};
     using R = CharRule<'x'>;
     int value = 0;
     auto test_callback = [&value] {
@@ -224,7 +224,7 @@ constexpr auto test4()
 
 constexpr auto test5()
 {
-    constexpr std::array<OCTET, 2> arr = {'x', 'x'};
+    constexpr std::array<octet, 2> arr = {'x', 'x'};
     using R = CharRule<'x'>;
     int value = 0;
     auto test_callback = [&value] {
@@ -240,7 +240,7 @@ constexpr auto test5()
 
 constexpr auto test6()
 {
-    constexpr std::array<OCTET, 2> arr = {'x', 'x'};
+    constexpr std::array<octet, 2> arr = {'x', 'x'};
     using R = CharRule<'x'>;
     int value = 0;
     auto test_callback = [&value] {
@@ -256,7 +256,7 @@ constexpr auto test6()
 }
 constexpr auto test7()
 {
-    constexpr std::array<OCTET, 2> arr = {'x', 'x'};
+    constexpr std::array<octet, 2> arr = {'x', 'x'};
     using R = CharRule<'x'>;
     int value = 0;
     auto test_callback = [&value] {

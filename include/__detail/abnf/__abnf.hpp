@@ -12,6 +12,7 @@
 #include "./operators/__max_times.hpp"
 #include "./operators/__with_callback.hpp"
 #include "./operators/__watch_index.hpp"
+#include "./core/__octet.hpp"
 #include "./core/__alpha.hpp"
 #include "./core/__bit.hpp"
 #include "./core/__char.hpp"
@@ -64,6 +65,7 @@ namespace mcs::abnf
     using operators::with_callback;
     using operators::watch_index;
 
+    using core::OCTET;
     using core::ALPHA;
     using core::BIT;
     using core::CHAR;

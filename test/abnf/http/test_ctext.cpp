@@ -10,9 +10,9 @@ using namespace mcs::abnf::http;
 int main()
 {
     // ctext = HTAB / SP / %x21-27 / %x2A-5B / %x5D-7E / obs-text
-    constexpr auto ctext = [](OCTET a) constexpr {
+    constexpr auto ctext = [](octet a) constexpr {
         auto rule = mcs::abnf::http::ctext{};
-        OCTET arr[] = {a};
+        octet arr[] = {a};
         auto ctx = make_parser_ctx(arr);
         rule(ctx);
         return ctx.done();

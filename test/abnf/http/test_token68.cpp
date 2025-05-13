@@ -13,11 +13,11 @@ constexpr auto make_long_valid_token68()
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
         "-._~+/";
 
-    std::array<OCTET, 1024> arr{};
+    std::array<octet, 1024> arr{};
     // 填充合法字符
     for (size_t i = 0; i < arr.size() - 3; ++i)
     {
-        arr[i] = static_cast<OCTET>(valid_chars[i % valid_chars.size()]);
+        arr[i] = static_cast<octet>(valid_chars[i % valid_chars.size()]);
     }
     // 末尾添加等号
     arr[arr.size() - 3] = '=';

@@ -7,14 +7,14 @@
 #include <vector>
 #include <chrono>
 
-using OCTET = std::uint8_t;
-using span_param_in = const std::span<const OCTET> &;
+using octet = std::uint8_t;
+using span_param_in = const std::span<const octet> &;
 // NOLINTBEGIN
 class HighPerfPacket
 {
   public:
-    explicit HighPerfPacket(std::span<const OCTET> data_span)
-        : size_(data_span.size()), data_(std::make_unique_for_overwrite<OCTET[]>(
+    explicit HighPerfPacket(std::span<const octet> data_span)
+        : size_(data_span.size()), data_(std::make_unique_for_overwrite<octet[]>(
                                        size_)) // C++23 优化：避免默认初始化
     {
         std::memcpy(data_.get(), data_span.data(), size_); // 直接内存拷贝（最快）
@@ -27,19 +27,19 @@ class HighPerfPacket
         other.size_ = 0;
     }
 
-    std::span<const OCTET> get_span() const
+    std::span<const octet> get_span() const
     {
         return {data_.get(), size_};
     }
 
   private:
     size_t size_ = 0; // NOTE: 难以范围计算 和 buffer 的范围算法不搭配
-    std::unique_ptr<OCTET[]> data_;
+    std::unique_ptr<octet[]> data_;
 };
 class BalancedPacket
 {
   public:
-    explicit BalancedPacket(std::span<const OCTET> data_span)
+    explicit BalancedPacket(std::span<const octet> data_span)
         : data_(data_span.begin(), data_span.end()) // 直接范围构造
     {
         data_.shrink_to_fit(); // 确保 capacity == size（可选）
@@ -48,13 +48,13 @@ class BalancedPacket
     // 移动构造函数
     BalancedPacket(BalancedPacket &&other) noexcept = default;
 
-    std::span<const OCTET> get_span() const
+    std::span<const octet> get_span() const
     {
         return data_;
     }
 
   private:
-    std::vector<OCTET> data_;
+    std::vector<octet> data_;
 };
 
 static_assert(sizeof(HighPerfPacket) < sizeof(BalancedPacket));
@@ -63,18 +63,18 @@ static_assert(sizeof(BalancedPacket) == 24);
 
 using namespace std::chrono;
 
-std::vector<OCTET> generate_test_data(size_t size)
+std::vector<octet> generate_test_data(size_t size)
 {
-    std::vector<OCTET> data(size);
+    std::vector<octet> data(size);
     for (size_t i = 0; i < size; ++i)
     {
-        data[i] = static_cast<OCTET>(i % 256);
+        data[i] = static_cast<octet>(i % 256);
     }
     return data;
 }
 
 // 测试 HighPerfPacket (unique_ptr)
-auto test_high_perf(const std::span<const OCTET> &data_span)
+auto test_high_perf(const std::span<const octet> &data_span)
 {
     auto start = high_resolution_clock::now();
     HighPerfPacket packet(data_span);
@@ -83,7 +83,7 @@ auto test_high_perf(const std::span<const OCTET> &data_span)
 }
 
 // 测试 BalancedPacket (vector)
-auto test_balanced(const std::span<const OCTET> &data_span)
+auto test_balanced(const std::span<const octet> &data_span)
 {
     auto start = high_resolution_clock::now();
     BalancedPacket packet(data_span);

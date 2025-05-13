@@ -10,8 +10,8 @@ using namespace mcs::abnf;
 int main()
 {
     TEST("ALPHA") = [] {
-        static constexpr OCTET test_char = 'A';
-        constexpr std::span<const OCTET> s(&test_char, 1);
+        static constexpr octet test_char = 'A';
+        constexpr std::span<const octet> s(&test_char, 1);
         constexpr auto alpha = [](parser_ctx ctx) constexpr {
             return mcs::abnf::ALPHA{}(ctx);
         };

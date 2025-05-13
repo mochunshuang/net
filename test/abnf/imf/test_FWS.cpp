@@ -22,10 +22,10 @@ int main()
             return suc;
         };
         // 标准FWS
-        constexpr std::array<OCTET, 3> valid1{' ', '\t', ' '}; // 多个WSP
+        constexpr std::array<octet, 3> valid1{' ', '\t', ' '}; // 多个WSP
         static_assert(FWS_rule(valid1));
         // 带CRLF的FWS
-        constexpr std::array<OCTET, 5> valid2{' ', '\r', '\n', '\t', ' '};
+        constexpr std::array<octet, 5> valid2{' ', '\r', '\n', '\t', ' '};
         static_assert(FWS_rule(valid2));
     }
 
@@ -40,7 +40,7 @@ int main()
             assert(not ctx.done());
             return suc;
         };
-        constexpr std::array<OCTET, 2> invalid1{'\r', '\n'};
+        constexpr std::array<octet, 2> invalid1{'\r', '\n'};
         static_assert(!FWS_rule(invalid1));
     }
 
