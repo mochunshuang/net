@@ -17,6 +17,9 @@ int main()
     static_assert(last_modified_pass("Fri, 15 Sep 2023 08:00:00 GMT"_span));
     static_assert(not last_modified_fail("2023-09-15T08:00:00Z"_span)); // ISO格式
 
+    // An example of its use is
+    // Last-Modified: Tue, 15 Nov 1994 12:45:26 GMT
+    static_assert(last_modified_pass("Tue, 15 Nov 1994 12:45:26 GMT"_span));
     return 0;
 }
 // NOLINTEND

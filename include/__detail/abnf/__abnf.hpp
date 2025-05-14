@@ -34,6 +34,10 @@
 #include "./generate/__check_char.hpp"
 #include "./generate/__simple_rule.hpp"
 #include "./generate/__string.hpp"
+#include "./tool/__to_lower.hpp"
+#include "./tool/__to_upper.hpp"
+#include "./tool/__equal_value.hpp"
+#include "./tool/__equal_span.hpp"
 
 namespace mcs::abnf
 {
@@ -97,5 +101,10 @@ namespace mcs::abnf
     using generate::SimpleRule;
     using generate::String;
     using generate::StringSensitive;
+
+    using tool::to_lower;
+    using tool::to_upper;
+    using tool::equal_value;
+    using tool::equal_span;
 
 }; // namespace mcs::abnf

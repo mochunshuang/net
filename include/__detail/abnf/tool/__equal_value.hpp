@@ -5,7 +5,8 @@
 
 namespace mcs::abnf::tool
 {
-    constexpr auto equal_value(__detail::span_param_in a, std::string_view b) noexcept
+    constexpr auto equal_value(__detail::span_param_in a,
+                               const std::string_view &b) noexcept
     {
         const auto k_size = a.size();
         if (k_size != b.size())

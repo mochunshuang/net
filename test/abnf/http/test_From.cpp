@@ -18,6 +18,10 @@ int main()
 
     // 测试带特殊符号的邮箱
     static_assert(from_pass("\"user.name\"@domain.com"_span)); // 引号包裹本地部分
+
+    // An example is:
+    //  From: spider-admin@example.org
+    static_assert(from_pass("spider-admin@example.org"_span));
     return 0;
 }
 // NOLINTEND
