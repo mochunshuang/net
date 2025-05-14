@@ -19,7 +19,10 @@ namespace mcs::protocol::http::iana
         };
         static constexpr auto registration = // NOLINT
             [] consteval {
-                return std::array{MediaType{"multipart/byteranges"}};
+                return std::array{
+                    MediaType{"multipart/byteranges"},
+                    // https://www.rfc-editor.org/rfc/rfc9112.html#name-media-type-registration
+                    MediaType{"message/http"}, MediaType{"application/http"}};
             }();
 
         constexpr static std::optional<MediaType> isRegistration(
