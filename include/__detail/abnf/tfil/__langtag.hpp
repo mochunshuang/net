@@ -1,12 +1,9 @@
 #pragma once
 
-#include "./__language.hpp"
 #include "./__script.hpp"
 #include "./__region.hpp"
-#include "./__variant.hpp"
-#include "./__extension.hpp"
-#include "./__privateuse.hpp"
-#include "__alphanum.hpp"
+#include "./__alphanum.hpp"
+#include "./__singleton.hpp"
 #include <cstddef>
 
 namespace mcs::abnf::tfil
