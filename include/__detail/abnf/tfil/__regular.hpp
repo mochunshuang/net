@@ -16,9 +16,9 @@ namespace mcs::abnf::tfil
                         / "zh-xiang"
      *
      */
-    using regular =
+    using regular = // "zh-min-nan" before "zh-min" is need
         alternative<String<"art-lojban">, String<"cel-gaulish">, String<"no-bok">,
                     String<"no-nyn">, String<"zh-guoyu">, String<"zh-hakka">,
-                    String<"zh-min">, String<"zh-min-nan">, String<"zh-xiang">>;
+                    String<"zh-min-nan">, String<"zh-min">, String<"zh-xiang">>;
 
 }; // namespace mcs::abnf::tfil

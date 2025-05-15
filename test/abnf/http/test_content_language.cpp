@@ -19,12 +19,12 @@ int main()
         make_pass_test<mcs::abnf::http::content_Language>();
     constexpr auto content_lang_fail =
         make_unpass_test<mcs::abnf::http::content_Language>();
-    // TODO 先测试tfil 再来测试这里
-    //  static_assert(content_lang_pass("zh-CN"_span)); // 带地区代码
-    //  static_assert(content_lang_pass("en, fr  , de"_span)); // 多语言
+
+    static_assert(content_lang_pass("zh-CN"_span));        // 带地区代码
+    static_assert(content_lang_pass("en, fr  , de"_span)); // 多语言
     {
         // langtag
-        // static_assert(make_pass_test<tfil::langtag>()("zh-CN"_span));
+        static_assert(make_pass_test<tfil::langtag>()("zh-CN"_span));
     }
 
     static_assert(content_lang_fail("en_US"_span)); // 非法下划线
