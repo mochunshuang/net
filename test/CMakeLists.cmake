@@ -25,3 +25,5 @@ auto_add_test_by_dir("abnf/imf")
 
 auto_add_test_by_dir("abnf/http")
 auto_add_test_by_dir("abnf/core")
+
+auto_add_test_by_dir("abnf/tfil")
