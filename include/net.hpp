@@ -5,3 +5,5 @@
 #include "./__detail/abnf/abnf.hpp"
 
 #include "./__detail/__buffer.hpp"
+
+#include "./__detail/protocol/__http.hpp"

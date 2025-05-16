@@ -81,9 +81,12 @@ int main()
             "text/html;q=0.001 ,      text/html;  ,    text/html;abc=\"abc ada asdasd\";efd=123;q=0.001"_span));
     }
     // 测试权重边界值
-    // static_assert(accept_pass("text/html;q=0"_span));     // 允许0
-    // static_assert(accept_pass("text/html;q=1"_span));     // 允许1
-    // static_assert(accept_pass("text/html;q=1.001"_span)); // 超上限
+    static_assert(accept_pass("text/html;q=0"_span));     // 允许0
+    static_assert(accept_pass("text/html;q=1"_span));     // 允许1
+    static_assert(accept_fail("text/html;q=1.001"_span)); // 超上限
+
+    static_assert(accept_pass(
+        "text/html;q=0.001 ,      text/html;  ,    text/html;abc=\"abc ada asdasd\";efd=123;q=0.001"_span));
 
     // 测试媒体类型通配符组合
     static_assert(accept_pass("image/*"_span)); // 部分通配
