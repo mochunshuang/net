@@ -51,6 +51,12 @@ int main()
             // NOTE:多参数。 q2 变成 q 将错误。目的是为了 后面的 wight 规则做出下限制
             constexpr auto s7 = "chunked;q2=0.5;param=123"_span;
             static_assert(t_codings_rule(s7));
+
+            constexpr auto s8 = "chunked;q2=0.5;param=123;q=1"_span;
+            static_assert(t_codings_rule(s8));
+
+            static_assert(t_codings_rule("chunked;q2=0.5;param=123;q=1.000"_span));
+            static_assert(t_codings_rule("chunked;q2=0.5;param=123;q=0.010"_span));
         }
     }
     // 非法测试用例
@@ -83,7 +89,6 @@ int main()
             {
                 {
                     // NOTE: 优先级问题。 目前通过不允许 token 是 q 来解决
-                    //  TODO : BUG错误原因，;被当作 transfer_coding
                     //  transfer-coding = token *( OWS ";" OWS transfer-parameter )
                     //  transfer-parameter = token BWS "=" BWS ( token / quoted-string )
                     // static_assert(make_pass_test<transfer_coding>()("br;q=1.5"_span));
@@ -99,9 +104,12 @@ int main()
             }
             static_assert(t_codings_rule(s5));
 
-            // 多余参数
+            // 多余参数； q=0.5 要放在最后
             constexpr auto s7 = "chunked;q=0.5;param=123"_span;
             static_assert(t_codings_rule(s7));
+
+            // [wight] 不合法
+            static_assert(t_codings_rule("chunked;q2=0.5;param=123;q=1.010"_span));
         }
     }
 

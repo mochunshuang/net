@@ -64,7 +64,7 @@ namespace mcs::abnf::tfil
         using result_type = __type;
         using rule_concept = rule_t;
 
-        constexpr auto operator()(detail::parser_ctx_ref ctx) const noexcept
+        static constexpr auto operator()(detail::parser_ctx_ref ctx) noexcept
             -> detail::consumed_result
         {
             auto old_index = ctx.cur_index;
@@ -294,6 +294,15 @@ namespace mcs::abnf::tfil
                 }
             }
             return count;
+        }
+        static constexpr auto parse(parser_ctx_ref ctx) noexcept
+            -> std::optional<result_type>
+        {
+            auto begin{ctx.cur_index};
+            auto ret = operator()(ctx);
+            return ret ? std::make_optional(
+                             result_type{.value = ctx.root_span.subspan(begin, *ret)})
+                       : std::nullopt;
         }
     };
 

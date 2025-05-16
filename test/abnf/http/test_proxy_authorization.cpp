@@ -24,7 +24,9 @@ int main()
     static_assert(proxy_authz_pass("Basic dXNlcjpwYXNz"_span));     // Base64凭证 token68
     static_assert(proxy_authz_pass("Bearer token123"_span));        // Bearer令牌 token68
     static_assert(proxy_authz_pass("Digest username======="_span)); // token68
-    // static_assert(proxy_authz_pass("Custom scheme=\"quoted\""_span)); // 引号值
+    static_assert(proxy_authz_pass("Custom scheme=\"quoted\""_span)); // 引号值
+    static_assert(proxy_authz_pass(
+        "Custom scheme=\"quoted\" , b=123 , asdasd=shhahsdhahs"_span)); // 引号值
     {
         // scheme=\"quoted\"
         static_assert(
@@ -32,10 +34,7 @@ int main()
 
         constexpr auto ret = make_rule_test<mcs::abnf::http::Proxy_Authorization>(
             "Custom scheme=\"quoted\""_span);
-        static_assert(ret.second.cur_index == "Custom scheme="_span.size());
-        // NOTE: 解决的办法是 = 后面，断言。怎么兼容呢？
-        // TODO 修改 token68的顺序，或许是错误的
-        // TODO \r\n 每一行都说输入的情况下，或许能以此来兼容。token68 必须 ctx.done 结束
+        static_assert(ret.second.cur_index == "Custom scheme=\"quoted\""_span.size());
     }
     // 无效Proxy-Authorization测试
     static_assert(proxy_authz_fail("Basic: credentials"_span));     // 错误分隔符

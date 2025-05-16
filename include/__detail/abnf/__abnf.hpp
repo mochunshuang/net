@@ -101,6 +101,7 @@ namespace mcs::abnf
     using generate::SimpleRule;
     using generate::String;
     using generate::StringSensitive;
+    using generate::ctx_done_after;
 
     using tool::to_lower;
     using tool::to_upper;

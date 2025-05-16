@@ -16,7 +16,8 @@ namespace mcs::abnf::http
         auth_scheme,
         optional<sequence<
             one_or_more<SP>,
-            alternative<token68, optional<sequence<auth_param, zero_or_more<sequence<
-                                                                   OWS, Char<','>, OWS,
-                                                                   auth_param>>>>>>>>;
+            alternative<
+                ctx_done_after<token68>,
+                optional<sequence<auth_param, zero_or_more<sequence<OWS, Char<','>, OWS,
+                                                                    auth_param>>>>>>>>;
 }; // namespace mcs::abnf::http

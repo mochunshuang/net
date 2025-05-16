@@ -19,6 +19,8 @@ int main()
     static_assert(auth_param_pass("token = \"quoted\""_span));  // 带空白和引号
     static_assert(auth_param_pass("complex = a%20value"_span)); // 编码值
 
+    static_assert(auth_param_pass("q=1"_span)); // 简单键值对
+
     // 无效auth参数测试
     static_assert(not auth_param_fail("empty= "_span));     // 空值
     static_assert(not auth_param_fail("=value"_span));      // 缺少key

@@ -4,6 +4,7 @@
 #include "./__fixedstring.hpp"
 #include "../tool/__to_upper.hpp"
 #include "../tool/__to_lower.hpp"
+#include <optional>
 #include <utility>
 
 namespace mcs::abnf::generate
@@ -73,6 +74,32 @@ namespace mcs::abnf::generate
                         return std::nullopt;
                 }
             }
+            return ret;
+        }
+    };
+
+    template <typename Rule>
+    struct ctx_done_after
+    {
+        using rule_concept = detail::rule_t;
+        using result_type =
+            decltype(Rule{}.parse(std::declval<detail::parser_ctx_ref>()));
+
+        static constexpr auto operator()(detail::parser_ctx_ref ctx) noexcept
+            -> detail::consumed_result
+        {
+            constexpr auto k_rule = Rule{};
+            auto ret = k_rule(ctx);
+            if (!ctx.done())
+                return std::nullopt;
+            return ret;
+        }
+        static constexpr auto parse(detail::parser_ctx_ref ctx) noexcept
+        {
+            constexpr auto k_rule = Rule{};
+            auto ret = k_rule.parse(ctx);
+            if (!ctx.done())
+                return std::nullopt;
             return ret;
         }
     };

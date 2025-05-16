@@ -17,7 +17,17 @@ int main()
     constexpr auto credentials_pass = make_pass_test<mcs::abnf::http::credentials>();
     constexpr auto credentials_fail = make_unpass_test<mcs::abnf::http::credentials>();
     static_assert(credentials_pass("Basic dXNlcjpwYXNz"_span)); // Base64凭证
-    static_assert(credentials_fail("Bearer token=1,2"_span));   // 非法参数格式
+    static_assert(credentials_pass(
+        "Basic dXNlcjpwYXNz========================"_span));     // Base64凭证
+    static_assert(credentials_pass("Basic dXNlcjpwYXNz="_span)); // Base64凭证
+
+    static_assert(
+        credentials_pass("Basic q=1, b=c ,ahdshadh=6555"_span)); // Base64 + auth-param
+    {
+        static_assert(make_pass_test<mcs::abnf::http::auth_param>()("q=1"_span));
+    }
+
+    static_assert(credentials_fail("Bearer token=1,2"_span)); // 非法参数格式
 
     return 0;
 }
