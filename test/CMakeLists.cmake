@@ -29,3 +29,11 @@ auto_add_test_by_dir("abnf/core")
 auto_add_test_by_dir("abnf/tfil")
 
 auto_add_test_by_dir("protocol/http")
+
+# io 只能 手动测试
+if(WIN32)
+    auto_add_exec("io/windows")
+    auto_add_exec("taps/windows")
+elseif(APPLE)
+elseif(UNIX)
+endif()

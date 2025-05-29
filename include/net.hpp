@@ -7,3 +7,6 @@
 #include "./__detail/__buffer.hpp"
 
 #include "./__detail/protocol/__http.hpp"
+#include "./__detail/protocol/__ip.hpp"
+
+#include "./__detail/__io.hpp"

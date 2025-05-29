@@ -4,7 +4,7 @@ function(auto_add_exec dir_name)
     endif()
 
     # 获取指定目录下的所有 .cpp 文件
-    file(GLOB test_files "${TEST_ROOT_DIR}/${dir_name}/*.cpp")
+    file(GLOB test_files "${TEST_ROOT_DIR}/${dir_name}/test_*.cpp")
 
     # 遍历每个 .cpp 文件
     foreach(test_file ${test_files})
@@ -12,7 +12,8 @@ function(auto_add_exec dir_name)
         get_filename_component(test_name ${test_file} NAME_WE)
 
         # 生成可执行程序名：组-cpp文件名
-        set(target_name "${dir_name}-${test_name}")
+        string(REPLACE "/" "-" path_prefix "${dir_name}")
+        set(target_name "${path_prefix}-${test_name}")
 
         # 添加可执行程序
         add_executable(${target_name} ${test_file})

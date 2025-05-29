@@ -36,5 +36,58 @@ int main()
                   "Pointers must have the same size");
 
     std::cout << "Conversion succeeded." << '\n';
+
+    {
+        // NOTE: 不能在父类和子类同时拥有非静态成员时保持标准布局。
+        {
+            struct Base
+            {
+            }; // 空类（无成员）
+
+            struct Derived : Base
+            {
+                int x;
+            };
+            static_assert(std::is_standard_layout_v<Derived>, "OK");
+        }
+        {
+            struct Base
+            {
+                int x;
+            };
+
+            struct Derived : Base
+            {
+            };
+            static_assert(std::is_standard_layout_v<Derived>, "OK");
+        }
+        {
+            struct Base
+            {
+                int a;
+            };
+            struct Derived : Base
+            {
+                int b;
+            };
+
+            static_assert(!std::is_standard_layout_v<Derived>, "Fail");
+        }
+        {
+            struct Base
+            {
+                int a;
+            };
+
+            // 用组合代替继承
+            struct Derived
+            {
+                Base base; // 组合
+                int b;
+            };
+            // 满足标准布局（所有成员在同一类中）
+            static_assert(std::is_standard_layout_v<Derived>, "OK");
+        }
+    }
     return 0;
 }
