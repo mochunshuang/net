@@ -38,6 +38,9 @@
 #include "./tool/__to_upper.hpp"
 #include "./tool/__equal_value.hpp"
 #include "./tool/__equal_span.hpp"
+#include "./tool/__find_char.hpp"
+#include "./tool/__ows_count.hpp"
+#include "./tool/__hex_span_to_size_value.hpp"
 
 namespace mcs::abnf
 {
@@ -107,5 +110,8 @@ namespace mcs::abnf
     using tool::to_upper;
     using tool::equal_value;
     using tool::equal_span;
+    using tool::find_char;
+    using tool::ows_count;
+    using tool::hex_span_to_size_value;
 
 }; // namespace mcs::abnf

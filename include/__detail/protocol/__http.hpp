@@ -5,3 +5,6 @@
  * https://www.rfc-editor.org/rfc/rfc9112.html
  */
 #include "./http/rules/__http_message.hpp"
+#include "./http/rules/__trailer_section.hpp"
+#include "./http/rules/__chunk.hpp"
+#include "./http/rules/__chunked_body.hpp"

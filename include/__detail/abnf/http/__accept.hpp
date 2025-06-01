@@ -46,30 +46,6 @@ namespace mcs::abnf::http
             auto update_ctx = [&]() noexcept {
                 ctx.cur_index = old_index + count;
             };
-            auto find_char = [&](size_t start, octet c) noexcept {
-                for (size_t i{start}; i < ctx.end_index; ++i)
-                {
-                    if (ctx.root_span[i] == c)
-                        return i;
-                }
-                return ctx.end_index;
-            };
-            auto ows_count = [&] noexcept {
-                size_t count_ = 0;
-                while (true)
-                {
-                    auto index = ctx.cur_index + count_;
-                    if (index < ctx.end_index &&
-                        (abnf::sp_value == ctx.root_span[index] ||
-                         abnf::htab_value == ctx.root_span[index]))
-                    {
-                        ++count_;
-                        continue;
-                    }
-                    break;
-                }
-                return count_;
-            };
 
             // media-range = ( "*/*" / ( type "/*" ) / ( type "/" subtype ) ) parameters
             auto media_range_check = [&] noexcept -> int {
@@ -83,7 +59,8 @@ namespace mcs::abnf::http
                 {
                     const auto k_media_range_start_count = count;
 
-                    const auto k_index = find_char(ctx.cur_index, '/');
+                    const auto k_index =
+                        find_char(ctx, {.start = ctx.cur_index, .c = '/'});
                     if (k_index == ctx.end_index)
                         return -1;
 
@@ -118,7 +95,7 @@ namespace mcs::abnf::http
                     {
                         const auto k_parameters_start_count = count;
 
-                        count += ows_count();
+                        count += ows_count(ctx);
                         update_ctx();
                         if (ctx.root_span[ctx.cur_index] != ';')
                         {
@@ -128,7 +105,7 @@ namespace mcs::abnf::http
                         }
                         count += 1;
                         update_ctx();
-                        count += ows_count();
+                        count += ows_count(ctx);
                         update_ctx();
 
                         // [ parameter ]
@@ -208,7 +185,7 @@ namespace mcs::abnf::http
                 {
                     const auto k_weight_start_count = count;
 
-                    count += ows_count();
+                    count += ows_count(ctx);
                     update_ctx();
 
                     if (ctx.root_span[ctx.cur_index] != ';')
@@ -220,7 +197,7 @@ namespace mcs::abnf::http
                     count += 1;
                     update_ctx();
 
-                    count += ows_count();
+                    count += ows_count(ctx);
                     update_ctx();
 
                     if (ctx.remain() > 2 &&
@@ -257,7 +234,7 @@ namespace mcs::abnf::http
             {
                 const auto k_start_count = count;
 
-                count += ows_count();
+                count += ows_count(ctx);
                 update_ctx();
                 if (ctx.remain() > 0 && ctx.root_span[ctx.cur_index] != ',')
                 {
@@ -268,7 +245,7 @@ namespace mcs::abnf::http
                 count += 1;
                 update_ctx();
 
-                count += ows_count();
+                count += ows_count(ctx);
                 update_ctx();
 
                 // media_range_check

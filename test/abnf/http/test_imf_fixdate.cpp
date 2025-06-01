@@ -16,7 +16,8 @@ int main()
     // 测试过期的日期格式
     static_assert(imf_fixdate_pass("Mon, 07 Aug 2023 12:34:56 GMT"_span)); // RFC 5322格式
     static_assert(imf_fixdate_pass("Fri, 31 Feb 2023 00:00:00 GMT"_span)); // 无效日期
-
+    static_assert(imf_fixdate_pass("Sat, 29 Oct 1994 19:43:31 GMT"_span));
+    
     static_assert(
         not imf_fixdate_fail("Monday, 07-Aug-23 12:34:56 GMT"_span));         // 全称星期
     static_assert(not imf_fixdate_fail("Mon 07 Aug 2023 12:34:56 UTC"_span)); // 错误时区

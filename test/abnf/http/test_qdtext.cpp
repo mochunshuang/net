@@ -27,9 +27,13 @@ int main()
     static_assert(qdtext(0x80)); // obs-text 下限
     static_assert(qdtext(0xFF)); // obs-text 上限
 
-    // 测试非法字符
+    static_assert(qdtext(' '));
+
+    // NOTE: '\' 是非法字符相对于 qdtext。 因此 qdtext 可以和 quoted_pair区分
+    // NOTE: '"' 也是非法字符 于 qdtext。
     static_assert(!qdtext('"'));  // 0x22 (DQUOTE)
     static_assert(!qdtext('\\')); // 0x5C
+
     static_assert(!qdtext('\0')); // 0x00
     static_assert(!qdtext(0x7F)); // DEL
     static_assert(!qdtext(0x1B)); // ESC

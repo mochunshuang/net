@@ -41,15 +41,27 @@ namespace mcs::protocol::ip
 
 #else
 
-#include <system_error>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <cerrno>
-
 namespace mcs::protocol::ip
 {
+#ifndef AF_INET
+#define AF_INET 2
+#endif
+#ifndef AF_INET6
+#define AF_INET6 23
+#endif
+#ifndef SOCK_STREAM
+#define SOCK_STREAM 1
+#endif
+#ifndef IPPROTO_TCP
+#define IPPROTO_TCP 6
+#endif
+#ifndef SOCK_DGRAM
+#define SOCK_DGRAM 2
+#endif
+#ifndef IPPROTO_UDP
+#define IPPROTO_UDP 17
+#endif
+
 // 使用与Windows相同的宏定义
 #define OS_DEF_AF_INET AF_INET
 #define OS_DEF_AF_INET6 AF_INET6
@@ -62,9 +74,9 @@ namespace mcs::protocol::ip
     using os_socket_type = int;
     constexpr inline auto os_invalid_socket = -1; // Linux中无效socket通常用-1表示
 
-    constexpr auto os_closesocket(os_socket_type s) noexcept
+    constexpr auto os_closesocket(os_socket_type)
     {
-        return ::close(s); // Linux使用close而不是closesocket
+        throw;
     }
 
     [[noreturn]] constexpr void os_throw_socket_last_error(const char *msg)

@@ -38,6 +38,10 @@ int main()
         static_assert(quoted_pair('\\', 'z'));
         static_assert(quoted_pair('\\', '5'));
         static_assert(quoted_pair('\\', '#'));
+
+        // NOTE: \n or \r is good for quoted_pair
+        static_assert(quoted_pair('\\', 'n')); // \n
+        static_assert(quoted_pair('\\', 'r')); // \r
     }
     // 非法用例
     {
@@ -45,12 +49,17 @@ int main()
         static_assert(!quoted_pair('/', 't'));  // 错误引导符
         static_assert(!quoted_pair('a', 0x80)); // 非反斜杠
 
+        // NOTE: " 开头也不行。可以区分于 quoted_string
+        static_assert(!quoted_pair('"', 0x80)); // 非反斜杠
+                                                //
         // 反斜杠 + 非法字符
         static_assert(!quoted_pair('\\', 0x00)); // NUL
         static_assert(!quoted_pair('\\', 0x1F)); // US
 
         static_assert(quoted_pair('\\', 0x7F)); // DEL
-        // 验证 DQUOTE 的特殊性（VCHAR 包含 0x22）
+
+        // NOTE: 不能简单的 搜索 " 这是错误的。\" 是允许的
+        //  验证 DQUOTE 的特殊性（VCHAR 包含 0x22）
         static_assert(quoted_pair('\\', '\"')); // 应通过（" 是 VCHAR）
     }
 
