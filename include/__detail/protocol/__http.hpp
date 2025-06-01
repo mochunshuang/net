@@ -8,3 +8,5 @@
 #include "./http/rules/__trailer_section.hpp"
 #include "./http/rules/__chunk.hpp"
 #include "./http/rules/__chunked_body.hpp"
+#include "./http/rules/__obs_fold.hpp"
+#include "./http/rules/__transfer_encoding.hpp"

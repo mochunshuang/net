@@ -23,10 +23,24 @@ int main()
     static_assert(reason_phrase_pass("\x80\x81"_span));           // UTF-8序列
     static_assert(reason_phrase_pass("你好，世界"_span));         // UTF-8序列
 
+    static_assert(reason_phrase_pass("\x7F"_span)); // DEL字符
+
     // 无效 reason-phrase 测试
     static_assert(!reason_phrase_pass(""_span));             // 空字符串
     static_assert(!reason_phrase_fail("\r\n"_span));         // 控制字符
     static_assert(reason_phrase_fail("Invalid\u0007"_span)); // BEL控制字符
+
+    // NOTE: 补充
+    static_assert(reason_phrase_pass("OK"_span));
+    static_assert(reason_phrase_pass("Not Found"_span));
+    static_assert(reason_phrase_pass("Moved Permanently"_span));
+    static_assert(reason_phrase_pass(" \t Value with spaces \t "_span)); // 首尾空白
+    static_assert(reason_phrase_pass("\x21-\x7E"_span));                 // 可见字符范围
+    static_assert(reason_phrase_pass("\x80\xFF"_span));                  // obs-text
+
+    static_assert(!reason_phrase_fail("\x00\x1F"_span)); // 控制字符(U+0000-U+001F)
+    static_assert(reason_phrase_fail("Text\nwith\newline"_span)); // 换行符
+    static_assert(!reason_phrase_pass(""_span)); // 空字符串(允许但需单独处理)
 
     return 0;
 }
