@@ -1,8 +1,9 @@
 
 // NOLINTBEGIN
 #if defined(_MSC_VER)
-#include "E:\0_github_project\net\net\include\__detail\taps\services\windows\__base_service.hpp"
-#include "E:\0_github_project\net\net\include\__detail\protocol\__ip.hpp"
+
+#include "../../../include/__detail/taps/services/windows/__base_service.hpp"
+#include "../../../include/__detail/protocol/__ip.hpp"
 
 #include <cassert>
 #include <chrono>
