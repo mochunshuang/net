@@ -87,8 +87,8 @@ namespace mcs::net::io::windows
             return buffer;
         }
 
-        static constexpr endpoint_info parse_endpoint(
-            const sockaddr *addr) noexcept // NOLINT
+        // NOLINTNEXTLINE
+        static constexpr endpoint_info parse_endpoint(const sockaddr *addr) noexcept
         {
             if (addr == nullptr)
                 return {.ip_address = "", .port = 0};
