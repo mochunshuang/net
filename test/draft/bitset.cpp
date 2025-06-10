@@ -1,7 +1,9 @@
 #include <bitset>
+#include <cassert>
 #include <cstdint>
 #include <iostream>
 #include <limits>
+#include <optional>
 
 template <uint8_t... C>
 struct any_of
@@ -17,6 +19,43 @@ struct any_of
     {
         return k_bitset[c];
     }
+};
+
+class BufferManager
+{
+  public:
+    static constexpr size_t BUFFER_COUNT = 16;
+
+    BufferManager() : available_(0xFFFF) {} // 初始全可用
+
+    // 获取第一个可用 buffer 索引
+    std::optional<size_t> acquire()
+    {
+        if (available_.none())
+            return std::nullopt;
+        return std::countr_zero(available_.to_ulong());
+    }
+
+    // 分配指定 buffer
+    bool allocate(size_t index)
+    {
+        if (index >= BUFFER_COUNT || !available_.test(index))
+            return false;
+        available_.reset(index);
+        return true;
+    }
+
+    // 释放 buffer
+    void release(size_t index)
+    {
+        assert(index < BUFFER_COUNT);
+        available_.set(index);
+    }
+
+    static_assert(sizeof(unsigned long) == 4);// NOLINT
+
+  private:
+    std::bitset<BUFFER_COUNT> available_;
 };
 
 int main()

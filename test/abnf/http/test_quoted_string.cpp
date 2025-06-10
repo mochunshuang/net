@@ -34,6 +34,24 @@ int main()
         "\"\\\"\""_span)); // NOTE: 中间单引号。\\ 才是一个 "\"。而\"才是"""
     static_assert("\"\\\"\""_span.size() == 4);
 
+    static_assert(quoted_string_pass("\"\\r\\n\""_span));
+    static_assert("\"\\r\\n\""_span.size() == 6);
+    static_assert('\r' == 13);
+    static_assert('r' == 114);
+    constexpr auto span = "\"\\r\\n\""_span;
+    static_assert(span[0] == '"');
+    static_assert(span[1] == '\\');
+    static_assert(span[2] == 'r');
+    static_assert(span[3] == '\\');
+    static_assert(span[4] == 'n');
+    {
+        // NOTE: 不会有冲突。\\r 被解释成两个字符 \r被解释成一个字符
+        constexpr auto span = "\r\n"_span;
+        static_assert(span.size() == 2);
+        static_assert(span[0] == '\r');
+        static_assert(span[0] == 13);
+    }
+
     // 无效 quoted-string 测试
     static_assert(!quoted_string_fail("\""_span));                  // 未闭合引号
     static_assert(!quoted_string_fail("abc\""_span));               // 缺少起始引号
@@ -44,6 +62,10 @@ int main()
     static_assert(quoted_string_fail("\"unescaped\"quote\""_span)); // 未转义引号
     static_assert(!quoted_string_fail("no_quotes"_span));           // 完全无引号
     static_assert(!quoted_string_fail("\"\\\""_span));              // 转义后无字符
+
+    // NOTE: 裸\r\n 是不允许的
+    static_assert(!quoted_string_fail("\"\r\n\""_span)); // 转义后无字符
+    static_assert(!quoted_string_fail("\"\\r\\\""_span));
 
     return 0;
 }
