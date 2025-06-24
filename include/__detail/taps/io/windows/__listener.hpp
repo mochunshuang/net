@@ -6,7 +6,7 @@ namespace mcs::net::io::windows
 {
     struct listener
     {
-        io_context &io_ctx; // NOLINT
+        // io_context &io_ctx; // NOLINT
     };
 
 }; // namespace mcs::net::io::windows

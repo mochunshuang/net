@@ -2,6 +2,7 @@
 
 #include "../../io/windows/__iocp_context_base.hpp"
 #include "../../io/windows/__iocp_operation.hpp"
+#include "../../io/__io_opertion.hpp"
 #include "../../../../__third_party.hpp"
 
 #include <algorithm>
@@ -18,6 +19,15 @@ namespace mcs::net::services::windows
     struct base_service : io::windows::iocp_context_base
     {
         using endpoint_type = InternetProtocol::endpoint;
+        using io_operation_type = io::windows::io_operation_context_base;
+
+        constexpr static auto make_io_opertion( // NOLINT
+            io::io_opertion<::SOCKET> op) noexcept -> io_operation_type
+        {
+            return {.socket = op.socket,
+                    .wsabuf{.len = static_cast<ULONG>(op.len), .buf = op.buf},
+                    .bytes_transferred = {}};
+        }
 
         template <typename Sndr, typename Revr>
         struct state : io::windows::iocp_operation<state<Sndr, Revr>>
