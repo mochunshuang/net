@@ -51,8 +51,10 @@ int main()
 
     ip::tcp::endpoint ep(ip::address_v4::any(), 8080);
 
-    mcs::net::services::windows::base_service<ip::tcp> service(ep);
+    mcs::net::services::windows::base_service<ip::tcp> service{}; // NOTE: init network
     // service.print_info(); // 打印
+    // listen and bind => start service
+    auto listen_socket = service.start_service(ep).value();
 
     ex::counting_scope scope;
     ex::static_thread_pool<1> pool;
@@ -84,9 +86,10 @@ LPFN_GETACCEPTEXSOCKADDRS: 0xb8
         while (times-- > 0)
         {
             char buffer[2 * mcs::net::io::windows::ADDRESS_BUFFER_SIZE];
-            mcs::net::io::windows::io_operation_context_base p{
-                service.make_raw_socket(),
-                {.len = 2 * mcs::net::io::windows::ADDRESS_BUFFER_SIZE, .buf = buffer}};
+            mcs::net::io::windows::io_operation_accept_context p{
+                {service.make_raw_socket(ep),
+                 {.len = 2 * mcs::net::io::windows::ADDRESS_BUFFER_SIZE, .buf = buffer}},
+                listen_socket};
             // 测试复制
             auto p2 = p;
             assert(p.socket == p2.socket);
@@ -98,7 +101,7 @@ LPFN_GETACCEPTEXSOCKADDRS: 0xb8
             // 再启动sender
 
             // NOTE: 投递 accept 操作 给IOCP
-            auto conn = co_await service.make_accept(p);
+            // auto conn = co_await service.make_accept(p);
 
             // auto conn = co_await ex::just(0);
         }
@@ -111,18 +114,19 @@ LPFN_GETACCEPTEXSOCKADDRS: 0xb8
     ex::spawn(ex::starts_on(pool.get_scheduler(), std::move(ret)), scope.get_token());
 #else
     ex::spawn(
-        ex::starts_on(
+        ex::starts_on( // NOTE: coroutine 生成的lambda 可以按值捕获，但不能按引用捕获
             pool.get_scheduler(),
-            [](auto &service) noexcept -> ex::lazy<bool> {
+            [=](auto &service) noexcept -> ex::lazy<bool> {
                 int times = 1;
                 while (times-- > 0)
                 {
                     char buffer[2 * mcs::net::io::windows::ADDRESS_BUFFER_SIZE];
-                    mcs::net::io::windows::io_operation_context_base p{
-                        service.make_raw_socket(),
-                        {.len = 2 * mcs::net::io::windows::ADDRESS_BUFFER_SIZE,
-                         .buf = buffer},
-                        {}};
+                    mcs::net::io::windows::io_operation_accept_context p{
+                        mcs::net::io::windows::io_operation_context_base{
+                            service.make_raw_socket(ep),
+                            {.len = 2 * mcs::net::io::windows::ADDRESS_BUFFER_SIZE,
+                             .buf = buffer}},
+                        listen_socket};
                     // 测试复制
                     auto p2 = p;
                     assert(p.socket == p2.socket);
@@ -203,11 +207,12 @@ LPFN_GETACCEPTEXSOCKADDRS: 0xb8
                                      ctx.bytes_transferred, response.size());
                     }
                 }
+                service.close_service(listen_socket);
                 service.shutdown();
                 co_return true;
             }(service) | ex::then([&](auto ret) noexcept {
-                                              std::println("task done: {}", ret);
-                                          })),
+                                               std::println("task done: {}", ret);
+                                           })),
         scope.get_token());
 #endif
 

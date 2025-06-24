@@ -18,16 +18,15 @@ namespace mcs::net::services::windows
     template <class InternetProtocol>
     struct base_service : io::windows::iocp_context_base
     {
+        using socket_type = io::windows::iocp_context_base::socket_type;
+        using sockaddr_storage_type =
+            io::windows::iocp_context_base::sockaddr_storage_type;
+        using accept_operation_context = io::windows::io_operation_accept_context;
+        using read_operation_context = io::windows::io_operation_context_base;
+        using write_operation_context = read_operation_context;
+
         using endpoint_type = InternetProtocol::endpoint;
         using io_operation_type = io::windows::io_operation_context_base;
-
-        constexpr static auto make_io_opertion( // NOLINT
-            io::io_opertion<::SOCKET> op) noexcept -> io_operation_type
-        {
-            return {.socket = op.socket,
-                    .wsabuf{.len = static_cast<ULONG>(op.len), .buf = op.buf},
-                    .bytes_transferred = {}};
-        }
 
         template <typename Sndr, typename Revr>
         struct state : io::windows::iocp_operation<state<Sndr, Revr>>
@@ -35,9 +34,9 @@ namespace mcs::net::services::windows
             static constexpr auto io_type = Sndr::type; // NOLINT
             using operation_state_concept = ::mcs::execution::operation_state_t;
 
-            base_service &service;                                    // NOLINT
-            Revr rcvr;                                                // NOLINT
-            io::windows::io_operation_context_base operation_context; // NOLINT
+            base_service &service;                          // NOLINT
+            Revr rcvr;                                      // NOLINT
+            Sndr::operation_context_type operation_context; // NOLINT
 
             constexpr state(Sndr &sndr, Revr &&rcvr) noexcept // NOLINT
                 : io::windows::iocp_operation<state<Sndr, Revr>>{operation_context},
@@ -55,7 +54,9 @@ namespace mcs::net::services::windows
             {
                 if constexpr (io_type == io::io_type::IO_ACCEPT)
                 {
-                    if (auto ret = iocp_context_base::post_accept(service, this); !ret)
+                    if (auto ret =
+                            iocp_context_base::post_accept(service.pfn_acceptex(), this);
+                        !ret)
                         ::mcs::execution::recv::set_error(std::move(rcvr), ret.error());
                 }
                 else if constexpr (io_type == io::io_type::IO_READ)
@@ -90,10 +91,13 @@ namespace mcs::net::services::windows
         template <io::io_type io_type>
         struct sender
         {
+            using operation_context_type =
+                std::conditional_t<io_type == io::io_type::IO_ACCEPT,
+                                   ::mcs::net::io::windows::io_operation_accept_context,
+                                   ::mcs::net::io::windows::io_operation_context_base>;
             using sender_concept = ::mcs::execution::sender_t;
             using completion_signatures = ::mcs::execution::completion_signatures<
-                ::mcs::execution::set_value_t(
-                    ::mcs::net::io::windows::io_operation_context_base),
+                ::mcs::execution::set_value_t(operation_context_type),
                 ::mcs::execution::set_error_t(std::error_code)>;
 
             using indices_for = std::index_sequence_for<>;
@@ -105,7 +109,7 @@ namespace mcs::net::services::windows
                 return {*this, std::move(recv)};
             }
             base_service &service; // NOLINT
-            io::windows::io_operation_context_base operation_context;
+            operation_context_type operation_context;
         };
         static_assert(::mcs::execution::sender<sender<io::io_type::IO_ACCEPT>>);
 
@@ -113,33 +117,29 @@ namespace mcs::net::services::windows
         {
             return iocp_;
         }
-        [[nodiscard]] auto listen_socket() const noexcept // NOLINT
-        {
-            return listenSocket_;
-        }
         [[nodiscard]] auto pfn_acceptex() const noexcept // NOLINT
         {
             return pfnAcceptEx_;
         }
 
         [[nodiscard]] constexpr auto make_accept( // NOLINT
-            io::windows::io_operation_context_base context) noexcept
+            accept_operation_context context) noexcept
         {
             return sender<io::io_type::IO_ACCEPT>{*this, std::move(context)};
         }
         [[nodiscard]] constexpr auto make_read( // NOLINT
-            io::windows::io_operation_context_base context) noexcept
+            read_operation_context context) noexcept
         {
             return sender<io::io_type::IO_READ>{*this, std::move(context)};
         }
         [[nodiscard]] constexpr auto make_write( // NOLINT
-            io::windows::io_operation_context_base context) noexcept
+            write_operation_context context) noexcept
         {
             return sender<io::io_type::IO_WRITE>{*this, std::move(context)};
         }
 
         [[nodiscard]] constexpr auto make_rawconnection( // NOLINT
-            io::windows::io_operation_context_base context) noexcept
+            accept_operation_context context) noexcept
         {
             return make_accept(context) |
                    ::mcs::execution::then([this](auto new_ctx) noexcept {
@@ -147,18 +147,16 @@ namespace mcs::net::services::windows
                    });
         }
 
-        [[nodiscard]] constexpr auto make_raw_socket() const noexcept // NOLINT
+        [[nodiscard]] constexpr auto make_raw_socket( // NOLINT
+            const endpoint_type &endpoint) const noexcept -> socket_type
         {
             auto ret = ::WSASocketW(
-                endpoint_.protocol().family(), endpoint_.protocol().type(),
-                endpoint_.protocol().protocol(), nullptr, 0, WSA_FLAG_OVERLAPPED);
+                endpoint.protocol().family(), endpoint.protocol().type(),
+                endpoint.protocol().protocol(), nullptr, 0, WSA_FLAG_OVERLAPPED);
             assert(ret != INVALID_SOCKET);
             return ret;
         }
-        [[nodiscard]] constexpr auto family() const noexcept
-        {
-            return endpoint_.protocol().family();
-        }
+
         [[nodiscard]] constexpr auto connection_info(
             const io::windows::io_operation_context_base &context) const noexcept
         {
@@ -166,14 +164,13 @@ namespace mcs::net::services::windows
                                                        context.wsabuf.buf);
         }
 
-        constexpr explicit base_service(endpoint_type endpoint) : endpoint_{endpoint}
+        constexpr explicit base_service()
         {
             //
             // NOTE: SocKet的API WSAStartup后才能使用
             //  初始化Winsock. 如果成功， WSAStartup 函数返回零。
             if (WSADATA wsaData; 0 != ::WSAStartup(MAKEWORD(2, 2), &wsaData))
                 throw std::system_error(::WSAGetLastError(), std::system_category());
-
             try
             {
                 // 完成端口
@@ -182,58 +179,14 @@ namespace mcs::net::services::windows
                     throw std::system_error(static_cast<int>(::GetLastError()),
                                             std::system_category());
 
-                // 监听socket
-                listenSocket_ = make_raw_socket();
-                if (listenSocket_ == INVALID_SOCKET)
-                    throw std::system_error(::WSAGetLastError(), std::system_category());
+                socket_type tmp_sock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-                sockaddr_storage addr = {};
-                int addrLen = 0;
-
-                if (endpoint.protocol().family() == AF_INET)
-                {
-                    // IPv4 处理
-                    auto &ipv4_addr = reinterpret_cast<sockaddr_in &>(addr);
-                    ipv4_addr.sin_family = AF_INET;
-                    ipv4_addr.sin_addr.s_addr = ::htonl(INADDR_ANY); // 注意用 htonl 转换
-                    ipv4_addr.sin_port = ::htons(endpoint.port());
-                    addrLen = sizeof(sockaddr_in);
-                }
-                else if (endpoint.protocol().family() == AF_INET6)
-                {
-                    // IPv6 处理
-                    auto &ipv6_addr = reinterpret_cast<sockaddr_in6 &>(addr);
-                    ipv6_addr.sin6_family = AF_INET6;
-                    ipv6_addr.sin6_addr = in6addr_any; // IPv6 通配地址
-                    ipv6_addr.sin6_port = ::htons(endpoint.port());
-                    addrLen = sizeof(sockaddr_in6);
-                }
-                else
-                {
-                    throw std::runtime_error("Unsupported address family");
-                }
-
-                if (::bind(listenSocket_, reinterpret_cast<sockaddr *>(&addr), addrLen) ==
-                    SOCKET_ERROR)
-                {
-                    throw std::system_error(::WSAGetLastError(), std::system_category());
-                }
-
-                if (::listen(listenSocket_, SOMAXCONN) == SOCKET_ERROR)
-                    throw std::system_error(::WSAGetLastError(), std::system_category());
-
-                pfnAcceptEx_ = iocp_context_base::get_acceptex_ptr(listenSocket_);
+                pfnAcceptEx_ = iocp_context_base::get_acceptex_ptr(tmp_sock);
                 pfnGetAcceptExSockaddrs_ =
-                    iocp_context_base::get_accpetex_sockaddrs_ptr(listenSocket_);
-
-                // 将监听socket关联到完成端口
-                if (nullptr ==
-                    ::CreateIoCompletionPort(reinterpret_cast<HANDLE>(listenSocket_),
-                                             iocp_, {}, {}))
-                    throw std::system_error(static_cast<int>(::GetLastError()),
-                                            std::system_category());
-
-                std::println("service start ok, [port: {}]", endpoint.port());
+                    iocp_context_base::get_accpetex_sockaddrs_ptr(tmp_sock);
+                ::closesocket(tmp_sock);
+                assert(pfnAcceptEx_ != nullptr);
+                assert(pfnGetAcceptExSockaddrs_ != nullptr);
             }
             catch (...)
             {
@@ -245,7 +198,7 @@ namespace mcs::net::services::windows
 
         void run() noexcept
         {
-            std::println("run service port: [{}] .....", endpoint_.port());
+            stoped_.store(false, std::memory_order_relaxed);
             while (true)
             {
                 DWORD bytes_transferred = 0;
@@ -258,13 +211,21 @@ namespace mcs::net::services::windows
                                        ? ERROR_SUCCESS
                                        : ::GetLastError();
 
-                if (finish_.load(std::memory_order_relaxed))
+                if (stoped_.load(std::memory_order_relaxed))
                 {
-                    std::println("service shutdown....");
+                    std::println("base_service shutdown....");
                     break;
                 }
                 if (overlapped == nullptr)
                 {
+                    if (last_error == ERROR_ABANDONED_WAIT_0 ||
+                        last_error == ERROR_INVALID_HANDLE)
+                    {
+                        std::println(
+                            "overlapped == nullptr and serious error to shutdown: {}",
+                            last_error);
+                        break;
+                    }
                     std::println(
                         "overlapped == nullptr and GetQueuedCompletionStatus error: {}",
                         last_error);
@@ -279,11 +240,25 @@ namespace mcs::net::services::windows
                 switch (op->op_type)
                 {
                 case io::io_type::IO_ACCEPT: {
-                    ::SOCKET client_socket = op->context.socket;
-                    // UPDATE_ACCEPT_CONTEXT
-                    ::setsockopt(client_socket, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT,
-                                 reinterpret_cast<char *>(&listenSocket_),
-                                 sizeof(listenSocket_));
+                    auto &accept_context =
+                        static_cast<io::windows::io_operation_accept_context &>(
+                            op->context);
+                    socket_type client_socket = accept_context.socket;
+                    //  UPDATE_ACCEPT_CONTEXT
+                    if (SOCKET_ERROR ==
+                        ::setsockopt(
+                            client_socket, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT,
+                            reinterpret_cast<char *>(&accept_context.listen_socket),
+                            sizeof(accept_context.listen_socket)))
+                    {
+                        DWORD err = ::WSAGetLastError();
+                        ::closesocket(client_socket); // TODO(mcs): 交给外边处理吗？
+                        op->callbacks.complete_error(
+                            op, std::error_code(static_cast<int>(err),
+                                                std::system_category()));
+                        continue;
+                    }
+
                     if (nullptr ==
                         ::CreateIoCompletionPort(reinterpret_cast<HANDLE>(client_socket),
                                                  iocp_, 0, 0))
@@ -312,12 +287,95 @@ namespace mcs::net::services::windows
 
         constexpr void shutdown() noexcept
         {
-            this->finish_.store(true, std::memory_order::memory_order_release);
-            ::PostQueuedCompletionStatus(iocp_, 0, 0, nullptr);
+            if (bool expected = false; stoped_.compare_exchange_strong(
+                    expected, true, std::memory_order_release, std::memory_order_relaxed))
+                ::PostQueuedCompletionStatus(iocp_, 0, 0, nullptr);
         }
         [[nodiscard]] constexpr bool is_stopped() const noexcept // NOLINT
         {
-            return finish_.load(std::memory_order_relaxed);
+            return stoped_.load(std::memory_order_relaxed);
+        }
+
+        // NOLINTNEXTLINE
+        static constexpr auto get_sockaddr_storage(const endpoint_type &endpoint) noexcept
+            -> std::optional<sockaddr_storage_type>
+        {
+            sockaddr_storage_type storage{};
+            if (endpoint.protocol().family() == AF_INET)
+            {
+                auto &ipv4_addr = reinterpret_cast<sockaddr_in &>(storage.addr);
+                ipv4_addr.sin_family = AF_INET;
+                ipv4_addr.sin_addr.s_addr = ::htonl(INADDR_ANY); // 注意用 htonl 转换
+                ipv4_addr.sin_port = ::htons(endpoint.port());
+                storage.addr_len = sizeof(sockaddr_in);
+                return storage;
+            }
+            if (endpoint.protocol().family() == AF_INET6)
+            {
+                auto &ipv6_addr = reinterpret_cast<sockaddr_in6 &>(storage.addr);
+                ipv6_addr.sin6_family = AF_INET6;
+                ipv6_addr.sin6_addr = in6addr_any; // IPv6 通配地址
+                ipv6_addr.sin6_port = ::htons(endpoint.port());
+                storage.addr_len = sizeof(sockaddr_in6);
+                return storage;
+            }
+            return std::nullopt;
+        }
+
+        constexpr static void close_service(socket_type listen_socket) noexcept // NOLINT
+        {
+            ::closesocket(listen_socket);
+            std::println("close_service ok, [listen_socket: {}]", listen_socket);
+        }
+        constexpr auto start_service(const endpoint_type &endpoint) noexcept // NOLINT
+            -> std::optional<socket_type>
+        {
+            auto listen_socket = make_raw_socket(endpoint);
+            try
+            {
+                if (listen_socket == INVALID_SOCKET)
+                    throw std::system_error(::WSAGetLastError(), std::system_category());
+
+                auto storage = get_sockaddr_storage(endpoint);
+                if (not storage.has_value())
+                    throw std::runtime_error("Unsupported address family");
+                auto [addr, addr_len] = storage.value();
+                if (::bind(listen_socket, reinterpret_cast<sockaddr *>(&addr),
+                           addr_len) == SOCKET_ERROR)
+                    throw std::system_error(::WSAGetLastError(), std::system_category());
+
+                if (::listen(listen_socket, SOMAXCONN) == SOCKET_ERROR)
+                    throw std::system_error(::WSAGetLastError(), std::system_category());
+
+                // iocp_ bind to listen_socket
+                if (nullptr ==
+                    ::CreateIoCompletionPort(reinterpret_cast<HANDLE>(listen_socket),
+                                             iocp_, {}, {}))
+                    throw std::system_error(static_cast<int>(::GetLastError()),
+                                            std::system_category());
+
+                std::println("service start ok, [port: {},listen_socket: {}]",
+                             endpoint.port(), listen_socket);
+                return listen_socket;
+            }
+            catch (const std::system_error &e)
+            {
+                std::println("********base_service Construction [failed]********");
+                std::println("System error: [code: {}], [message: {}]", e.code().value(),
+                             e.what());
+            }
+            catch (const std::runtime_error &e)
+            {
+                std::println("********base_service Construction [failed]********");
+                std::println("Runtime error: [message: {}]", e.what());
+            }
+            catch (...)
+            {
+                std::println("********base_service Construction [failed]********");
+                std::println("Unknown error occurred");
+            }
+            ::closesocket(listen_socket);
+            return std::nullopt;
         }
 
         constexpr ~base_service() noexcept
@@ -330,20 +388,14 @@ namespace mcs::net::services::windows
         base_service &operator=(base_service &&) = delete;
 
       private:
-        endpoint_type endpoint_;
         HANDLE iocp_{INVALID_HANDLE_VALUE};
-        SOCKET listenSocket_{INVALID_SOCKET};
         LPFN_ACCEPTEX pfnAcceptEx_{};
         LPFN_GETACCEPTEXSOCKADDRS pfnGetAcceptExSockaddrs_{};
-        std::atomic<bool> finish_;
+        std::atomic<bool> stoped_{true};
 
         constexpr void deinit() noexcept
         {
-            if (listenSocket_ != INVALID_SOCKET)
-            {
-                ::closesocket(listenSocket_);
-                listenSocket_ = INVALID_SOCKET;
-            }
+            shutdown();
             if (iocp_ != INVALID_HANDLE_VALUE)
             {
                 ::CloseHandle(iocp_);

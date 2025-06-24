@@ -24,6 +24,8 @@ namespace mcs::net::io::windows
     };
     struct iocp_context_base
     {
+        using socket_type = windows_socket_type;
+
         struct endpoint_info
         {
             using port_type = std::uint_least16_t;
@@ -49,8 +51,14 @@ namespace mcs::net::io::windows
 
         struct rawconnection
         {
-            ::SOCKET socket{INVALID_SOCKET};
+            socket_type socket{INVALID_SOCKET};
             connection_info info;
+        };
+
+        struct sockaddr_storage_type
+        {
+            ::sockaddr_storage addr = {};
+            int addr_len = 0;
         };
 
         static constexpr connection_info parse_connection( // NOLINT
@@ -154,19 +162,20 @@ namespace mcs::net::io::windows
             return pfnGetAcceptExSockaddrs;
         }
 
-        template <iocp_context Service> // NOLINTNEXTLINE
-        static constexpr auto post_accept(const Service &service,
+        // NOLINTNEXTLINE
+        static constexpr auto post_accept(LPFN_ACCEPTEX pfn_acceptex,
                                           iocp_operation_base *op) noexcept
             -> std::expected<void, std::error_code>
         {
-            auto &ctx = op->context;
             DWORD bytes = 0;
+            auto &accept_context =
+                static_cast<io::windows::io_operation_accept_context &>(op->context);
             // https://learn.microsoft.com/en-us/windows/win32/api/mswsock/nf-mswsock-acceptex
             // https://learn.microsoft.com/en-us/windows/win32/api/mswsock/nf-mswsock-acceptex#:~:text=be%20NULL.-,Return%20value,-If%20no%20error
-            if (FALSE == service.pfn_acceptex()(service.listen_socket(), ctx.socket,
-                                                ctx.wsabuf.buf, 0, ADDRESS_BUFFER_SIZE,
-                                                ADDRESS_BUFFER_SIZE, &bytes,
-                                                static_cast<::OVERLAPPED *>(op)))
+            if (FALSE == pfn_acceptex(accept_context.listen_socket, accept_context.socket,
+                                      accept_context.wsabuf.buf, 0, ADDRESS_BUFFER_SIZE,
+                                      ADDRESS_BUFFER_SIZE, &bytes,
+                                      static_cast<::OVERLAPPED *>(op)))
             {
                 if (const ::DWORD k_error = ::WSAGetLastError();
                     k_error != ERROR_IO_PENDING)
