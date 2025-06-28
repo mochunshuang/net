@@ -22,8 +22,13 @@ namespace mcs::net::services::windows
         using sockaddr_storage_type =
             io::windows::iocp_context_base::sockaddr_storage_type;
         using accept_operation_context = io::windows::io_operation_accept_context;
-        using read_operation_context = io::windows::io_operation_context_base;
-        using write_operation_context = read_operation_context;
+        using io_operation_context_base = io::windows::io_operation_context_base;
+        using read_operation_context = io_operation_context_base;
+        using write_operation_context = io_operation_context_base;
+        static constexpr auto invalid_socket_value = INVALID_SOCKET; // NOLINT
+        static constexpr auto default_accept_buffer_size =           // NOLINT
+            2 * io::windows::ADDRESS_BUFFER_SIZE;
+        using connection_type = io::windows::iocp_context_base::rawconnection;
 
         using endpoint_type = InternetProtocol::endpoint;
         using io_operation_type = io::windows::io_operation_context_base;
@@ -103,7 +108,7 @@ namespace mcs::net::services::windows
             using indices_for = std::index_sequence_for<>;
             static constexpr auto type = io_type; // NOLINT
 
-            template <typename Recv>
+            template <::mcs::execution::receiver Recv>
             constexpr auto connect(Recv recv) noexcept -> state<sender, Recv>
             {
                 return {*this, std::move(recv)};
@@ -138,12 +143,12 @@ namespace mcs::net::services::windows
             return sender<io::io_type::IO_WRITE>{*this, std::move(context)};
         }
 
-        [[nodiscard]] constexpr auto make_rawconnection( // NOLINT
+        [[nodiscard]] constexpr auto make_connection( // NOLINT
             accept_operation_context context) noexcept
         {
             return make_accept(context) |
                    ::mcs::execution::then([this](auto new_ctx) noexcept {
-                       return rawconnection{new_ctx.socket, connection_info(new_ctx)};
+                       return connection_type{new_ctx.socket, connection_info(new_ctx)};
                    });
         }
 
@@ -196,6 +201,7 @@ namespace mcs::net::services::windows
             }
         }
 
+        // TODO(mcs): 需要绑定线程池资源的run接口。虽然base_service可以引用传递+pool解决
         void run() noexcept
         {
             stoped_.store(false, std::memory_order_relaxed);

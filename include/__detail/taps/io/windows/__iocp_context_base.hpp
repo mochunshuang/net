@@ -105,7 +105,7 @@ namespace mcs::net::io::windows
             if (addr->sa_family == AF_INET6)
             {
                 const auto *addr6 = reinterpret_cast<const sockaddr_in6 *>(addr);
-                if (::IN6_IS_ADDR_V4MAPPED(&addr6->sin6_addr))
+                if (TRUE == ::IN6_IS_ADDR_V4MAPPED(&addr6->sin6_addr))
                 {
                     sockaddr_in addr4{};
                     addr4.sin_family = AF_INET;

@@ -170,7 +170,7 @@ LPFN_GETACCEPTEXSOCKADDRS: 0xb8
                     }(service, p);
                     auto connect = co_await sndr;
 #else
-                    auto connect = co_await service.make_rawconnection(p);
+                    auto connect = co_await service.make_connection(p);
 #endif
                     assert(connect.socket == p.socket);
                     std::println("New connection: {}", connect.info.to_string());
