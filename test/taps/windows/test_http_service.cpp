@@ -15,6 +15,20 @@
 
 #include <Windows.h>
 
+void start_base_service_with_pool(auto &service, auto &thread_pool, auto &scope) noexcept
+{
+    namespace ex = mcs::execution;
+    for (std::size_t i = 0; i < thread_pool.size(); ++i)
+    {
+        ex::spawn(ex::schedule(thread_pool[i].get_scheduler()) | ex::then([&]() noexcept {
+                      std::cout << "service.run thread_id: " << std::this_thread::get_id()
+                                << '\n';
+                      service.run();
+                  }),
+                  scope.get_token());
+    }
+}
+
 int main()
 {
     namespace ip = mcs::protocol::ip; // NOLINT
@@ -37,18 +51,25 @@ int main()
 
     ex::counting_scope scope;
     ex::static_thread_pool<1> pool;
+    constexpr auto thead_count = 8;
+    ex::static_thread_pool<thead_count> io_pool;
 
-    ex::spawn(ex::starts_on(pool.get_scheduler(),
-                            [=](auto &service) noexcept -> ex::lazy<bool> {
-                                auto c = co_await service.make_http_connection();
-                                co_return true;
-                            }(http) | ex::then([&](auto ret) noexcept {
-                                                               std::println(
-                                                                   "task done: {}", ret);
-                                                           })),
+    ex::spawn(ex::starts_on(
+                  pool.get_scheduler(),
+                  [=](auto &service) noexcept -> ex::lazy<bool> {
+                      auto c = co_await service.make_http_connection();
+
+                      co_return true;
+                  }(http) | ex::then([&](auto ret) noexcept {
+                                                     std::println("task done: {}", ret);
+
+                                                     base_service.shutdown(
+                                                         thead_count); // NOTE: ASYNC
+                                                 })),
               scope.get_token());
 
-    base_service.run();
+    // base_service.run();
+    start_base_service_with_pool(base_service, io_pool, scope);
     mcs::this_thread::sync_wait(scope.join());
 
     std::cout << "main done\n";

@@ -18,6 +18,7 @@ namespace mcs::net::io::pool
         requires(is_inheritable<T>)
     struct buffer_object_pool
     {
+        using object_type = T;
         // T chunk[block_count];
         struct chunk;
         struct double_link

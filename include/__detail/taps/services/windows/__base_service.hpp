@@ -219,7 +219,8 @@ namespace mcs::net::services::windows
 
                 if (stoped_.load(std::memory_order_relaxed))
                 {
-                    std::println("base_service shutdown....");
+                    std::println("base_service shutdown....: [thead_id: {}]",
+                                 std::this_thread::get_id());
                     break;
                 }
                 if (overlapped == nullptr)
@@ -291,11 +292,16 @@ namespace mcs::net::services::windows
             }
         }
 
-        constexpr void shutdown() noexcept
+        constexpr void shutdown(std::size_t thead_count = 1) noexcept
         {
             if (bool expected = false; stoped_.compare_exchange_strong(
                     expected, true, std::memory_order_release, std::memory_order_relaxed))
-                ::PostQueuedCompletionStatus(iocp_, 0, 0, nullptr);
+            {
+                for (std::size_t i = 0; i < thead_count; ++i)
+                {
+                    ::PostQueuedCompletionStatus(iocp_, 0, 0, nullptr);
+                }
+            }
         }
         [[nodiscard]] constexpr bool is_stopped() const noexcept // NOLINT
         {
