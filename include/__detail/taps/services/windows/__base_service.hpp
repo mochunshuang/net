@@ -297,6 +297,7 @@ namespace mcs::net::services::windows
             if (bool expected = false; stoped_.compare_exchange_strong(
                     expected, true, std::memory_order_release, std::memory_order_relaxed))
             {
+                std::println("shutdown thead_count: [ {} ]", thead_count);
                 for (std::size_t i = 0; i < thead_count; ++i)
                 {
                     ::PostQueuedCompletionStatus(iocp_, 0, 0, nullptr);
@@ -336,8 +337,17 @@ namespace mcs::net::services::windows
 
         constexpr static void close_service(socket_type listen_socket) noexcept // NOLINT
         {
+            assert(listen_socket != invalid_socket_value);
+            ::CancelIoEx(reinterpret_cast<HANDLE>(listen_socket), nullptr);
             ::closesocket(listen_socket);
             std::println("close_service ok, [listen_socket: {}]", listen_socket);
+        }
+        constexpr static void close_socket(socket_type client_socket) noexcept // NOLINT
+        {
+            assert(client_socket != invalid_socket_value);
+            ::CancelIoEx(reinterpret_cast<HANDLE>(client_socket), nullptr);
+            ::closesocket(client_socket);
+            std::println("close_socket ok, [client_socket: {}]", client_socket);
         }
         constexpr auto start_service(const endpoint_type &endpoint) noexcept // NOLINT
             -> std::optional<socket_type>

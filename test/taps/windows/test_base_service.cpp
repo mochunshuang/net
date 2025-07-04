@@ -116,7 +116,7 @@ LPFN_GETACCEPTEXSOCKADDRS: 0xb8
     ex::spawn(
         ex::starts_on( // NOTE: coroutine 生成的lambda 可以按值捕获，但不能按引用捕获
             pool.get_scheduler(),
-            [=](auto &service) noexcept -> ex::lazy<bool> {
+            [=](auto &service) noexcept -> ex::task<bool> {
                 int times = 1;
                 while (times-- > 0)
                 {
