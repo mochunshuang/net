@@ -5,7 +5,6 @@
 #include "../snd/general/__FWD_ENV.hpp"
 #include "../snd/__detail/mate_type/__child_type.hpp"
 #include "../snd/__get_completion_signatures.hpp"
-#include <utility>
 
 namespace mcs::execution::diagnostics
 {
@@ -34,16 +33,13 @@ namespace mcs::execution::diagnostics
     template <snd::sender Sndr, class... Env> // NOLINTNEXTLINE
     inline constexpr bool check_type_impl<Sndr, Env...> = []() consteval {
         using index = Sndr::indices_for;
-        if (not std::is_same_v<index, std::make_index_sequence<0>>)
-        {
-            []<std::size_t... Is>(std::index_sequence<Is...>) {
-                (static_cast<void>(
-                     snd::get_completion_signatures<
-                         snd::__detail::mate_type::child_type<Sndr, Is>,
-                         decltype(snd::general::FWD_ENV(std::declval<Env>()))...>()),
-                 ...);
-            }(index{});
-        }
+        []<std::size_t... Is>(std::index_sequence<Is...>) {
+            (static_cast<void>(
+                 snd::get_completion_signatures<
+                     snd::__detail::mate_type::child_type<Sndr, Is>,
+                     decltype(snd::general::FWD_ENV(std::declval<Env>()))...>()),
+             ...);
+        }(index{});
         return true;
     }();
 

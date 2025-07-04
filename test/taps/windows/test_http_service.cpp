@@ -1,5 +1,6 @@
 
 // NOLINTBEGIN
+#include <string>
 #if defined(_MSC_VER)
 
 #include "../../../include/__detail/taps/services/windows/__base_service.hpp"
@@ -54,19 +55,78 @@ int main()
     constexpr auto thead_count = 8;
     ex::static_thread_pool<thead_count> io_pool;
 
-    ex::spawn(ex::starts_on(
-                  pool.get_scheduler(),
-                  [=](auto &service) noexcept -> ex::lazy<bool> {
-                      auto c = co_await service.make_http_connection();
+    ex::spawn(
+        ex::starts_on(
+            pool.get_scheduler(),
+            [=](auto &service) noexcept -> ex::task<bool> {
+                std::println(">>> spawn start thead_id: {}", std::this_thread::get_id());
+                // NOTE: 浏览器默认两次请求，拉起服务
+                int count = 3;
+                while (count--)
+                {
+                    // NOTE: make_http_connection 允许连接。相应已经建立的连接
+                    auto http_connect = co_await service.make_http_connection();
 
-                      co_return true;
-                  }(http) | ex::then([&](auto ret) noexcept {
-                                                     std::println("task done: {}", ret);
+                    {
+                        auto rawconnect = http_connect.dependentConnect();
+                        std::println("New connection: {}", rawconnect.info.to_string());
+                        std::println("Remote IP: {}", rawconnect.info.remote.ip_address);
+                        std::println("Remote Port: {}", rawconnect.info.remote.port);
+                        std::println("Local Port: {}", rawconnect.info.local.port);
+                    }
 
-                                                     base_service.shutdown(
-                                                         thead_count); // NOTE: ASYNC
-                                                 })),
-              scope.get_token());
+                    // NOTE: 允许已经建立的连接发起请求
+                    //  接收： 请求。打印http 报文
+                    {
+                        char buffer[4096];
+                        auto bytes_transferred =
+                            co_await http_connect.aync_read(buffer, 4090);
+                        std::println("[read bytes_transferred]: {} \n{}",
+                                     bytes_transferred,
+                                     std::string(buffer, bytes_transferred));
+                        std::println(">>> read after thead_id: {}",
+                                     std::this_thread::get_id());
+                    }
+
+                    {
+                        // 构造响应：让浏览器打印
+                        // NOTE: 最后浏览器影响影响：”Hello World!: 0“
+                        std::string responseBody =
+                            "Hello World!: " + std::to_string(count);
+                        std::string response = "HTTP/1.1 200 OK\r\n"
+                                               "Content-Type: text/plain\r\n"
+                                               "Content-Length: " +
+                                               std::to_string(responseBody.length()) +
+                                               "\r\n"
+                                               "Connection: " +
+                                               (false ? "keep-alive" : "close") +
+                                               "\r\n"
+                                               "\r\n" // 头与正文的空行
+                                               + responseBody;
+                        auto response_szie = response.size();
+                        std::vector<char> vec;
+                        vec.reserve(response.size() + 1); // +1 为了包含字符串结束符 '\0'
+
+                        // 使用 std::move 避免拷贝
+                        vec.assign(std::make_move_iterator(response.begin()),
+                                   std::make_move_iterator(response.end()));
+                        auto bytes_transferred =
+                            co_await http_connect.aync_write(std::move(vec));
+                        std::println("write bytes_transferred: {} , response.size(): {} ",
+                                     bytes_transferred, response_szie);
+                        std::println(">>> write after thead_id: {}",
+                                     std::this_thread::get_id());
+                    }
+                }
+                std::println(">>> spawn end thead_id: {}", std::this_thread::get_id());
+                co_return true;
+            }(http) | ex::then([&](auto ret) noexcept {
+                                               std::println("task done: {}", ret);
+
+                                               base_service.shutdown(
+                                                   thead_count); // NOTE: ASYNC
+                                           })),
+        scope.get_token());
 
     // base_service.run();
     start_base_service_with_pool(base_service, io_pool, scope);

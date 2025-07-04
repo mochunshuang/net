@@ -227,34 +227,13 @@ namespace mcs::execution
                                                    decltype(snd::general::FWD_ENV(
                                                        std::declval<Env>()))...>());
                 using index = Sndr::indices_for;
-
-                if (not std::is_same_v<index, std::make_index_sequence<0>>)
-                {
-                    []<std::size_t... Is>(std::index_sequence<Is...>) {
-                        // (static_cast<void>(snd::get_completion_signatures<
-                        //                    snd::__detail::mate_type::child_type<Sndr,
-                        //                    Is>, decltype(snd::general::FWD_ENV(
-                        //                        std::declval<Env>()))...>()),
-                        //  ...);
-                        // 对每个Is进行处理，使用立即调用的lambda和if constexpr检查有效性
-                        (
-                            [&]<std::size_t I>() {
-                                if constexpr (requires {
-                                                  typename snd::__detail::mate_type::
-                                                      child_type<Sndr, I>;
-                                              })
-                                {
-                                    // 仅当child_type有效时，实例化get_completion_signatures
-                                    static_cast<void>(
-                                        snd::get_completion_signatures<
-                                            snd::__detail::mate_type::child_type<Sndr, I>,
-                                            decltype(snd::general::FWD_ENV(
-                                                std::declval<Env>()))...>());
-                                }
-                            }.template operator()<Is>(),
-                            ...);
-                    }(index{});
-                }
+                []<std::size_t... Is>(std::index_sequence<Is...>) {
+                    (static_cast<void>(
+                         snd::get_completion_signatures<
+                             snd::__detail::mate_type::child_type<Sndr, Is>,
+                             decltype(snd::general::FWD_ENV(std::declval<Env>()))...>()),
+                     ...);
+                }(index{});
                 return true;
             }();
     }; // namespace diagnostics
