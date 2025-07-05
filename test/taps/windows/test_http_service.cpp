@@ -68,7 +68,7 @@ int main()
                     auto http_connect = co_await service.make_http_connection();
 
                     {
-                        auto rawconnect = http_connect.dependentConnect();
+                        auto rawconnect = http_connect.dependent_connect();
                         std::println("New connection: {}", rawconnect.info.to_string());
                         std::println("Remote IP: {}", rawconnect.info.remote.ip_address);
                         std::println("Remote Port: {}", rawconnect.info.remote.port);
@@ -117,12 +117,13 @@ int main()
                         std::println(">>> write after thead_id: {}",
                                      std::this_thread::get_id());
                     }
+                    service.close_http_connection(http_connect);
                 }
                 std::println(">>> spawn end thead_id: {}", std::this_thread::get_id());
                 co_return true;
             }(http) | ex::then([&](auto ret) noexcept {
                                                std::println("task done: {}", ret);
-
+                                               http.stop();
                                                base_service.shutdown(
                                                    thead_count); // NOTE: ASYNC
                                            })),

@@ -349,6 +349,11 @@ namespace mcs::net::services::windows
             ::closesocket(client_socket);
             std::println("close_socket ok, [client_socket: {}]", client_socket);
         }
+        constexpr static void close_connection(connection_type conn) noexcept // NOLINT
+        {
+            close_socket(conn.socket);
+        }
+
         constexpr auto start_service(const endpoint_type &endpoint) noexcept // NOLINT
             -> std::optional<socket_type>
         {
