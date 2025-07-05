@@ -104,7 +104,7 @@ void base_test5()
                    static_assert(ex::scope::async_scope_token<decltype(scope_token)>);
 
                    ex::spawn(ex::starts_on(sch,
-                                           [&]() noexcept -> ex::lazy<> {
+                                           [&]() noexcept -> ex::task<> {
                                                then_called = true;
                                                co_return;
                                            }()),
@@ -121,7 +121,7 @@ void base_test5()
 void base_test6()
 {
     bool then_called = false;
-    auto ret = [&]() noexcept -> ex::lazy<bool> {
+    auto ret = [&]() noexcept -> ex::task<bool> {
         co_return true;
     }() | ex::then([&](auto ret) noexcept { then_called = true; });
     static_assert(ex::sender<decltype(ret)>);
@@ -165,7 +165,7 @@ int main()
     ex::static_thread_pool<1> pool;
     set_signal_handler(context);
 
-    auto ret = [&]() noexcept -> ex::lazy<bool> {
+    auto ret = [&]() noexcept -> ex::task<bool> {
         while (not context.is_stopped())
         {
             auto conn = co_await context.make_accept();
